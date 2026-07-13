@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&amp;family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes hq-pop{
+  0%{transform:translate(-50%,-50%) scale(.2) rotate(-16deg);opacity:0}
+  12%{opacity:1}
+  34%{transform:translate(-50%,-50%) scale(1.16) rotate(6deg)}
+  50%{transform:translate(-50%,-50%) scale(.95) rotate(-3deg)}
+  60%{transform:translate(-50%,-50%) scale(1) rotate(0)}
+  82%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(.7) rotate(0);opacity:0}
+}
+@keyframes hq-rays{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(60deg)}}
+@keyframes hq-ribbon{
+  0%{opacity:0;transform:translate(-50%,12px)}
+  28%{opacity:0;transform:translate(-50%,12px)}
+  44%{opacity:1;transform:translate(-50%,0)}
+  82%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-8px)}
+}
+@keyframes hq-fade{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes hq-confetti{
+  from{transform:translate(-50%,-50%) rotate(0);opacity:1}
+  to{transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot));opacity:0}
+}
+@keyframes hq-toast{
+  0%{transform:translate(-50%,14px);opacity:0}
+  14%{transform:translate(-50%,0);opacity:1}
+  86%{transform:translate(-50%,0);opacity:1}
+  100%{transform:translate(-50%,-8px);opacity:0}
+}
+@keyframes hq-sheet{from{transform:translateY(100%)}to{transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#F6EBDC;display:flex;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;font-family:Gabarito,system-ui,sans-serif">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;position:relative;background:#262033;overflow:hidden;color:#262033">
+
+  <div style="position:absolute;inset:0;overflow-y:auto;padding:74px 16px 40px;box-sizing:border-box">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="background:#FFF9EE;border:3px solid #262033;border-radius:20px;padding:18px 18px 16px;box-shadow:4px 4px 0 rgba(38,32,51,.3);margin-bottom:20px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
+          <div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:11px;letter-spacing:.16em;color:rgba(38,32,51,.55);margin-bottom:6px">HOMEQUEST</div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;line-height:1.18;color:#262033">{{ headline }}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;padding-top:2px">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;line-height:1;color:#262033">{{ overallPct }}%</div>
+            <div style="font-weight:700;font-size:11px;color:rgba(38,32,51,.55);margin-top:2px">{{ allDone }}/{{ allTotal }} things</div>
+          </div>
+        </div>
+        <div style="height:12px;border-radius:999px;background:rgba(38,32,51,.1);overflow:hidden">
+          <div style="height:100%;border-radius:999px;background:#FFC531;width:{{ overallPct }}%;transition:width .5s ease"></div>
+        </div>
+        <div style="font-weight:700;font-size:12px;color:rgba(38,32,51,.55);margin-top:9px">{{ roomsDone }} of {{ roomCount }} rooms fully done</div>
+      </div>
+
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:11px;letter-spacing:.16em;color:rgba(255,239,217,.75);margin-bottom:12px;padding-left:2px">YOUR ROOMS</div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-if value="{{ heroRoom }}">
+          <div style="position:relative;background:{{ heroRoom.bg }};color:{{ heroRoom.textColor }};border-radius:30px;padding:22px 22px 20px;cursor:pointer;box-shadow:0 16px 34px rgba(38,32,51,.28)" onClick="{{ heroRoom.onOpen }}">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12px;letter-spacing:.1em;opacity:.72;text-transform:uppercase;margin-bottom:8px">{{ heroRoom.tag }}</div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;line-height:1.15">{{ heroRoom.name }}</div>
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:44px;line-height:1;letter-spacing:-.02em;flex-shrink:0">{{ heroRoom.pct }}%</div>
+            </div>
+            <div style="height:16px;border-radius:999px;background:{{ heroRoom.barTrack }};overflow:hidden">
+              <div style="height:100%;border-radius:999px;background:{{ heroRoom.barFill }};width:{{ heroRoom.pct }}%;transition:width .5s ease"></div>
+            </div>
+            <button style="position:absolute;top:20px;right:20px;width:30px;height:30px;border:none;background:rgba(0,0,0,.12);color:inherit;font-size:20px;font-weight:700;border-radius:999px;cursor:pointer;padding:0" onClick="{{ heroRoom.onQuickAdd }}">+</button>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <sc-for list="{{ mediumRooms }}" as="room" hint-placeholder-count="2">
+            <div style="position:relative;flex:1;min-width:145px;background:{{ room.bg }};color:{{ room.textColor }};border-radius:26px;padding:18px 16px 16px;cursor:pointer;box-shadow:0 12px 26px rgba(38,32,51,.24)" onClick="{{ room.onOpen }}">
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin-bottom:10px">{{ room.name }}</div>
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;margin-bottom:10px">{{ room.pct }}%</div>
+              <div style="height:12px;border-radius:999px;background:{{ room.barTrack }};overflow:hidden">
+                <div style="height:100%;border-radius:999px;background:{{ room.barFill }};width:{{ room.pct }}%;transition:width .5s ease"></div>
+              </div>
+              <button style="position:absolute;top:14px;right:12px;width:26px;height:26px;border:none;background:rgba(0,0,0,.12);color:inherit;font-size:17px;font-weight:700;border-radius:999px;cursor:pointer;padding:0" onClick="{{ room.onQuickAdd }}">+</button>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-for list="{{ slimRooms }}" as="room" hint-placeholder-count="1">
+          <div style="position:relative;display:flex;align-items:center;gap:12px;background:{{ room.bg }};color:{{ room.textColor }};border-radius:20px;padding:14px 18px;cursor:pointer;box-shadow:0 10px 22px rgba(38,32,51,.2)" onClick="{{ room.onOpen }}">
+            <div style="flex:1;min-width:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px">{{ room.name }}</div>
+            <div style="border-radius:999px;padding:4px 12px;font-weight:800;font-size:11px;letter-spacing:.5px;text-transform:uppercase;background:rgba(0,0,0,.12)">DONE &#10003;</div>
+          </div>
+        </sc-for>
+
+        <div style="border:2.5px dashed rgba(255,239,217,.45);border-radius:24px;padding:16px;text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:rgba(255,239,217,.7);cursor:pointer" onClick="{{ openAddRoom }}">+ add a room</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isRoom }}">
+    <div>
+      <button style="width:44px;height:44px;border-radius:999px;background:#FFF9EE;border:2.5px solid #262033;box-shadow:2px 2px 0 rgba(38,32,51,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px;padding:0" onClick="{{ goHome }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#262033" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+      </button>
+      <div style="border-radius:20px;padding:18px;border:3px solid #262033;box-shadow:4px 4px 0 rgba(38,32,51,.3);background:{{ roomDetail.bg }};color:{{ roomDetail.textColor }}">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(0,0,0,.12);flex-shrink:0">{{ roomDetail.emoji }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;line-height:1.1">{{ roomDetail.name }}</div>
+            <div style="font-weight:700;font-size:12px;opacity:.82;margin-top:3px">{{ roomDetail.done }} of {{ roomDetail.total }} done</div>
+          </div>
+          <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;flex-shrink:0">{{ roomDetail.pct }}%</div>
+        </div>
+        <div style="height:10px;border-radius:999px;overflow:hidden;margin-top:14px;background:rgba(0,0,0,.16)">
+          <div style="height:100%;border-radius:999px;width:{{ roomDetail.pct }}%;background:{{ roomDetail.textColor }};transition:width .5s ease"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:11px;letter-spacing:.16em;color:rgba(255,239,217,.75);margin-bottom:12px">COLLECTION &#183; {{ roomDetail.done }}/{{ roomDetail.total }}</div>
+        <div style="background:#262033;border-radius:18px;padding:16px;position:relative;overflow:hidden;box-shadow:4px 4px 0 rgba(0,0,0,.3)">
+          <sc-if value="{{ roomDetail.complete }}">
+            <div style="text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12px;color:#FFC531;letter-spacing:.5px;margin-bottom:8px">{{ completeBanner }}</div>
+          </sc-if>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:14px 10px;justify-items:center;align-items:center;padding:6px 2px 4px">
+            <sc-for list="{{ roomDetail.tasksView }}" as="t" hint-placeholder-count="6">
+              <span style="display:inline-block;font-size:33px;line-height:1;transform:rotate({{ t.rot }}deg);opacity:{{ t.bigOpacity }};filter:{{ t.bigFilter }}">{{ t.sticker }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:11px;letter-spacing:.16em;color:rgba(255,239,217,.75);margin-bottom:12px">TO DO &#183; {{ roomDetail.left }} LEFT</div>
+        <div style="background:#FFF9EE;border-radius:18px;overflow:hidden;border:3px solid #262033;box-shadow:4px 4px 0 rgba(38,32,51,.3)">
+          <sc-for list="{{ roomDetail.tasksView }}" as="t" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:11px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(38,32,51,.08);background:{{ t.rowBg }}" onClick="{{ t.onToggle }}">
+              <div style="width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;background:{{ t.checkBg }};color:{{ t.checkColor }};border:{{ t.checkBorder }}">{{ t.checkMark }}</div>
+              <span style="flex:1;font-weight:700;font-size:14px;line-height:1.4;color:{{ t.labelColor }};text-decoration:{{ t.strike }}">{{ t.label }}</span>
+              <span style="font-size:20px;flex-shrink:0;opacity:{{ t.smallOpacity }};filter:{{ t.smallFilter }}">{{ t.sticker }}</span>
+              <button style="width:30px;height:30px;border:none;background:transparent;color:rgba(38,32,51,.4);font-size:18px;cursor:pointer;border-radius:8px;flex-shrink:0;padding:0" onClick="{{ t.onEdit }}">&#8943;</button>
+            </div>
+          </sc-for>
+          <div style="display:flex;align-items:center;gap:11px;padding:13px 16px;cursor:pointer;color:rgba(38,32,51,.55);font-weight:700;font-size:14px" onClick="{{ roomDetail.onAddJob }}">
+            <span style="width:26px;height:26px;border-radius:7px;border:2px dashed rgba(38,32,51,.3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0">+</span> add a job
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{ sheetOpen }}">
+    <div style="position:absolute;inset:0;background:rgba(38,32,51,.55);display:flex;align-items:flex-end;justify-content:center;z-index:80" onClick="{{ closeSheet }}">
+      <div style="width:100%;background:#FFF9EE;border-radius:22px 22px 0 0;padding:20px 18px 34px;box-shadow:0 -6px 0 rgba(0,0,0,.12);animation:hq-sheet .26s cubic-bezier(.16,1,.3,1);box-sizing:border-box" onClick="{{ stopClick }}">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#262033;margin-bottom:14px">{{ sheet.title }}</div>
+        <input style="width:100%;font-weight:700;font-size:15px;color:#262033;background:#fff;border:2.5px solid #262033;border-radius:12px;padding:12px 13px;margin-bottom:10px;box-sizing:border-box;font-family:Gabarito,sans-serif" placeholder="{{ sheet.placeholder }}" value="{{ sheet.name }}" onChange="{{ setSheetName }}"/>
+        <sc-if value="{{ sheet.showEmojiField }}">
+          <input style="width:100%;font-weight:700;font-size:15px;color:#262033;background:#fff;border:2.5px solid #262033;border-radius:12px;padding:12px 13px;margin-bottom:10px;box-sizing:border-box;font-family:Gabarito,sans-serif" placeholder="Emoji, optional (e.g. &#127978;)" value="{{ sheet.emoji }}" onChange="{{ setSheetEmoji }}"/>
+        </sc-if>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <button style="flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#262033;background:rgba(38,32,51,.08);border:none;border-radius:12px;padding:13px 18px;cursor:pointer" onClick="{{ closeSheet }}">Cancel</button>
+          <sc-if value="{{ sheet.showDelete }}">
+            <button style="flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#fff;background:#FF6B57;border:none;border-radius:12px;padding:13px 16px;cursor:pointer" onClick="{{ deleteJob }}">Delete</button>
+          </sc-if>
+          <button style="flex:1;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#262033;background:#FFC531;border:2.5px solid #262033;border-radius:12px;padding:13px;cursor:pointer;box-shadow:2px 2px 0 rgba(0,0,0,.22)" onClick="{{ saveSheet }}">{{ sheet.saveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ celebration }}">
+    <div style="position:absolute;inset:0;z-index:65;pointer-events:none;overflow:hidden">
+      <div style="position:absolute;inset:0;background:rgba(38,32,51,.34);animation:hq-fade 1.5s ease forwards"></div>
+      <div style="position:absolute;top:44%;left:50%;width:360px;height:360px;transform:translate(-50%,-50%);border-radius:50%;opacity:.25;background:repeating-conic-gradient({{ celebration.accent }} 0 10deg, transparent 10deg 22deg);-webkit-mask:radial-gradient(circle,#000 26%,transparent 68%);mask:radial-gradient(circle,#000 26%,transparent 68%);animation:hq-rays 1.5s linear forwards"></div>
+      <div style="position:absolute;top:44%;left:50%;font-size:100px;animation:hq-pop 1.5s cubic-bezier(.2,1.3,.4,1) forwards;filter:drop-shadow(2px 4px 2px rgba(38,32,51,.45))">{{ celebration.sticker }}</div>
+      <div style="position:absolute;top:62%;left:50%;background:#262033;border:3px solid #FFC531;border-radius:8px;padding:9px 20px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;color:#FFC531;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;animation:hq-ribbon 1.5s ease forwards">{{ celebration.label }}</div>
+      <sc-for list="{{ celebration.particles }}" as="p" hint-placeholder-count="22">
+        <div style="position:absolute;top:44%;left:50%;width:11px;height:15px;border-radius:{{ p.radius }};background:{{ p.color }};animation:hq-confetti {{ p.duration }}ms cubic-bezier(.15,.7,.3,1) forwards;animation-delay:{{ p.delay }}ms;--tx:{{ p.tx }}px;--ty:{{ p.ty }}px;--rot:{{ p.rot }}deg"></div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:absolute;bottom:104px;left:50%;z-index:70;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#FFC531;background:#262033;padding:10px 22px;border-radius:8px;border:2px solid #FFC531;animation:hq-toast 1.9s ease forwards;pointer-events:none;white-space:nowrap;transform:translate(-50%,0)">{{ toast.msg }}</div>
+  </sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:500,&quot;height&quot;:900},&quot;copyTone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;unhinged&quot;,&quot;options&quot;:[&quot;unhinged&quot;,&quot;gentle&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Copy&quot;},&quot;accentPalette&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:[&quot;#FFC531&quot;,&quot;#7C8CF8&quot;,&quot;#FF6B57&quot;,&quot;#5FBE8B&quot;],&quot;options&quot;:[[&quot;#FFC531&quot;,&quot;#7C8CF8&quot;,&quot;#FF6B57&quot;,&quot;#5FBE8B&quot;],[&quot;#FF6B57&quot;,&quot;#FFC531&quot;,&quot;#5FBE8B&quot;,&quot;#7C8CF8&quot;],[&quot;#0FB5BA&quot;,&quot;#F791C3&quot;,&quot;#F6BC3F&quot;,&quot;#5C30FF&quot;]],&quot;tsType&quot;:&quot;string[]&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;showCollection&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;}}">
+const STICKER_MAP = [
+  ['mirror','\u{1FA9E}'], ['coffee table','\u{1FAB5}'], ['gallery','\u{1F5BC}\uFE0F'], ['photo','\u{1F5BC}\uFE0F'], ['frame','\u{1F5BC}\uFE0F'],
+  ['rug','\u{1F9F6}'], ['runner','\u{1F9F6}'], ['lamp','\u{1F4A1}'], ['light','\u{1F4A1}'], ['shelf','\u{1FA9B}'],
+  ['bedside','\u{1F6CF}\uFE0F'], ['curtain','\u{1FA9F}'], ['pillow','\u{1F6CB}\uFE0F'], ['spice','\u{1F336}\uFE0F'],
+  ['stool','\u{1FA91}'], ['cabinet','\u{1F3A8}'], ['paint','\u{1F3A8}'], ['drawer','\u{1F527}'], ['console','\u{1FAB5}'],
+  ['hook','\u{1F9E5}'], ['coat','\u{1F9E5}'], ['wall','\u{1F3A8}'], ['door','\u{1F6AA}'], ['plant','\u{1FAB4}'],
+  ['table','\u{1FAB5}'], ['sofa','\u{1F6CB}\uFE0F'], ['couch','\u{1F6CB}\uFE0F'], ['tv','\u{1F4FA}'], ['shower','\u{1F6BF}'],
+];
+const STICKER_POOL = ['\u{1F527}','\u{1FA9B}','\u{1F9F0}','\u{1FAA3}','\u{1F9F9}','\u{1F4E6}','\u{1FA9C}','\u{1F529}','\u{1F9FD}','\u{1FA9F}','\u{1FAB4}','\u{1F4A1}','\u{1F6AA}','\u{1F5BC}\uFE0F','\u{1F9F1}','\u{1F6E0}\uFE0F'];
+const FALLBACK_PALETTE = ['#FFC531','#7C8CF8','#FF6B57','#5FBE8B','#FF9F6B','#6BC7D9','#F79ACB','#B9E36D'];
+const STORAGE_KEY = 'homequest-app-rooms-v1';
+
+class Component extends DCLogic {
+  state = {
+    screen: 'home',
+    activeRoomId: null,
+    rooms: [],
+    sheet: null,
+    celebration: null,
+    toast: null,
+  };
+
+  componentDidMount() {
+    let rooms = null;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved) && saved.length) rooms = saved;
+      }
+    } catch (e) {}
+    if (!rooms) rooms = this.buildDefaultRooms();
+    this.setState({ rooms });
+  }
+
+  stickerFor(label) {
+    const l = String(label).toLowerCase();
+    for (const [k, e] of STICKER_MAP) if (l.includes(k)) return e;
+    let h = 0;
+    for (let i = 0; i < l.length; i++) h = (h * 31 + l.charCodeAt(i)) >>> 0;
+    return STICKER_POOL[h % STICKER_POOL.length];
+  }
+
+  luminance(hex) {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+  }
+  textFor(bg) { return this.luminance(bg) > 0.62 ? '#262033' : '#FFF3E2'; }
+
+  buildDefaultRooms() {
+    const pal = (this.props.accentPalette && this.props.accentPalette.length === 4) ? this.props.accentPalette : ['#FFC531', '#7C8CF8', '#FF6B57', '#5FBE8B'];
+    const mk = (id, label) => ({ id, label, done: false, sticker: this.stickerFor(label) });
+    return [
+      { id: 'living', name: 'Living Room', emoji: '\u{1F6CB}\uFE0F', bg: pal[0], textColor: this.textFor(pal[0]), tasks: [mk('l1', 'Hang the mirror'), mk('l2', 'Coffee table'), mk('l3', 'Gallery wall'), mk('l4', 'Rug'), mk('l5', 'Floor lamp'), mk('l6', 'Fix the wobbly shelf')] },
+      { id: 'bedroom', name: 'Bedroom', emoji: '\u{1F6CF}\uFE0F', bg: pal[1], textColor: this.textFor(pal[1]), tasks: [mk('b1', 'Bedside tables'), mk('b2', 'Blackout curtains'), mk('b3', 'New mirror'), mk('b4', 'Frame the wedding photo'), mk('b5', 'Throw pillows')] },
+      { id: 'kitchen', name: 'Kitchen', emoji: '\u{1F37D}\uFE0F', bg: pal[2], textColor: this.textFor(pal[2]), tasks: [mk('k1', 'Spice rack'), mk('k2', 'Bar stools'), mk('k3', 'Pendant light'), mk('k4', 'Paint the cabinets'), mk('k5', 'Fix the jamming drawer')] },
+      { id: 'hallway', name: 'Hallway', emoji: '\u{1F5BC}\uFE0F', bg: pal[3], textColor: this.textFor(pal[3]), tasks: [mk('h1', 'Console table'), mk('h2', 'Coat hooks'), mk('h3', 'Runner rug'), mk('h4', 'Repaint the scuffed wall')] },
+    ];
+  }
+
+  save(rooms) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms)); } catch (e) {}
+  }
+
+  openRoom = (id) => this.setState({ screen: 'room', activeRoomId: id, celebration: null });
+  goHome = () => this.setState({ screen: 'home', activeRoomId: null, celebration: null });
+  stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
+
+  toggleTask = (roomId, taskId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const rooms = this.state.rooms.map(r => r.id !== roomId ? r : { ...r, tasks: r.tasks.map(t => t.id === taskId ? { ...t, done: !t.done } : t) });
+    const room = rooms.find(r => r.id === roomId);
+    const task = room.tasks.find(t => t.id === taskId);
+    this.save(rooms);
+    this.setState({ rooms });
+    if (task.done) this.celebrate(task.sticker, room.bg);
+  };
+
+  celebrate(sticker, accent) {
+    const particles = Array.from({ length: 22 }).map((_, i) => {
+      const angle = (Math.PI * 2 * i / 22) + (Math.random() * 0.4 - 0.2);
+      const dist = 70 + Math.random() * 110;
+      return {
+        id: i,
+        tx: Math.round(Math.cos(angle) * dist),
+        ty: Math.round(Math.sin(angle) * dist),
+        rot: Math.round(Math.random() * 540),
+        color: [accent, '#FFC531', '#FF6B57', '#7C8CF8', '#5FBE8B'][i % 5],
+        radius: i % 3 === 0 ? '50%' : '3px',
+        duration: 900 + Math.round(Math.random() * 500),
+        delay: Math.round(Math.random() * 90),
+      };
+    });
+    const unhinged = (this.props.copyTone ?? 'unhinged') === 'unhinged';
+    this.setState({ celebration: { sticker, accent, particles, label: unhinged ? 'Nailed it.' : 'Nice work.' } });
+    clearTimeout(this._celT);
+    this._celT = setTimeout(() => this.setState({ celebration: null }), 1500);
+  }
+
+  flashToast(msg) {
+    this.setState({ toast: { msg } });
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => this.setState({ toast: null }), 1900);
+  }
+
+  openAddJob = (roomId, e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ sheet: { mode: 'job', roomId, name: '', emoji: '' } }); };
+  openAddRoom = () => this.setState({ sheet: { mode: 'room', name: '', emoji: '' } });
+  openEditJob = (roomId, taskId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const room = this.state.rooms.find(r => r.id === roomId);
+    const task = room.tasks.find(t => t.id === taskId);
+    this.setState({ sheet: { mode: 'edit', roomId, taskId, name: task.label, emoji: '' } });
+  };
+  closeSheet = () => this.setState({ sheet: null });
+  setSheetName = (e) => this.setState(s => ({ sheet: { ...s.sheet, name: e.target.value } }));
+  setSheetEmoji = (e) => this.setState(s => ({ sheet: { ...s.sheet, emoji: e.target.value } }));
+
+  saveSheet = () => {
+    const s = this.state.sheet;
+    const name = (s.name || '').trim();
+    if (!name) return;
+    const unhinged = (this.props.copyTone ?? 'unhinged') === 'unhinged';
+    let rooms = this.state.rooms;
+    if (s.mode === 'edit') {
+      rooms = rooms.map(r => r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map(t => t.id === s.taskId ? { ...t, label: name, sticker: this.stickerFor(name) } : t) });
+      this.flashToast('Updated.');
+    } else if (s.mode === 'job') {
+      rooms = rooms.map(r => r.id !== s.roomId ? r : { ...r, tasks: [...r.tasks, { id: 't' + Date.now(), label: name, done: false, sticker: this.stickerFor(name) }] });
+      this.flashToast(unhinged ? 'Added. Bold move.' : 'Job added.');
+    } else {
+      const pal = (this.props.accentPalette && this.props.accentPalette.length === 4) ? this.props.accentPalette : FALLBACK_PALETTE;
+      const bg = (rooms.length < pal.length) ? pal[rooms.length] : FALLBACK_PALETTE[rooms.length % FALLBACK_PALETTE.length];
+      rooms = [...rooms, { id: 'r' + Date.now(), name, emoji: (s.emoji || '').trim() || '\u{1F3E0}', bg, textColor: this.textFor(bg), tasks: [] }];
+      this.flashToast(unhinged ? 'New room, who dis?' : 'Room added.');
+    }
+    this.save(rooms);
+    this.setState({ rooms, sheet: null });
+  };
+
+  deleteJob = () => {
+    const s = this.state.sheet;
+    const unhinged = (this.props.copyTone ?? 'unhinged') === 'unhinged';
+    const rooms = this.state.rooms.map(r => r.id !== s.roomId ? r : { ...r, tasks: r.tasks.filter(t => t.id !== s.taskId) });
+    this.save(rooms);
+    this.flashToast(unhinged ? 'Gone. No funeral.' : 'Removed.');
+    this.setState({ rooms, sheet: null });
+  };
+
+  renderVals() {
+    const { screen, activeRoomId, rooms, sheet, celebration, toast } = this.state;
+    const unhinged = (this.props.copyTone ?? 'unhinged') === 'unhinged';
+    const showCollection = this.props.showCollection ?? true;
+
+    let allDone = 0, allTotal = 0, roomsDone = 0;
+    const roomCards = rooms.map(r => {
+      const done = r.tasks.filter(t => t.done).length;
+      const total = r.tasks.length;
+      allDone += done; allTotal += total;
+      const pct = total ? Math.round(done / total * 100) : 0;
+      const complete = total > 0 && done === total;
+      if (complete) roomsDone++;
+      const textColor = this.textFor(r.bg);
+      const dark = textColor === '#262033';
+      return {
+        id: r.id, name: r.name, emoji: r.emoji, bg: r.bg, done, total, pct, complete, textColor,
+        barTrack: dark ? 'rgba(38,32,51,.16)' : 'rgba(255,243,226,.3)',
+        barFill: textColor,
+        onOpen: () => this.openRoom(r.id),
+        onQuickAdd: (e) => this.openAddJob(r.id, e),
+      };
+    });
+    const overallPct = allTotal ? Math.round(allDone / allTotal * 100) : 0;
+
+    const incomplete = roomCards.filter(r => !r.complete).sort((a, b) => a.pct - b.pct);
+    const completeList = roomCards.filter(r => r.complete);
+    const heroRoom = incomplete[0] ? { ...incomplete[0], tag: unhinged ? 'needs you most' : 'focus here next' } : null;
+    const mediumRooms = incomplete.slice(1);
+    const slimRooms = completeList;
+
+    let roomDetail = null;
+    const activeRoom = rooms.find(r => r.id === activeRoomId);
+    if (activeRoom) {
+      const done = activeRoom.tasks.filter(t => t.done).length;
+      const total = activeRoom.tasks.length;
+      const pct = total ? Math.round(done / total * 100) : 0;
+      const complete = total > 0 && done === total;
+      const tasksView = activeRoom.tasks.map((t, i) => ({
+        id: t.id,
+        label: t.label,
+        sticker: t.sticker,
+        rot: (i % 2 ? 1 : -1) * (2 + i % 3),
+        rowBg: t.done ? 'rgba(38,32,51,.05)' : 'transparent',
+        labelColor: t.done ? 'rgba(38,32,51,.35)' : '#262033',
+        strike: t.done ? 'line-through' : 'none',
+        checkBg: t.done ? activeRoom.bg : 'transparent',
+        checkColor: t.done ? activeRoom.textColor : 'transparent',
+        checkBorder: t.done ? 'none' : '2px solid rgba(38,32,51,.25)',
+        checkMark: t.done ? '\u2713' : '',
+        bigOpacity: t.done ? 1 : 0.35,
+        bigFilter: t.done ? 'none' : 'grayscale(1)',
+        smallOpacity: t.done ? 1 : 0.22,
+        smallFilter: t.done ? 'none' : 'grayscale(1)',
+        onToggle: (e) => this.toggleTask(activeRoom.id, t.id, e),
+        onEdit: (e) => this.openEditJob(activeRoom.id, t.id, e),
+      }));
+      roomDetail = {
+        id: activeRoom.id, name: activeRoom.name, emoji: activeRoom.emoji, bg: activeRoom.bg, textColor: activeRoom.textColor,
+        done, total, pct, complete, left: total - done, tasksView,
+        onAddJob: (e) => this.openAddJob(activeRoom.id, e),
+      };
+    }
+
+    let sheetView = null;
+    if (sheet) {
+      const isEdit = sheet.mode === 'edit';
+      const isRoomMode = sheet.mode === 'room';
+      sheetView = {
+        name: sheet.name, emoji: sheet.emoji,
+        title: isEdit ? 'Edit job' : isRoomMode ? 'Add a room' : 'Add a job',
+        placeholder: isRoomMode ? 'Room name\u2026' : 'New job\u2026',
+        showEmojiField: isRoomMode,
+        showDelete: isEdit,
+        saveLabel: isEdit ? 'Save' : 'Add',
+      };
+    }
+
+    return {
+      isHome: screen === 'home' && !!rooms.length,
+      isRoom: screen === 'room' && !!roomDetail,
+      headline: unhinged ? 'You said "this weekend"\nnine weekends ago.' : 'Look how far you two\nhave come.',
+      completeBanner: unhinged ? '\u2605 IT\u2019S DONE. WE DID A THING. \u2605' : '\u2605 Room complete \u2605',
+      roomCards, heroRoom, mediumRooms, slimRooms, overallPct, allDone, allTotal, roomsDone, roomCount: rooms.length,
+      roomDetail, showCollection,
+      sheet: sheetView, sheetOpen: !!sheet,
+      celebration, toast,
+      goHome: this.goHome, openAddRoom: this.openAddRoom,
+      closeSheet: this.closeSheet, stopClick: this.stopClick,
+      saveSheet: this.saveSheet, deleteJob: this.deleteJob,
+      setSheetName: this.setSheetName, setSheetEmoji: this.setSheetEmoji,
+    };
+  }
+}
+</script>
+</body>
+</html>

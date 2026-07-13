@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2A7A4E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nestful">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%232A7A4E'/%3E%3Cpath d='M44 96 L90 56 L136 96 Z' fill='%23f6bc3f'/%3E%3Crect x='54' y='92' width='72' height='54' rx='8' fill='%23FFFDF5'/%3E%3Crect x='80' y='116' width='20' height='30' rx='3' fill='%231a0030'/%3E%3C/svg%3E">
+<title>Nestful</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; }
+  :root {
+    --ink: #1a0030;
+    --cream: #FFFDF5;
+    --mat: #1E2233;
+    --gold: #f6bc3f;
+    --peach: #ffe8ce;
+    --sg: 'Space Grotesk', sans-serif;
+    --dm: 'DM Sans', sans-serif;
+  }
+  body { font-family: var(--dm); }
+
+  .stage { min-height: 100vh; min-height: 100dvh; background: #e63c23; display: flex; align-items: center; justify-content: center; padding: 32px; }
+  .phone { position: relative; width: 390px; height: 844px; background: var(--mat); border-radius: 46px; overflow: hidden; border: 3px solid var(--ink); box-shadow: 12px 12px 0 rgba(0,0,0,0.38); }
+
+  @media (max-width: 460px) {
+    .stage { padding: 0; background: var(--mat); }
+    .phone { width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; border: none; box-shadow: none; }
+  }
+
+  .mat-grid { position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(255,255,255,0.09) 23px, rgba(255,255,255,0.09) 24px),
+      repeating-linear-gradient(90deg, transparent, transparent 23px, rgba(255,255,255,0.09) 23px, rgba(255,255,255,0.09) 24px); }
+
+  .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 52px; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; z-index: 40; pointer-events: none; }
+  .statusbar .time { font-family: var(--sg); font-weight: 700; font-size: 14px; color: var(--peach); }
+  .statusbar .sig { font-size: 13px; color: var(--peach); letter-spacing: 1px; }
+
+  .scroll { position: absolute; inset: 0; overflow-y: auto; z-index: 1; -webkit-overflow-scrolling: touch; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .scroll { scrollbar-width: none; }
+
+  /* header card */
+  .home-head { position: relative; margin: 0 -16px 26px; padding: 24px 22px 42px; overflow: visible;
+    background: linear-gradient(135deg, var(--gold) 0%, #ffcf6b 55%, var(--peach) 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 91%); }
+  .hh-ghost { position: absolute; top: -14px; right: 4px; font-family: var(--sg); font-weight: 800; font-size: 128px; line-height: 1; letter-spacing: -5px; color: rgba(26,0,48,0.08); z-index: 0; pointer-events: none; }
+  .hh-mascot { position: absolute; right: 18px; bottom: -6px; font-size: 58px; transform: rotate(-9deg); filter: drop-shadow(3px 5px 0 rgba(26,0,48,0.28)); z-index: 2; }
+  .hh-top { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+  .hh-eyebrow { font-family: var(--sg); font-weight: 700; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(26,0,48,0.6); margin-bottom: 6px; }
+  .hh-title { font-family: var(--sg); font-weight: 800; font-size: 24px; line-height: 1.12; color: var(--ink); max-width: 74%; }
+  .hh-pct { font-family: var(--sg); font-weight: 800; font-size: 30px; line-height: 1; color: var(--ink); }
+  .hh-count { font-family: var(--dm); font-weight: 700; font-size: 11px; color: rgba(26,0,48,0.6); margin-top: 2px; }
+  .bar-track { height: 10px; border-radius: 99px; background: rgba(26,0,48,0.1); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+  .hh-rooms { position: relative; z-index: 1; font-family: var(--dm); font-weight: 700; font-size: 11px; color: rgba(26,0,48,0.6); margin-top: 9px; }
+
+  .mat-label { font-family: var(--sg); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,232,206,0.8); margin-bottom: 12px; padding-left: 2px; }
+
+  .rooms-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rooms-list > .room-card, .rooms-list > .addroom-card { grid-column: span 2; }
+  .rooms-list > .room-card.rc-sm, .rooms-list > .room-card.rc-tall { grid-column: span 1; }
+  .rooms-list > .room-card.rc-tall { grid-row: span 2; }
+  .rc-sm, .rc-tall { padding: 14px 14px 12px; display: flex; flex-direction: column; }
+  .rc-sm .rc-sm-head, .rc-tall .rc-sm-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+  .rc-sm .rc-tile { width: 44px; height: 44px; border-radius: 11px; font-size: 24px; }
+  .rc-sm .rc-name, .rc-tall .rc-name { font-size: 15px; margin-bottom: 1px; }
+  .rc-sm .rc-done, .rc-tall .rc-done { font-size: 11px; }
+  .rc-sm .rc-pct { font-size: 30px; margin-top: 12px; }
+  .rc-sm .rc-add, .rc-tall .rc-add, .rc-strip .rc-add { position: static; margin: -2px -4px 0 0; }
+  .rc-sm .rc-badge, .rc-tall .rc-badge { align-self: flex-start; margin-top: 6px; }
+  .rc-tall .rc-tile { width: 56px; height: 56px; border-radius: 14px; font-size: 31px; }
+  .rc-tall .rc-spacer { flex: 1; }
+  .rc-tall .rc-pct { font-size: 40px; margin-top: 14px; }
+  .rc-strip { padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+  .rc-strip .rc-tile { width: 36px; height: 36px; border-radius: 10px; font-size: 20px; box-shadow: 1.5px 1.5px 0 rgba(0,0,0,0.22); }
+  .rc-strip .rc-name { font-size: 14px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rc-strip .bar-track { flex: 1; height: 8px; min-width: 40px; }
+  .rc-strip .rc-pct { font-size: 19px; flex: none; }
+  .rc-strip .rc-add { flex: none; margin: 0 -6px 0 -2px; }
+
+  .room-card { position: relative; background: var(--cream); border-radius: 16px; padding: 18px 16px 14px; cursor: pointer; box-shadow: 4px 4px 0 rgba(0,0,0,0.22); transition: transform 0.14s ease, box-shadow 0.14s ease; }
+  .room-card:hover { transform: translateY(-2px); box-shadow: 6px 6px 0 rgba(0,0,0,0.22); }
+  .room-card:active { transform: translate(1px,1px); box-shadow: 3px 3px 0 rgba(0,0,0,0.22); }
+  .rc-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .rc-top .rc-right { align-self: flex-start; }
+  .rc-tile { width: 52px; height: 52px; border-radius: 13px; flex: none; display: grid; place-items: center; font-size: 29px; line-height: 1; border: 2.5px solid var(--ink); box-shadow: 2px 2px 0 rgba(0,0,0,0.22); }
+  .rc-name { font-family: var(--sg); font-weight: 800; font-size: 17px; line-height: 1.2; color: var(--ink); margin-bottom: 1px; }
+  .rc-done { font-family: var(--dm); font-weight: 700; font-size: 12px; color: rgba(26,0,48,0.55); }
+  .rc-right { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .rc-pct { font-family: var(--sg); font-weight: 800; font-size: 21px; line-height: 1; }
+  .rc-add { position: absolute; top: 56px; right: 13px; z-index: 2; width: 28px; height: 28px; border: none; background: transparent; color: rgba(26,0,48,0.4); font-size: 20px; font-weight: 700; line-height: 1; display: grid; place-items: center; cursor: pointer; border-radius: 8px; padding: 0; }
+  .rc-add:active { background: rgba(26,0,48,0.08); color: var(--ink); }
+  .addjob-row { display: flex; align-items: center; gap: 11px; padding: 12px 16px; cursor: pointer; color: rgba(26,0,48,0.55); font-family: var(--dm); font-weight: 700; font-size: 14px; position: relative; }
+  .addjob-row .plus { width: 26px; height: 26px; border-radius: 7px; border: 2px dashed rgba(26,0,48,0.3); display: grid; place-items: center; font-size: 16px; font-weight: 800; flex: none; }
+  .addjob-row:active { background: rgba(26,0,48,0.04); }
+  .rc-badge { border-radius: 4px; padding: 2px 7px; font-family: var(--sg); font-weight: 800; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rc-minis { display: flex; gap: 6px; margin-bottom: 12px; align-items: center; }
+  .pip { flex: 1; height: 13px; border-radius: 99px; border: 2px dashed rgba(26,0,48,0.18); }
+  .pip-on { border: 2px solid var(--ink); }
+
+  /* room detail */
+  .rd-head { padding: calc(env(safe-area-inset-top) + 18px) 16px 14px; }
+  .rd-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .back-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--cream); box-shadow: 2px 2px 0 rgba(0,0,0,0.28); display: grid; place-items: center; cursor: pointer; flex: none; border: none; padding: 0; margin-bottom: 12px; }
+  .back-btn svg { width: 20px; height: 20px; display: block; }
+
+  .room-hero { border-radius: 18px; padding: 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.22); }
+  .rh-top { display: flex; align-items: center; gap: 12px; }
+  .rh-tile { width: 52px; height: 52px; border-radius: 13px; display: grid; place-items: center; font-size: 28px; flex: none; }
+  .rh-meta { flex: 1; min-width: 0; }
+  .rh-name { font-family: var(--sg); font-weight: 800; font-size: 20px; line-height: 1.1; }
+  .rh-sub { font-family: var(--dm); font-weight: 700; font-size: 12px; opacity: 0.82; margin-top: 3px; }
+  .rh-pct { font-family: var(--sg); font-weight: 800; font-size: 22px; flex: none; }
+  .rh-bar { height: 10px; border-radius: 99px; overflow: hidden; margin-top: 13px; }
+  .rh-bar i { display: block; height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+  .rd-titleslip { flex: 1; background: var(--cream); border-radius: 12px; padding: 8px 13px; box-shadow: 2px 2px 0 rgba(0,0,0,0.22); }
+  .rd-kicker { font-family: var(--sg); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(26,0,48,0.55); margin-bottom: 2px; }
+  .rd-name { font-family: var(--sg); font-weight: 800; font-size: 18px; color: var(--ink); line-height: 1.1; }
+  .rd-emoji { width: 38px; height: 38px; border-radius: 50%; background: var(--cream); box-shadow: 2px 2px 0 rgba(0,0,0,0.25); display: grid; place-items: center; font-size: 20px; flex: none; }
+
+  .rd-slip { background: var(--cream); border-radius: 12px; padding: 11px 14px; box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+  .rd-slip-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .rd-slip-pct { font-family: var(--sg); font-weight: 800; font-size: 14px; flex: none; }
+  .rd-slip-sub { font-family: var(--dm); font-weight: 700; font-size: 11px; color: rgba(26,0,48,0.55); }
+
+  .rd-block { padding: 0 16px; margin-top: 18px; }
+  .sticker-zone { background: var(--ink); border-radius: 16px; padding: 16px; position: relative; overflow: hidden; box-shadow: 4px 4px 0 rgba(0,0,0,0.22); }
+  .sz-grid { position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 23px, rgba(255,255,255,0.07) 23px, rgba(255,255,255,0.07) 24px),
+      repeating-linear-gradient(90deg, transparent, transparent 23px, rgba(255,255,255,0.07) 23px, rgba(255,255,255,0.07) 24px); }
+  .sz-label { font-family: var(--sg); font-weight: 700; font-size: 10px; color: rgba(255,232,206,0.55); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; position: relative; }
+  .sz-complete { text-align: center; font-family: var(--sg); font-weight: 800; font-size: 12px; color: var(--gold); letter-spacing: 0.5px; margin-bottom: 8px; position: relative; }
+  .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; position: relative; }
+  .sheet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 14px 10px; justify-items: center; align-items: center; position: relative; padding: 6px 2px 4px; }
+  .sheet-grid .sticker { font-size: 33px; }
+  .sticker { display: inline-block; line-height: 1; filter: drop-shadow(1px 2px 1.5px rgba(26,0,48,0.4));
+    text-shadow:
+      -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff,
+      0 -2px 0 #fff, 0 2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff,
+      0 -3px 0 #fff, 0 3px 0 #fff, 3px 0 0 #fff, -3px 0 0 #fff,
+      -3px -3px 0 #fff, 3px 3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff; }
+  .sticker.off { filter: grayscale(1); opacity: 0.38; text-shadow: none; }
+  .sticker-lg { filter: drop-shadow(2px 4px 2px rgba(26,0,48,0.45));
+    text-shadow:
+      -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff,
+      0 -4px 0 #fff, 0 4px 0 #fff, 4px 0 0 #fff, -4px 0 0 #fff,
+      0 -5px 0 #fff, 0 5px 0 #fff, 5px 0 0 #fff, -5px 0 0 #fff,
+      -5px -5px 0 #fff, 5px 5px 0 #fff, 5px -5px 0 #fff, -5px 5px 0 #fff; }
+  .slot-locked { height: 72px; border-radius: 12px; border: 2px dashed rgba(255,232,206,0.22); display: flex; align-items: center; justify-content: center; font-family: var(--sg); font-size: 10px; font-weight: 800; color: rgba(255,232,206,0.15); text-transform: uppercase; letter-spacing: 0.5px; }
+  .slot-done { height: 72px; border-radius: 12px; border: 2.5px solid var(--ink); display: flex; align-items: center; justify-content: center; box-shadow: 2px 2px 0 rgba(0,0,0,0.22); }
+
+  .notepad { background: var(--cream); border-radius: 16px; overflow: hidden; position: relative; box-shadow: 4px 4px 0 rgba(0,0,0,0.22); }
+  .notepad-ruled { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 40px, rgba(26,0,48,0.07) 40px, rgba(26,0,48,0.07) 41px); }
+  .notepad-head { padding: 16px 16px 10px; border-bottom: 1px solid rgba(26,0,48,0.08); position: relative; font-family: var(--sg); font-weight: 800; font-size: 15px; color: var(--ink); }
+  .task-row { display: flex; align-items: center; gap: 11px; padding: 10px 16px; cursor: pointer; border-bottom: 1px solid rgba(26,0,48,0.06); position: relative; transition: background 0.12s ease; }
+  .task-row:active { background: rgba(26,0,48,0.06) !important; }
+  .task-check { width: 26px; height: 26px; border-radius: 7px; flex: none; display: grid; place-items: center; font-size: 14px; font-weight: 800; }
+  .task-label { flex: 1; font-family: var(--dm); font-weight: 700; font-size: 14px; line-height: 1.4; }
+  .task-sticker { font-size: 20px; flex: none; }
+  .task-cost { font-family: var(--dm); font-weight: 700; font-size: 12px; color: rgba(26,0,48,0.55); flex: none; }
+  .task-menu { flex: none; width: 30px; height: 30px; border: none; background: transparent; color: rgba(26,0,48,0.4); font-size: 18px; line-height: 1; cursor: pointer; border-radius: 8px; }
+  .task-menu:active { background: rgba(26,0,48,0.07); color: var(--ink); }
+
+  /* bottom nav */
+  .nav { position: absolute; bottom: 0; left: 0; right: 0; height: 88px; background: var(--ink); display: flex; align-items: center; justify-content: space-around; padding: 0 16px 22px; z-index: 30; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+  .nav-item .ico { font-size: 22px; }
+  .nav-item .lab { font-family: var(--sg); font-weight: 800; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--peach); }
+  .nav-dim { opacity: 0.3; }
+  .nav-add { width: 54px; height: 54px; border-radius: 50%; background: var(--gold); border: 3px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,0.3); display: grid; place-items: center; font-size: 26px; color: var(--ink); margin-top: -18px; cursor: pointer; font-weight: 900; line-height: 1; }
+  .fab { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom)); width: 60px; height: 60px; border-radius: 50%; background: var(--gold); border: 3px solid var(--ink); box-shadow: 3px 4px 0 rgba(0,0,0,0.32); color: var(--ink); font-size: 32px; font-weight: 900; line-height: 1; display: grid; place-items: center; cursor: pointer; z-index: 30; padding: 0; }
+  .fab:active { transform: translateX(-50%) translateY(1px); box-shadow: 2px 3px 0 rgba(0,0,0,0.32); }
+
+  .addroom-card { border: 2px dashed rgba(255,232,206,0.5); border-radius: 16px; padding: 16px; text-align: center; font-family: var(--sg); font-weight: 800; font-size: 14px; color: rgba(255,232,206,0.7); cursor: pointer; }
+  .addroom-card:active { background: rgba(255,255,255,0.06); }
+
+  .sheet-overlay { position: absolute; inset: 0; background: rgba(26,0,48,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 80; }
+  .sheet-overlay.open { display: flex; }
+  .sheet { width: 100%; background: var(--cream); border-radius: 20px 20px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 0 rgba(0,0,0,0.12); animation: nf-sheet 0.26s cubic-bezier(0.16,1,0.3,1); }
+  .sheet-title { font-family: var(--sg); font-weight: 800; font-size: 18px; color: var(--ink); margin-bottom: 14px; }
+  .sheet-input { width: 100%; font-family: var(--dm); font-weight: 700; font-size: 15px; color: var(--ink); background: #fff; border: 2.5px solid var(--ink); border-radius: 12px; padding: 12px 13px; margin-bottom: 10px; outline: none; }
+  .sheet-input::placeholder { color: rgba(26,0,48,0.35); }
+  select.sheet-input { appearance: none; -webkit-appearance: none; }
+  .sheet-btns { display: flex; gap: 10px; margin-top: 6px; }
+  .sheet-cancel { flex: none; font-family: var(--sg); font-weight: 800; font-size: 14px; color: var(--ink); background: rgba(26,0,48,0.08); border: none; border-radius: 12px; padding: 13px 18px; cursor: pointer; }
+  .sheet-save { flex: 1; font-family: var(--sg); font-weight: 800; font-size: 14px; color: var(--ink); background: var(--gold); border: 2.5px solid var(--ink); border-radius: 12px; padding: 13px; cursor: pointer; box-shadow: 2px 2px 0 rgba(0,0,0,0.22); }
+  .sheet-del { flex: none; font-family: var(--sg); font-weight: 800; font-size: 14px; color: #fff; background: #e63c23; border: none; border-radius: 12px; padding: 13px 16px; cursor: pointer; }
+
+  /* overlays */
+  .overlay { position: absolute; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+  .confetti { position: absolute; top: -14px; }
+  .burst { position: absolute; top: 42%; left: 50%; animation: nf-burst 1.6s ease forwards; }
+  .burst-circle { width: 118px; height: 118px; border-radius: 50%; background: var(--gold); border: 5px solid var(--ink); display: grid; place-items: center; font-size: 60px; margin: -59px 0 0 -59px; }
+  .burst-label { position: absolute; top: 57%; left: 50%; transform: translate(-50%,-50%); background: var(--ink); border-radius: 8px; border: 3px solid var(--gold); padding: 8px 18px; font-family: var(--sg); font-weight: 800; font-size: 13px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+
+  .toast { position: absolute; bottom: 104px; left: 50%; z-index: 70; font-family: var(--sg); font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gold); background: var(--ink); padding: 10px 22px; border-radius: 8px; border: 2px solid var(--gold); animation: nf-toast 1.9s ease forwards; pointer-events: none; white-space: nowrap; }
+
+  /* sticker-earned celebration */
+  .cele { position: absolute; inset: 0; z-index: 65; pointer-events: none; overflow: hidden; }
+  .cele::before { content: ''; position: absolute; inset: 0; background: rgba(26,0,48,0.34); animation: nf-fade 1.5s ease forwards; }
+  .cele-rays { position: absolute; top: 44%; left: 50%; width: 360px; height: 360px; transform: translate(-50%,-50%); border-radius: 50%; opacity: 0.25;
+    background: repeating-conic-gradient(var(--acc,#f6bc3f) 0 10deg, transparent 10deg 22deg);
+    -webkit-mask: radial-gradient(circle, #000 26%, transparent 68%); mask: radial-gradient(circle, #000 26%, transparent 68%);
+    animation: nf-rays 1.5s linear forwards; }
+  .cele-sticker { position: absolute; top: 44%; left: 50%; font-size: 100px; animation: nf-pop 1.5s cubic-bezier(.2,1.3,.4,1) forwards; }
+  .cele-ribbon { position: absolute; top: 62%; left: 50%; background: var(--ink); border: 3px solid var(--gold); border-radius: 8px; padding: 9px 20px; font-family: var(--sg); font-weight: 800; font-size: 14px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; animation: nf-ribbon 1.5s ease forwards; }
+  .cele-bit { position: absolute; top: 44%; left: 50%; width: 11px; height: 15px; border-radius: 2px; }
+  @keyframes nf-fade { 0% { opacity: 0; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes nf-rays { from { transform: translate(-50%,-50%) rotate(0); } to { transform: translate(-50%,-50%) rotate(60deg); } }
+  @keyframes nf-ribbon { 0% { opacity: 0; transform: translate(-50%,12px); } 28% { opacity: 0; transform: translate(-50%,12px); } 44% { opacity: 1; transform: translate(-50%,0); } 82% { opacity: 1; transform: translate(-50%,0); } 100% { opacity: 0; transform: translate(-50%,-8px); } }
+  @keyframes nf-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes nf-sheet { from { transform: translateY(100%); } to { transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+  @keyframes nf-pop {
+    0%   { transform: translate(-50%,-50%) scale(0.2) rotate(-16deg); opacity: 0; }
+    12%  { opacity: 1; }
+    34%  { transform: translate(-50%,-50%) scale(1.16) rotate(6deg); }
+    50%  { transform: translate(-50%,-50%) scale(0.95) rotate(-3deg); }
+    60%  { transform: translate(-50%,-50%) scale(1) rotate(0); }
+    82%  { transform: translate(-50%,-50%) scale(1) rotate(0); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scale(0.7) rotate(0); opacity: 0; }
+  }
+
+  @keyframes nf-confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(480px) rotate(560deg); opacity: 0; } }
+  @keyframes nf-burst { 0% { transform: translate(-50%,-50%) scale(0.1) rotate(-22deg); opacity: 0; } 40% { transform: translate(-50%,-50%) scale(1.15) rotate(8deg); opacity: 1; } 80% { transform: translate(-50%,-50%) scale(0.98) rotate(-3deg); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(0.8) rotate(0deg); opacity: 0; } }
+  @keyframes nf-toast { 0% { transform: translate(-50%, 14px); opacity: 0; } 14% { transform: translate(-50%, 0); opacity: 1; } 86% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -8px); opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone" id="phone">
+    <div class="mat-grid"></div>
+    <div class="scroll" id="screen"></div>
+
+
+    <div class="sheet-overlay" id="sheet">
+      <div class="sheet">
+        <div class="sheet-title" id="sheetTitle">Add a job</div>
+        <input class="sheet-input" id="sheetInput" placeholder="New job…" autocomplete="off">
+        <select class="sheet-input" id="sheetRoom"></select>
+        <input class="sheet-input" id="sheetCost" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Cost £ — optional">
+        <input class="sheet-input" id="sheetEmoji" placeholder="Emoji — optional (e.g. 🛋️)" autocomplete="off">
+        <div class="sheet-btns">
+          <button class="sheet-cancel" id="sheetCancel">Cancel</button>
+          <button class="sheet-del" id="sheetDel" style="display:none">Delete</button>
+          <button class="sheet-save" id="sheetSave">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlayHost"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ───────────────────────────────────────────────────────────
+const SLOT_BG = ['#e63c23','#f6bc3f','#5c30ff','#008c47','#f791c3','#ffe8ce'];
+
+const T = (id, label) => ({ id, label, done: false, cost: 0 });
+const DEFAULT_ROOMS = [
+  { id:'front', name:'Front', emoji:'🏡', bg:'#b45309', textColor:'#ffe8ce', tasks:[
+    T('fr1','New Stones'), T('fr2','Outdoor Govee Light'), T('fr3','New House Number'),
+    T('fr4','Paint Peak'), T('fr5','Remove Moss on Driveway'), T('fr6','Cut Down Bush'),
+    T('fr7','Remove Weeds'), T('fr8','Ring Doorbell'),
+  ]},
+  { id:'dhall', name:'Downstairs Hallway', emoji:'🧥', bg:'#f6bc3f', textColor:'#1a0030', tasks:[
+    T('dh1','Lampshade'), T('dh2','Frames'), T('dh3','Paint'),
+  ]},
+  { id:'dtoilet', name:'Downstairs Toilet', emoji:'🚽', bg:'#2563eb', textColor:'#ffe8ce', tasks:[
+    T('dt1','Govee Bulb'), T('dt2','Frame'), T('dt3','Wings Put Up'), T('dt4','Mirror Put Up'),
+    T('dt5','Internal Door'), T('dt6','Replace Tiles'), T('dt7','Fix Sealant'), T('dt8','Paint'),
+  ]},
+  { id:'kitchen', name:'Kitchen', emoji:'🍽️', bg:'#e63c23', textColor:'#ffe8ce', tasks:[
+    T('k1','Internal Door'), T('k2','Blinds'), T('k3','Frames'), T('k4','Govee Bulbs'),
+    T('k5','Fix Sealant'), T('k6','Paint'), T('k7','Window Sill'),
+  ]},
+  { id:'hall', name:'Hallway', emoji:'🖼️', bg:'#0fb5ba', textColor:'#ffe8ce', tasks:[
+    T('h1','Frames'), T('h2','Internal Doors'), T('h3','Strip Banister'),
+    T('h4','Paint'), T('h5','Carpet'),
+  ]},
+  { id:'living', name:'Living Room', emoji:'🛋️', bg:'#5c30ff', textColor:'#ffe8ce', tasks:[
+    T('l1','Coffee Table'), T('l2','Rug'), T('l3','Wooden Floor'), T('l4','Blinds'),
+    T('l5','Light Fixture'), T('l6','Fix & Fill Holes'), T('l7','Internal Doors'),
+    T('l8','Paint'), T('l9','Internal Windows'), T('l10','Radiator'),
+  ]},
+  { id:'bedroom', name:'Bedroom', emoji:'🛏️', bg:'#f791c3', textColor:'#1a0030', tasks:[
+    T('b1','Internal Door'), T('b2','Anchor Points'), T('b3','New Mirror'), T('b4','Update Frames'),
+    T('b5','Bedside Tables'), T('b6','TV'), T('b7','Blinds'), T('b8','Paint'), T('b9','Frames'),
+  ]},
+  { id:'bathroom', name:'Bathroom', emoji:'🛁', bg:'#ff7a1a', textColor:'#ffe8ce', tasks:[
+    T('ba1','Internal Door'), T('ba2','New Blinds'), T('ba3','Reseal Shower'),
+    T('ba4','Fix Skirting'), T('ba5','Paint'),
+  ]},
+];
+
+// ── STATE + PERSISTENCE ────────────────────────────────────────────
+const KEY = 'nestful-v3';
+function stickerFor(label) {
+  const l = label.toLowerCase();
+  const map = [
+    ['doorbell','🔔'],['house number','🔢'],['coffee table','🪵'],['govee','💡'],['lampshade','💡'],
+    ['paint','🎨'],['frame','🖼️'],['blind','🪟'],['carpet','🧶'],['bulb','💡'],['light','💡'],
+    ['mirror','🪞'],['tile','🧱'],['sealant','🧴'],['radiator','♨️'],['banister','🪜'],
+    ['moss','🌿'],['weed','🌿'],['bush','🪴'],['stone','🪨'],['driveway','🪨'],
+    ['shower','🚿'],['tv','📺'],['rug','🧶'],['floor','🪵'],['window','🪟'],['table','🛋️'],
+    ['anchor','🔩'],['wings','🦋'],['hole','🔨'],['skirting','📏'],['peak','🪜'],['cut down','🪚'],
+    ['door','🚪'],
+  ];
+  for (const [k, e] of map) if (l.includes(k)) return e;
+  // no keyword match → varied (but stable) sticker from a home/DIY pool, not always a star
+  const POOL = ['🔧','🪛','🧰','🪣','🧹','📦','🪜','🔩','🧽','🪟','🪴','💡','🚪','🖼️','🧱','🛠️','🪚','🧴'];
+  let h = 0; for (let i = 0; i < label.length; i++) h = (h * 31 + label.charCodeAt(i)) >>> 0;
+  return POOL[h % POOL.length];
+}
+
+let ROOMS = DEFAULT_ROOMS.map(r => ({ ...r, tasks: r.tasks.map(t => ({ ...t, sticker: stickerFor(t.label) })) }));
+let screen = 'home';
+let activeRoom = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (Array.isArray(saved) && saved.length) {
+      ROOMS = saved;
+      ROOMS.forEach(r => r.tasks.forEach(t => { if (!t.sticker) t.sticker = stickerFor(t.label); }));
+    }
+  } catch (e) {}
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(ROOMS)); } catch (e) {}
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = n => '£' + (Number(n) || 0).toLocaleString('en-GB');
+const pctColor   = bg => (bg === '#ffe8ce' || bg === '#f6bc3f') ? '#1a0030' : bg;
+const accentColor = bg => bg === '#ffe8ce' ? '#1a0030' : bg === '#008c47' ? '#004d27' : bg;
+
+// ── RENDER ─────────────────────────────────────────────────────────
+const screenEl = document.getElementById('screen');
+
+function render() {
+  if (screen === 'home') renderHome(); else renderRoom();
+}
+
+function renderHome() {
+  screenEl.style.padding = 'calc(env(safe-area-inset-top) + 22px) 16px 96px';
+  let allDone = 0, allTotal = 0, roomsDone = 0, houseCost = 0;
+
+  const stats = ROOMS.map(r => {
+    const done = r.tasks.filter(t => t.done).length;
+    const total = r.tasks.length;
+    const complete = total > 0 && done === total;
+    allDone += done; allTotal += total;
+    r.tasks.forEach(t => houseCost += Number(t.cost) || 0);
+    if (complete) roomsDone++;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    return { r, done, total, complete, pct, remaining: total - done };
+  });
+
+  const sorted = [...stats].sort((a, b) => {
+    if (a.complete !== b.complete) return a.complete ? 1 : -1;
+    if (a.pct !== b.pct) return a.pct - b.pct;
+    return b.remaining - a.remaining;
+  });
+  const rest = sorted;
+
+  // bento shape assignment: groups of [wide] [tall+small+small] [strip] [small+small]
+  const shapes = [];
+  {
+    let i = 0;
+    const G = ['wide', 'trio', 'strip', 'pair'];
+    let g = 0;
+    while (i < rest.length) {
+      const left = rest.length - i;
+      const kind = G[g % G.length]; g++;
+      if (kind === 'wide') { shapes.push('wide'); i += 1; }
+      else if (kind === 'strip') { shapes.push('strip'); i += 1; }
+      else if (kind === 'trio') {
+        if (left >= 3) { shapes.push('tall', 'sm', 'sm'); i += 3; }
+        else if (left === 2) { shapes.push('sm', 'sm'); i += 2; }
+        else { shapes.push('wide'); i += 1; }
+      } else { // pair
+        if (left >= 2) { shapes.push('sm', 'sm'); i += 2; }
+        else { shapes.push('wide'); i += 1; }
+      }
+    }
+  }
+
+  const cards = rest.map((s, i) => {
+    const { r, done, total, pct } = s;
+    const badge = s.complete
+      ? `<div class="rc-badge" style="background:${r.bg};color:${r.textColor};">DONE ✓</div>` : '';
+    const shape = shapes[i];
+
+    if (shape === 'sm' || shape === 'tall') {
+      return `
+      <div class="room-card ${shape === 'tall' ? 'rc-tall' : 'rc-sm'}" data-room="${r.id}">
+        <div class="rc-sm-head">
+          <div class="rc-tile" style="background:${r.bg};">${r.emoji}</div>
+          <button class="rc-add" data-add="${r.id}" aria-label="Add job to ${esc(r.name)}">+</button>
+        </div>
+        <div class="rc-name">${esc(r.name)}</div>
+        <div class="rc-done">${done} of ${total} stickers</div>
+        ${shape === 'tall' ? '<div class="rc-spacer"></div>' : ''}
+        <div class="rc-pct" style="color:${pctColor(r.bg)};">${pct}%</div>
+        ${badge}
+        <div class="bar-track" style="height:8px;margin-top:10px;">
+          <div class="bar-fill" style="background:${r.bg};width:${pct}%;"></div>
+        </div>
+      </div>`;
+    }
+
+    if (shape === 'strip') {
+      return `
+      <div class="room-card rc-strip" data-room="${r.id}">
+        <div class="rc-tile" style="background:${r.bg};">${r.emoji}</div>
+        <div class="rc-name">${esc(r.name)}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="background:${r.bg};width:${pct}%;"></div>
+        </div>
+        <div class="rc-pct" style="color:${pctColor(r.bg)};">${pct}%</div>
+        <button class="rc-add" data-add="${r.id}" aria-label="Add job to ${esc(r.name)}">+</button>
+      </div>`;
+    }
+
+    return `
+      <div class="room-card" data-room="${r.id}">
+        <div class="rc-top">
+          <div class="rc-tile" style="background:${r.bg};">${r.emoji}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="rc-name">${esc(r.name)}</div>
+            <div class="rc-done">${done} of ${total} stickers</div>
+          </div>
+          <div class="rc-right">
+            <div class="rc-pct" style="color:${pctColor(r.bg)};">${pct}%</div>
+            ${badge}
+          </div>
+          <button class="rc-add" data-add="${r.id}" aria-label="Add job to ${esc(r.name)}">+</button>
+        </div>
+        <div class="bar-track" style="height:8px;margin-top:12px;">
+          <div class="bar-fill" style="background:${r.bg};width:${pct}%;"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const overallPct = allTotal ? Math.round(allDone / allTotal * 100) : 0;
+
+  screenEl.innerHTML = `
+    <div class="home-head">
+      <div class="hh-ghost">${overallPct}</div>
+      <div class="hh-mascot">🏡</div>
+      <div class="hh-top">
+        <div>
+          <div class="hh-eyebrow">✦ Nestful</div>
+          <div class="hh-title">Congrats, you live<br>in a building site. 🚧</div>
+        </div>
+        <div style="text-align:right;flex:none;padding-top:2px;">
+          <div class="hh-pct">${overallPct}%</div>
+          <div class="hh-count">${allDone}/${allTotal} tasks</div>
+        </div>
+      </div>
+      <div class="bar-track" style="position:relative;z-index:1;background:rgba(26,0,48,0.16);">
+        <div class="bar-fill" style="background:var(--ink);width:${overallPct}%;"></div>
+      </div>
+      <div class="hh-rooms">${roomsDone} of ${ROOMS.length} rooms done${houseCost ? ' · ' + money(houseCost) + ' spent' : ''}</div>
+    </div>
+    <div class="mat-label">Your rooms</div>
+    <div class="rooms-list">${cards}
+      <div class="addroom-card" id="addRoomCard">+ Add a room</div>
+    </div>`;
+
+  screenEl.querySelectorAll('.room-card').forEach(el =>
+    el.addEventListener('click', () => openRoom(el.dataset.room)));
+  const arc = document.getElementById('addRoomCard');
+  if (arc) arc.addEventListener('click', openAddRoom);
+  screenEl.querySelectorAll('.rc-add').forEach(el =>
+    el.addEventListener('click', e => { e.stopPropagation(); openAddJob(el.dataset.add); }));
+}
+
+function renderRoom() {
+  screenEl.style.padding = '0 0 96px';
+  const r = ROOMS.find(x => x.id === activeRoom);
+  if (!r) { goHome(); return; }
+  const done = r.tasks.filter(t => t.done).length;
+  const total = r.tasks.length;
+  const pct = Math.round(done / total * 100);
+  const complete = done === total;
+  const roomCost = r.tasks.reduce((s, t) => s + (Number(t.cost) || 0), 0);
+  const heroText = textFor(r.bg);
+  const onLight = heroText === '#1a0030';
+  const tileBg = onLight ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.20)';
+  const barTrack = onLight ? 'rgba(0,0,0,0.14)' : 'rgba(255,255,255,0.30)';
+
+  const discs = r.tasks.map((t, i) => `<span class="sticker ${t.done ? '' : 'off'}" style="transform:rotate(${(i % 2 ? 1 : -1) * (2 + i % 3)}deg);">${t.sticker}</span>`).join('');
+
+  const tasks = r.tasks.map(t => {
+    const checkBg     = t.done ? r.bg : 'transparent';
+    const checkColor  = t.done ? r.textColor : 'transparent';
+    const checkBorder = t.done ? 'none' : '2px solid rgba(26,0,48,0.25)';
+    const rowBg       = t.done ? 'rgba(26,0,48,0.04)' : 'transparent';
+    const labelColor  = t.done ? 'rgba(26,0,48,0.35)' : '#1a0030';
+    const strike      = t.done ? 'line-through' : 'none';
+    const stOpacity   = t.done ? '1' : '0.22';
+    const stFilter    = t.done ? 'none' : 'grayscale(1)';
+    return `
+      <div class="task-row" data-task="${t.id}" style="background:${rowBg};">
+        <div class="task-check" style="color:${checkColor};background:${checkBg};border:${checkBorder};">${t.done ? '✓' : ''}</div>
+        <span class="task-label" style="color:${labelColor};text-decoration:${strike};">${esc(t.label)}</span>
+        ${Number(t.cost) ? `<span class="task-cost">${money(t.cost)}</span>` : ''}
+        <span class="task-sticker" style="opacity:${stOpacity};filter:${stFilter};">${t.sticker}</span>
+        <button class="task-menu" data-edit="${t.id}" aria-label="Edit job">⋯</button>
+      </div>`;
+  }).join('');
+
+  screenEl.innerHTML = `
+    <div class="rd-head">
+      <button class="back-btn" id="backBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1a0030" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="room-hero" style="background:${r.bg};color:${heroText};">
+        <div class="rh-top">
+          <div class="rh-tile" style="background:${tileBg};">${r.emoji}</div>
+          <div class="rh-meta">
+            <div class="rh-name">${esc(r.name)}</div>
+            <div class="rh-sub">${done} of ${total} done${roomCost ? ' · ' + money(roomCost) : ''}</div>
+          </div>
+          <div class="rh-pct">${pct}%</div>
+        </div>
+        <div class="rh-bar" style="background:${barTrack};"><i style="width:${pct}%;background:${heroText};"></i></div>
+      </div>
+    </div>
+
+    <div class="rd-block">
+      <div class="mat-label">Collection · ${done}/${total}</div>
+      <div class="sticker-zone">
+        <div class="sz-grid"></div>
+        ${complete ? `<div class="sz-complete">★ Collection Complete ★</div>` : ''}
+        <div class="sheet-grid">${discs}</div>
+      </div>
+    </div>
+
+    <div class="rd-block">
+      <div class="mat-label">To do · ${total - done} left</div>
+      <div class="notepad">
+        <div class="notepad-ruled"></div>
+        <div style="display:flex;flex-direction:column;position:relative;">${tasks}
+          <div class="addjob-row" id="addJobRow"><span class="plus">+</span> add a job</div>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('backBtn').addEventListener('click', goHome);
+  screenEl.querySelectorAll('.task-row').forEach(el =>
+    el.addEventListener('click', () => toggleTask(r.id, el.dataset.task)));
+  screenEl.querySelectorAll('.task-menu').forEach(el =>
+    el.addEventListener('click', e => { e.stopPropagation(); openEditJob(r.id, el.dataset.edit); }));
+  const ajr = document.getElementById('addJobRow');
+  if (ajr) ajr.addEventListener('click', () => openAddJob(r.id));
+}
+
+// ── ACTIONS ────────────────────────────────────────────────────────
+function animateScreen() {
+  screenEl.style.animation = 'none';
+  void screenEl.offsetWidth;
+  screenEl.style.animation = 'nf-rise 0.24s cubic-bezier(0.16,1,0.3,1)';
+}
+function clearCelebrations() { document.querySelectorAll('#overlayHost .cele').forEach(e => e.remove()); }
+function openRoom(id) { clearCelebrations(); screen = 'room'; activeRoom = id; render(); screenEl.scrollTop = 0; animateScreen(); }
+function goHome() { clearCelebrations(); screen = 'home'; activeRoom = null; render(); screenEl.scrollTop = 0; animateScreen(); }
+
+function toggleTask(roomId, taskId) {
+  const r = ROOMS.find(x => x.id === roomId);
+  const t = r.tasks.find(x => x.id === taskId);
+  const nowDone = !t.done;
+  t.done = nowDone;
+  save();
+  render();
+  if (nowDone) celebrate(t.sticker, r.bg);
+}
+
+// ── CELEBRATION ────────────────────────────────────────────────────
+const host = document.getElementById('overlayHost');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let celebrateTimer, toastTimer;
+
+function celebrate(sticker, accent) {
+  if (reduceMotion) { flashToast('Sticker earned!'); return; }
+  const ov = document.createElement('div');
+  ov.className = 'cele';
+  ov.innerHTML =
+    `<div class="cele-rays" style="--acc:${accent}"></div>` +
+    `<div class="cele-sticker sticker sticker-lg">${sticker}</div>` +
+    `<div class="cele-ribbon">Sticker earned!</div>`;
+  host.appendChild(ov);
+
+  const colors = [accent, '#f6bc3f', '#e63c23', '#5c30ff', '#0fb5ba', '#f791c3', '#ffe8ce'];
+  for (let i = 0; i < 26; i++) {
+    const p = document.createElement('div');
+    p.className = 'cele-bit';
+    p.style.background = colors[i % colors.length];
+    if (i % 3 === 0) p.style.borderRadius = '50%';
+    ov.appendChild(p);
+    const ang = (Math.PI * 2 * i / 26) + (Math.random() * 0.4 - 0.2);
+    const dist = 80 + Math.random() * 130;
+    p.animate([
+      { transform: 'translate(-50%,-50%) rotate(0)', opacity: 1 },
+      { transform: `translate(-50%,-50%) translate(${Math.cos(ang) * dist}px, ${Math.sin(ang) * dist}px) rotate(${Math.random() * 540}deg)`, opacity: 0 }
+    ], { duration: 900 + Math.random() * 500, easing: 'cubic-bezier(.15,.7,.3,1)', delay: Math.random() * 90, fill: 'forwards' });
+  }
+
+  setTimeout(() => ov.remove(), 1500);
+}
+
+function flashToast(msg) {
+  const old = host.querySelector('.toast');
+  if (old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  host.appendChild(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.remove(), 1950);
+}
+
+// ── NAV ────────────────────────────────────────────────────────────
+// ── ADD: jobs + rooms ──────────────────────────────────────────────
+const uid = () => 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+const NEW_PALETTE = ['#16a34a','#f6bc3f','#2563eb','#e63c23','#0fb5ba','#5c30ff','#f791c3','#ff7a1a','#0e9488','#d62872','#7c3aed','#ea580c'];
+function luminance(hex){ const n=parseInt(hex.slice(1),16); return (0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255; }
+const textFor = bg => luminance(bg) > 0.62 ? '#1a0030' : '#ffe8ce';
+const nextRoomColor = () => NEW_PALETTE[ROOMS.length % NEW_PALETTE.length];
+
+const sheet = document.getElementById('sheet');
+const sheetTitle = document.getElementById('sheetTitle');
+const sheetInput = document.getElementById('sheetInput');
+const sheetRoom = document.getElementById('sheetRoom');
+const sheetCost = document.getElementById('sheetCost');
+const sheetEmoji = document.getElementById('sheetEmoji');
+let sheetMode = 'job';
+
+let editRoom = null, editTask = null;
+
+function resetSheetButtons() {
+  document.getElementById('sheetDel').style.display = 'none';
+  document.getElementById('sheetSave').textContent = 'Add';
+}
+
+function openAddJob(roomId) {
+  if (!ROOMS.length) { openAddRoom(); return; }
+  sheetMode = 'job';
+  resetSheetButtons();
+  sheetTitle.textContent = 'Add a job';
+  sheetInput.placeholder = 'New job…';
+  sheetInput.value = '';
+  sheetRoom.style.display = '';
+  sheetCost.style.display = '';
+  sheetCost.value = '';
+  sheetEmoji.style.display = 'none';
+  sheetRoom.innerHTML = ROOMS.map(r => `<option value="${r.id}">${r.emoji} ${esc(r.name)}</option>`).join('');
+  sheetRoom.value = roomId || ROOMS[0].id;
+  sheet.classList.add('open');
+  setTimeout(() => sheetInput.focus(), 50);
+}
+
+function openAddRoom() {
+  sheetMode = 'room';
+  resetSheetButtons();
+  sheetTitle.textContent = 'Add a room';
+  sheetInput.placeholder = 'Room name…';
+  sheetInput.value = '';
+  sheetRoom.style.display = 'none';
+  sheetCost.style.display = 'none';
+  sheetEmoji.style.display = '';
+  sheetEmoji.value = '';
+  sheet.classList.add('open');
+  setTimeout(() => sheetInput.focus(), 50);
+}
+
+function openEditJob(roomId, taskId) {
+  const r = ROOMS.find(x => x.id === roomId);
+  const t = r && r.tasks.find(x => x.id === taskId);
+  if (!t) return;
+  sheetMode = 'edit';
+  editRoom = roomId; editTask = taskId;
+  sheetTitle.textContent = 'Edit job';
+  sheetInput.placeholder = 'Job name…';
+  sheetInput.value = t.label;
+  sheetRoom.style.display = 'none';
+  sheetCost.style.display = '';
+  sheetCost.value = t.cost || '';
+  sheetEmoji.style.display = 'none';
+  document.getElementById('sheetDel').style.display = '';
+  document.getElementById('sheetSave').textContent = 'Save';
+  sheet.classList.add('open');
+  setTimeout(() => sheetInput.focus(), 50);
+}
+
+function deleteJob() {
+  const r = ROOMS.find(x => x.id === editRoom);
+  if (r) { r.tasks = r.tasks.filter(t => t.id !== editTask); save(); flashToast('Job deleted'); }
+  closeSheet();
+  render();
+}
+
+function closeSheet() { sheet.classList.remove('open'); }
+
+function saveSheet() {
+  const val = sheetInput.value.trim();
+  if (!val) { sheetInput.focus(); return; }
+  if (sheetMode === 'edit') {
+    const r = ROOMS.find(x => x.id === editRoom);
+    const t = r && r.tasks.find(x => x.id === editTask);
+    if (t) { t.label = val; t.sticker = stickerFor(val); t.cost = parseFloat(sheetCost.value) || 0; }
+    flashToast('Saved');
+    save(); closeSheet(); render(); return;
+  }
+  if (sheetMode === 'job') {
+    const r = ROOMS.find(x => x.id === sheetRoom.value);
+    if (r) { r.tasks.push({ id: uid(), label: val, done: false, cost: parseFloat(sheetCost.value) || 0, sticker: stickerFor(val) }); flashToast('Job added'); }
+  } else {
+    const bg = nextRoomColor();
+    ROOMS.push({ id: uid(), name: val, emoji: (sheetEmoji.value.trim() || '🏠'), bg, textColor: textFor(bg), tasks: [] });
+    flashToast('Room added');
+  }
+  save();
+  closeSheet();
+  render();
+}
+
+document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+document.getElementById('sheetSave').addEventListener('click', saveSheet);
+document.getElementById('sheetDel').addEventListener('click', deleteJob);
+sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
+sheetInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveSheet(); });
+
+
+// ── INIT ───────────────────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>

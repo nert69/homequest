@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&amp;family=Instrument+Serif:ital@0;1&amp;family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFECE4;font-family:system-ui,sans-serif}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-note{margin:0 0 24px;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5);max-width:760px}
+.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:26px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+@keyframes qNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t5">
+<div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">Sticker-board direction — cork mat, hard shadows, collectible chore stickers</span></div>
+<p class="dv-note">New mood inspired by scrapbook/mat-board apps: cream cards with a thick hand-drawn outline and a hard offset shadow (no blur), a subtle corkboard grid behind everything, Space Grotesk headlines over DM Sans body, and a reward built around <em>collecting a sticker per finished job</em> rather than just a percentage. <a class="dv-oid" href="#5a">5a</a> home, <a class="dv-oid" href="#5b">5b</a> room detail with the sticker board.</p>
+<div class="dv-opts">
+
+<!-- ═══ 5a HOME — STICKER BOARD ═══ -->
+<div class="dv-opt" id="5a">
+<div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>Home — corkboard mat, hard-shadow room cards</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#2E7D5B;position:relative;padding:72px 16px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;font-family:'Space Grotesk',Gabarito,sans-serif;color:#241A33;overflow:hidden">
+  <div style="position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(255,255,255,.08) 23px,rgba(255,255,255,.08) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(255,255,255,.08) 23px,rgba(255,255,255,.08) 24px)"></div>
+  <div style="position:relative;background:#FFFCF3;border-radius:18px;padding:18px 18px 16px;box-shadow:4px 4px 0 rgba(0,0,0,.28)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
+      <div>
+        <div style="font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(36,26,51,.5);margin-bottom:6px">&#10022; HOMEQUEST</div>
+        <div style="font-weight:800;font-size:22px;line-height:1.15">Building-site chic.<br>52% resolved.</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;padding-top:2px">
+        <div style="font-weight:800;font-size:28px;line-height:1">52%</div>
+        <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:11px;color:rgba(36,26,51,.55);margin-top:2px">18/35 tasks</div>
+      </div>
+    </div>
+    <div style="height:10px;border-radius:999px;background:rgba(36,26,51,.1);overflow:hidden"><div style="height:100%;width:52%;border-radius:999px;background:#F0B429"></div></div>
+    <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:11px;color:rgba(36,26,51,.55);margin-top:7px">1 of 4 rooms done &#183; 9 stickers earned</div>
+  </div>
+
+  <div style="position:relative;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,252,243,.8);padding-left:2px">Your rooms</div>
+
+  <div style="position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="grid-column:span 2;background:#FFFCF3;border-radius:16px;padding:16px 15px 13px;box-shadow:4px 4px 0 rgba(0,0,0,.28)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:9px">
+        <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:25px;background:#7C8CF8;border:2.5px solid #241A33">&#128717;&#65039;</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:16px;line-height:1.2">Bedroom</div>
+          <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:rgba(36,26,51,.55)">4 of 5 stickers</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-weight:800;font-size:19px;color:#7C8CF8">80%</div>
+        </div>
+      </div>
+      <div style="height:8px;border-radius:999px;background:rgba(36,26,51,.1);overflow:hidden"><div style="height:100%;width:80%;border-radius:999px;background:#7C8CF8"></div></div>
+    </div>
+
+    <div style="grid-column:span 1;grid-row:span 2;background:#FFFCF3;border-radius:16px;padding:16px 15px 13px;box-shadow:4px 4px 0 rgba(0,0,0,.28);display:flex;flex-direction:column">
+      <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:25px;background:#F0B429;border:2.5px solid #241A33;margin-bottom:9px">&#128715;&#65039;</div>
+      <div style="font-weight:800;font-size:16px;line-height:1.2">Living room</div>
+      <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:rgba(36,26,51,.55)">6 of 9 stickers</div>
+      <div style="flex:1"></div>
+      <div style="font-weight:800;font-size:19px;color:#C9861A;margin-bottom:9px">67%</div>
+      <div style="height:8px;border-radius:999px;background:rgba(36,26,51,.1);overflow:hidden"><div style="height:100%;width:67%;border-radius:999px;background:#F0B429"></div></div>
+    </div>
+
+    <div style="grid-column:span 1;background:#FFFCF3;border-radius:16px;padding:16px 15px 13px;box-shadow:4px 4px 0 rgba(0,0,0,.28)">
+      <div style="width:48px;height:48px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:25px;background:#E2542D;border:2.5px solid #241A33;margin-bottom:9px">&#127860;&#65039;</div>
+      <div style="font-weight:800;font-size:16px;line-height:1.2">Kitchen</div>
+      <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:rgba(36,26,51,.55)">3 of 7 stickers</div>
+      <div style="font-weight:800;font-size:19px;color:#E2542D;margin-top:8px">43%</div>
+      <div style="height:8px;border-radius:999px;background:rgba(36,26,51,.1);overflow:hidden;margin-top:8px"><div style="height:100%;width:43%;border-radius:999px;background:#E2542D"></div></div>
+    </div>
+
+    <div style="grid-column:span 1;background:#FFFCF3;border-radius:16px;padding:16px 15px 13px;box-shadow:4px 4px 0 rgba(0,0,0,.28);display:flex;flex-direction:column;justify-content:space-between">
+      <div style="font-weight:800;font-size:16px">Hallway</div>
+      <div style="border-radius:5px;padding:3px 8px;font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.5px;background:#2E7D5B;color:#FFFCF3;align-self:flex-start;margin-top:9px">DONE &#10003;</div>
+    </div>
+
+    <div style="grid-column:span 2;border:2.5px dashed rgba(255,252,243,.5);border-radius:16px;padding:15px;text-align:center;font-weight:800;font-size:14px;color:rgba(255,252,243,.75)">+ add a room</div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Emoji tile = room icon on a hard-edged swatch; the flat cream card + offset shadow reads like a sticker stuck to the mat background.</div>
+</div>
+
+<!-- ═══ 5b ROOM DETAIL — STICKER BOARD ═══ -->
+<div class="dv-opt" id="5b">
+<div class="dv-olabel"><a class="dv-oid" href="#5b">5b</a>Room detail — the sticker board is the reward, not a progress ring</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#7C8CF8;position:relative;padding:72px 16px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;font-family:'Space Grotesk',Gabarito,sans-serif;color:#241A33;overflow:hidden">
+  <div style="position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(255,255,255,.08) 23px,rgba(255,255,255,.08) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(255,255,255,.08) 23px,rgba(255,255,255,.08) 24px)"></div>
+
+  <button style="position:relative;width:42px;height:42px;border-radius:50%;background:#FFFCF3;box-shadow:2px 2px 0 rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;border:none">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#241A33" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+  </button>
+
+  <div style="position:relative;background:#F4F1FF;border-radius:20px;padding:18px;box-shadow:4px 4px 0 rgba(0,0,0,.28)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:50px;height:50px;border-radius:13px;background:rgba(36,26,51,.08);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">&#128717;&#65039;</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:19px;line-height:1.1">Bedroom</div>
+        <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;opacity:.6;margin-top:3px">4 of 5 done</div>
+      </div>
+      <div style="font-weight:800;font-size:22px">80%</div>
+    </div>
+    <div style="height:9px;border-radius:999px;overflow:hidden;margin-top:13px;background:rgba(36,26,51,.12)"><div style="height:100%;width:80%;border-radius:999px;background:#7C8CF8"></div></div>
+  </div>
+
+  <div style="position:relative">
+    <div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:rgba(244,241,255,.8);margin-bottom:10px;padding-left:2px">Sticker board &#183; 4/5</div>
+    <div style="background:#241A33;border-radius:18px;padding:16px;position:relative;overflow:hidden;box-shadow:4px 4px 0 rgba(0,0,0,.28)">
+      <div style="position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(255,255,255,.07) 23px,rgba(255,255,255,.07) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(255,255,255,.07) 23px,rgba(255,255,255,.07) 24px)"></div>
+      <div style="position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+        <span style="font-size:32px;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.4))">&#129525;</span>
+        <span style="font-size:32px;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.4))">&#128161;</span>
+        <span style="font-size:32px;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.4))">&#127749;&#65039;</span>
+        <span style="font-size:32px;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.4))">&#128444;&#65039;</span>
+        <span style="font-size:32px;opacity:.25;filter:grayscale(1)">&#128683;</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;gap:0">
+    <div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:rgba(244,241,255,.8);margin-bottom:10px;padding-left:2px">To do &#183; 1 left</div>
+    <div style="background:#FFFCF3;border-radius:16px;overflow:hidden;box-shadow:4px 4px 0 rgba(0,0,0,.28)">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid rgba(36,26,51,.08);background:rgba(36,26,51,.04)">
+        <div style="width:24px;height:24px;border-radius:6px;background:#7C8CF8;color:#F4F1FF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">&#10003;</div>
+        <span style="flex:1;font-family:DM Sans,sans-serif;font-weight:700;font-size:14px;color:rgba(36,26,51,.35);text-decoration:line-through">Bedside tables</span>
+        <span style="font-size:19px;opacity:1">&#129525;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid rgba(36,26,51,.08);background:rgba(36,26,51,.04)">
+        <div style="width:24px;height:24px;border-radius:6px;background:#7C8CF8;color:#F4F1FF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">&#10003;</div>
+        <span style="flex:1;font-family:DM Sans,sans-serif;font-weight:700;font-size:14px;color:rgba(36,26,51,.35);text-decoration:line-through">New mirror</span>
+        <span style="font-size:19px">&#128161;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 15px">
+        <div style="width:24px;height:24px;border-radius:6px;border:2px solid rgba(36,26,51,.25);flex-shrink:0"></div>
+        <span style="flex:1;font-family:DM Sans,sans-serif;font-weight:700;font-size:14px">Frame the photo</span>
+        <span style="font-size:19px;opacity:.22;filter:grayscale(1)">&#128683;</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Same task list as before, but the payoff is visible above it &#8212; a physical-feeling board of earned stickers, greyed slots waiting to be filled.</div>
+</div>
+
+</div>
+<p class="dv-next">Like the sticker-board mood? I can carry it into <a class="dv-oid" href="#2c">2c</a>'s completion moment or make it the base for the interactive prototype.</p>
+</section>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Asymmetric bento grids — room overview</span></div>
+<p class="dv-note">Non-uniform tiles, each with a reason for its size (not random): <a class="dv-oid" href="#4a">4a</a> size = real room footprint, <a class="dv-oid" href="#4b">4b</a> size = how much is left (the neediest room is biggest, on purpose), <a class="dv-oid" href="#4c">4c</a> Arc/Raycast-style masonry rhythm, purely visual variety layered on an otherwise even set of rooms.</p>
+<div class="dv-opts">
+
+<!-- ═══ 4a FOOTPRINT BENTO ═══ -->
+<div class="dv-opt" id="4a">
+<div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Footprint bento — tile size = actual room size</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:radial-gradient(130% 70% at 15% 0%, #FFE7BC 0%, #F6EBDC 55%, #F2E2CE 100%);padding:72px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="padding:0 6px 2px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.14em;color:#B09877">YOUR HOUSE</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1">52% a home.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:auto auto auto;gap:10px;flex:1">
+    <div style="grid-column:1;grid-row:1/3;background:#FFC531;border-radius:32px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 16px 34px rgba(255,171,49,.3)">
+      <div>
+        <div style="font-size:18px;font-weight:800">Living room</div>
+        <div style="font-size:12.5px;font-weight:600;color:rgba(38,32,51,.55)">biggest room, biggest push</div>
+      </div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:8px">64%</div>
+        <div style="height:16px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#262033"></div></div>
+      </div>
+    </div>
+    <div style="grid-column:2;grid-row:1;background:#7C8CF8;border-radius:28px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;color:#F4F1FF;box-shadow:0 14px 28px rgba(124,140,248,.3)">
+      <div style="font-size:16px;font-weight:800">Bedroom</div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px">82%</div>
+        <div style="height:12px;border-radius:999px;background:rgba(244,241,255,.3);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#F4F1FF"></div></div>
+      </div>
+    </div>
+    <div style="grid-column:2;grid-row:2;background:#FF6B57;border-radius:28px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;color:#FFF3E2;box-shadow:0 14px 28px rgba(255,107,87,.3)">
+      <div style="font-size:16px;font-weight:800">Kitchen</div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px">41%</div>
+        <div style="height:12px;border-radius:999px;background:rgba(255,243,226,.3);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#FFF3E2"></div></div>
+      </div>
+    </div>
+    <div style="grid-column:1/3;grid-row:3;background:#5FBE8B;border-radius:24px;padding:14px 18px;display:flex;align-items:center;gap:14px;color:#F0FBF3;box-shadow:0 12px 26px rgba(95,190,139,.28)">
+      <div style="font-size:16px;font-weight:800">Hallway</div>
+      <div style="font-size:12px;font-weight:600;color:#CDEFDA;flex:1">narrow room, small tile — matches real life</div>
+      <div style="width:90px;height:12px;border-radius:999px;background:rgba(240,251,243,.3);overflow:hidden"><div style="height:100%;width:12%;border-radius:999px;background:#F0FBF3"></div></div>
+      <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:20px;font-weight:800">12%</div>
+    </div>
+  </div>
+  <div style="background:#262033;border-radius:999px;padding:16px 22px;display:flex;align-items:center;gap:12px;color:#F6EBDC;box-shadow:0 16px 36px rgba(38,32,51,.32)">
+    <div style="width:14px;height:14px;border-radius:5px;background:#FFC531;flex-shrink:0"></div>
+    <div style="font-size:16px;font-weight:800;flex:1">Next: coffee table</div>
+    <span style="font-size:18px;font-weight:800">&#8594;</span>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Tiles map to the floor plan — living room dominates because it is the biggest room, hallway stays a sliver.</div>
+</div>
+
+<!-- ═══ 4b NEEDIEST-IS-BIGGEST ═══ -->
+<div class="dv-opt" id="4b">
+<div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>Attention bento — the room with the most left to do gets the spotlight</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:radial-gradient(130% 70% at 15% 0%, #FFE7BC 0%, #F6EBDC 55%, #F2E2CE 100%);padding:72px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="padding:0 6px 2px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.14em;color:#B09877">YOUR HOUSE</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1">52% a home.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto;gap:10px;flex:1">
+    <div style="grid-column:1/3;background:#FF6B57;border-radius:34px;padding:20px;display:flex;flex-direction:column;gap:10px;color:#FFF3E2;box-shadow:0 18px 38px rgba(255,107,87,.35)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:13px;font-weight:700;letter-spacing:.1em;color:#FFD3C6">NEEDS YOU MOST</div>
+          <div style="font-size:22px;font-weight:800">Kitchen</div>
+        </div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1">41%</div>
+      </div>
+      <div style="height:18px;border-radius:999px;background:rgba(255,243,226,.28);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#FFF3E2"></div></div>
+      <div style="font-size:13.5px;font-weight:600;color:#FFD3C6">4 things left &#183; the furthest behind</div>
+    </div>
+    <div style="background:#FFC531;border-radius:28px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 14px 28px rgba(255,171,49,.3)">
+      <div style="font-size:15px;font-weight:800">Living room</div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px">64%</div>
+        <div style="height:11px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#262033"></div></div>
+      </div>
+    </div>
+    <div style="background:#5FBE8B;border-radius:28px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;color:#F0FBF3;box-shadow:0 14px 28px rgba(95,190,139,.3)">
+      <div style="font-size:15px;font-weight:800">Hallway</div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px">12%</div>
+        <div style="height:11px;border-radius:999px;background:rgba(240,251,243,.3);overflow:hidden"><div style="height:100%;width:12%;border-radius:999px;background:#F0FBF3"></div></div>
+      </div>
+    </div>
+    <div style="grid-column:1/3;background:#7C8CF8;border-radius:24px;padding:14px 20px;display:flex;align-items:center;gap:14px;color:#F4F1FF;box-shadow:0 12px 26px rgba(124,140,248,.28)">
+      <div style="font-size:15px;font-weight:800;flex:1">Bedroom &#8212; nearly there</div>
+      <div style="width:90px;height:11px;border-radius:999px;background:rgba(244,241,255,.3);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#F4F1FF"></div></div>
+      <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:19px;font-weight:800">82%</div>
+    </div>
+  </div>
+  <div style="background:#262033;border-radius:999px;padding:16px 22px;display:flex;align-items:center;gap:12px;color:#F6EBDC;box-shadow:0 16px 36px rgba(38,32,51,.32)">
+    <div style="width:14px;height:14px;border-radius:5px;background:#FF6B57;flex-shrink:0"></div>
+    <div style="font-size:16px;font-weight:800;flex:1">Next: kitchen shelf</div>
+    <span style="font-size:18px;font-weight:800">&#8594;</span>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Layout re-sorts as rooms finish — the lowest % always claims the hero tile, so attention naturally flows to what's neglected.</div>
+</div>
+
+<!-- ═══ 4c ARC/RAYCAST MASONRY RHYTHM ═══ -->
+<div class="dv-opt" id="4c">
+<div class="dv-olabel"><a class="dv-oid" href="#4c">4c</a>Masonry rhythm — pure visual variety, Arc/Raycast style</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:radial-gradient(130% 70% at 15% 0%, #FFE7BC 0%, #F6EBDC 55%, #F2E2CE 100%);padding:72px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="padding:0 6px 2px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.14em;color:#B09877">YOUR HOUSE</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1">52% a home.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:70px;gap:10px;flex:1">
+    <div style="grid-column:1/3;grid-row:1/4;background:#FFC531;border-radius:30px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 16px 32px rgba(255,171,49,.3)">
+      <div style="font-size:17px;font-weight:800">Living room</div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:8px">64%</div>
+        <div style="height:15px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#262033"></div></div>
+      </div>
+    </div>
+    <div style="grid-column:3;grid-row:1/3;background:#7C8CF8;border-radius:26px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;color:#F4F1FF;box-shadow:0 12px 26px rgba(124,140,248,.3)">
+      <div style="font-size:14px;font-weight:800">Bedroom</div>
+      <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1">82%</div>
+    </div>
+    <div style="grid-column:3;grid-row:3/5;background:#5FBE8B;border-radius:26px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;color:#F0FBF3;box-shadow:0 12px 26px rgba(95,190,139,.3)">
+      <div style="font-size:14px;font-weight:800">Hallway</div>
+      <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1">12%</div>
+    </div>
+    <div style="grid-column:1/3;grid-row:4/6;background:#FF6B57;border-radius:26px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;color:#FFF3E2;box-shadow:0 12px 26px rgba(255,107,87,.3)">
+      <div style="font-size:15px;font-weight:800">Kitchen</div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:6px">41%</div>
+        <div style="height:12px;border-radius:999px;background:rgba(255,243,226,.28);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#FFF3E2"></div></div>
+      </div>
+    </div>
+  </div>
+  <div style="background:#262033;border-radius:999px;padding:16px 22px;display:flex;align-items:center;gap:12px;color:#F6EBDC;box-shadow:0 16px 36px rgba(38,32,51,.32)">
+    <div style="width:14px;height:14px;border-radius:5px;background:#FFC531;flex-shrink:0"></div>
+    <div style="font-size:16px;font-weight:800;flex:1">Next: coffee table</div>
+    <span style="font-size:18px;font-weight:800">&#8594;</span>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Sizes are staggered on purpose, not tied to data — pure Arc/Raycast-style visual rhythm to avoid a boring even grid.</div>
+</div>
+
+</div>
+<p class="dv-next">Which logic feels right &#8212; <a class="dv-oid" href="#4a">4a</a> real footprint, <a class="dv-oid" href="#4b">4b</a> attention-seeking, or <a class="dv-oid" href="#4c">4c</a> just rhythm? I can carry the winner into the full home screen and room detail.</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Identity pushed further + the remaining screens</span></div>
+<p class="dv-note">Same Digital House system as turn 2, elevated: Bricolage Grotesque for headlines (chunkier, more character), atmospheric gradient washes instead of flat backgrounds, colored soft shadows for depth, and a dusk palette for the ritual screens. <a class="dv-oid" href="#3a">3a</a> home refined, <a class="dv-oid" href="#3b">3b</a> onboarding, <a class="dv-oid" href="#3c">3c</a> add-a-thing, <a class="dv-oid" href="#3d">3d</a> Sunday recap, <a class="dv-oid" href="#3e">3e</a> admire mode at dusk.</p>
+<div class="dv-opts">
+
+<!-- ═══ 3a HOME, ELEVATED ═══ -->
+<div class="dv-opt" id="3a">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Home, refined — new type, washes, colored depth</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:radial-gradient(130% 70% at 15% 0%, #FFE7BC 0%, #F6EBDC 55%, #F2E2CE 100%);padding:72px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="padding:0 6px 4px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.14em;color:#B09877">TUESDAY &#183; WEEK 9</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1">52% a home.</div>
+  </div>
+  <div style="background:#FFC531;border-radius:36px;padding:20px 22px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 44px rgba(255,171,49,.35);transform:rotate(-.6deg)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <div style="font-size:20px;font-weight:800">Living room</div>
+        <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:50px;font-weight:800;letter-spacing:-.03em;line-height:1">64%</div>
+      </div>
+      <svg width="120" height="74" viewBox="0 0 120 74">
+        <ellipse cx="60" cy="68" rx="56" ry="5" fill="rgba(38,32,51,.12)"></ellipse>
+        <rect x="4" y="14" width="112" height="36" rx="15" fill="#FF6B57"></rect>
+        <rect x="18" y="22" width="38" height="22" rx="9" fill="#FFF3E2"></rect>
+        <rect x="63" y="22" width="38" height="22" rx="9" fill="#FFF3E2"></rect>
+        <rect x="0" y="38" width="120" height="22" rx="11" fill="#EA5847"></rect>
+        <rect x="14" y="58" width="10" height="10" rx="3" fill="#B8452F"></rect>
+        <rect x="96" y="58" width="10" height="10" rx="3" fill="#B8452F"></rect>
+      </svg>
+    </div>
+    <div style="height:20px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#262033"></div></div>
+  </div>
+  <div style="display:flex;gap:12px">
+    <div style="flex:1;background:#7C8CF8;border-radius:32px;padding:18px;display:flex;flex-direction:column;gap:9px;color:#F4F1FF;box-shadow:0 18px 38px rgba(124,140,248,.35);transform:rotate(.5deg)">
+      <div style="font-size:16px;font-weight:800">Bedroom</div>
+      <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1">82%</div>
+      <div style="height:14px;border-radius:999px;background:rgba(244,241,255,.3);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#F4F1FF"></div></div>
+      <div style="font-size:13px;font-weight:600;color:#D6DCFF">one thing left</div>
+    </div>
+    <div style="flex:1;background:#FF6B57;border-radius:32px;padding:18px;display:flex;flex-direction:column;gap:9px;color:#FFF3E2;box-shadow:0 18px 38px rgba(255,107,87,.35);transform:rotate(-.4deg)">
+      <div style="font-size:16px;font-weight:800">Kitchen</div>
+      <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1">41%</div>
+      <div style="height:14px;border-radius:999px;background:rgba(255,243,226,.3);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#FFF3E2"></div></div>
+      <div style="font-size:13px;font-weight:600;color:#FFD3C6">getting there</div>
+    </div>
+  </div>
+  <div style="background:#5FBE8B;border-radius:28px;padding:16px 20px;display:flex;align-items:center;gap:14px;color:#F0FBF3;box-shadow:0 16px 34px rgba(95,190,139,.3);transform:rotate(.4deg)">
+    <div style="font-size:16px;font-weight:800;flex:1">Hallway</div>
+    <div style="width:120px;height:14px;border-radius:999px;background:rgba(240,251,243,.3);overflow:hidden"><div style="height:100%;width:12%;border-radius:999px;background:#F0FBF3"></div></div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:24px;font-weight:800">12%</div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="background:#262033;border-radius:999px;padding:17px 24px;display:flex;align-items:center;gap:12px;color:#F6EBDC;box-shadow:0 18px 40px rgba(38,32,51,.35)">
+    <div style="width:16px;height:16px;border-radius:5px;background:#FFC531;flex-shrink:0"></div>
+    <div style="font-size:17px;font-weight:800;flex:1">Next: coffee table</div>
+    <div style="font-size:14px;font-weight:600;opacity:.6">15 min</div>
+    <span style="font-size:19px;font-weight:800">&#8594;</span>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- ═══ 3b ONBOARDING ═══ -->
+<div class="dv-opt" id="3b">
+<div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>Onboarding — sketch your house, pick the rooms</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:radial-gradient(120% 75% at 80% 0%, #FFE0D2 0%, #F6EBDC 55%, #F1E3D0 100%);padding:76px 24px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="display:flex;gap:6px">
+    <div style="width:26px;height:7px;border-radius:999px;background:#262033"></div>
+    <div style="width:26px;height:7px;border-radius:999px;background:rgba(38,32,51,.18)"></div>
+    <div style="width:26px;height:7px;border-radius:999px;background:rgba(38,32,51,.18)"></div>
+  </div>
+  <div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;line-height:1.05;text-wrap:pretty">Which rooms are you two taking on?</div>
+    <div style="font-size:16px;font-weight:600;color:rgba(38,32,51,.55);margin-top:8px">They all start as sketches. You fill them in.</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="background:#FFC531;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;box-shadow:0 14px 30px rgba(255,171,49,.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">Living room</span><svg width="16" height="13" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#262033" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+      <div style="font-size:13px;font-weight:600;color:rgba(38,32,51,.55)">6 things sketched</div>
+    </div>
+    <div style="background:#7C8CF8;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;color:#F4F1FF;box-shadow:0 14px 30px rgba(124,140,248,.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">Bedroom</span><svg width="16" height="13" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#F4F1FF" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+      <div style="font-size:13px;font-weight:600;color:#D6DCFF">5 things sketched</div>
+    </div>
+    <div style="background:#FF6B57;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;color:#FFF3E2;box-shadow:0 14px 30px rgba(255,107,87,.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">Kitchen</span><svg width="16" height="13" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#FFF3E2" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+      <div style="font-size:13px;font-weight:600;color:#FFD3C6">7 things sketched</div>
+    </div>
+    <div style="background:#5FBE8B;border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;color:#F0FBF3;box-shadow:0 14px 30px rgba(95,190,139,.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:18px;font-weight:800">Hallway</span><svg width="16" height="13" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#F0FBF3" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+      <div style="font-size:13px;font-weight:600;color:#CDEFDA">4 things sketched</div>
+    </div>
+    <div style="border:2.5px dashed rgba(38,32,51,.35);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;color:rgba(38,32,51,.6)">
+      <span style="font-size:18px;font-weight:700">Bathroom</span>
+      <div style="font-size:13px;font-weight:600;opacity:.7">later, maybe</div>
+    </div>
+    <div style="border:2.5px dashed rgba(38,32,51,.35);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;color:rgba(38,32,51,.6)">
+      <span style="font-size:18px;font-weight:700">Office</span>
+      <div style="font-size:13px;font-weight:600;opacity:.7">lol. someday</div>
+    </div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="background:#262033;border-radius:999px;padding:18px 26px;display:flex;align-items:center;justify-content:center;gap:10px;color:#F6EBDC;font-size:18px;font-weight:800;box-shadow:0 18px 40px rgba(38,32,51,.35)">Start sketching <span>&#8594;</span></div>
+</div>
+</x-import>
+</div>
+
+<!-- ═══ 3c ADD A THING ═══ -->
+<div class="dv-opt" id="3c">
+<div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>Add a thing — pick a shape, not a task</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#FFC531;padding:72px 20px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="width:44px;height:44px;border-radius:999px;background:rgba(38,32,51,.12);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">&#215;</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:28px;font-weight:800;letter-spacing:-.01em;flex:1">Add to living room</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+    <div style="background:#FFF3E2;border-radius:24px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;outline:3.5px solid #262033;box-shadow:0 12px 26px rgba(38,32,51,.18)">
+      <svg width="54" height="40" viewBox="0 0 54 40"><rect x="4" y="10" width="46" height="9" rx="4.5" fill="#E1A05C"></rect><rect x="10" y="19" width="7" height="15" rx="3" fill="#C9884A"></rect><rect x="37" y="19" width="7" height="15" rx="3" fill="#C9884A"></rect></svg>
+      <span style="font-size:13.5px;font-weight:800">Coffee table</span>
+    </div>
+    <div style="background:#FFF3E2;border-radius:24px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="54" height="40" viewBox="0 0 54 40"><rect x="20" y="24" width="14" height="12" rx="4" fill="#C9884A"></rect><circle cx="27" cy="14" r="9" fill="#5FBE8B"></circle><circle cx="17" cy="9" r="6" fill="#5FBE8B"></circle><circle cx="37" cy="9" r="6" fill="#5FBE8B"></circle></svg>
+      <span style="font-size:13.5px;font-weight:800">Plant</span>
+    </div>
+    <div style="background:#FFF3E2;border-radius:24px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="54" height="40" viewBox="0 0 54 40"><rect x="8" y="4" width="16" height="20" rx="3" fill="#7C8CF8"></rect><rect x="29" y="9" width="18" height="14" rx="3" fill="#FF6B57"></rect><rect x="14" y="29" width="26" height="4" rx="2" fill="#262033"></rect></svg>
+      <span style="font-size:13.5px;font-weight:800">Gallery wall</span>
+    </div>
+    <div style="background:#FFF3E2;border-radius:24px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="54" height="40" viewBox="0 0 54 40"><ellipse cx="27" cy="22" rx="23" ry="11" fill="#FF6B57"></ellipse><ellipse cx="27" cy="22" rx="14" ry="6.5" fill="#FFD066"></ellipse></svg>
+      <span style="font-size:13.5px;font-weight:800">Rug</span>
+    </div>
+    <div style="background:#FFF3E2;border-radius:24px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="54" height="40" viewBox="0 0 54 40"><rect x="25" y="12" width="4" height="20" fill="#262033"></rect><circle cx="27" cy="9" r="8" fill="#FFC531" stroke="#262033" stroke-width="2"></circle><rect x="16" y="32" width="22" height="5" rx="2.5" fill="#262033"></rect></svg>
+      <span style="font-size:13.5px;font-weight:800">Lamp</span>
+    </div>
+    <div style="background:#FFF3E2;border-radius:24px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="54" height="40" viewBox="0 0 54 40"><rect x="6" y="18" width="42" height="5" rx="2.5" fill="#C9884A"></rect><rect x="12" y="6" width="7" height="12" rx="2" fill="#7C8CF8"></rect><rect x="21" y="9" width="7" height="9" rx="2" fill="#FF6B57"></rect><rect x="30" y="7" width="7" height="11" rx="2" fill="#5FBE8B"></rect></svg>
+      <span style="font-size:13.5px;font-weight:800">Shelf</span>
+    </div>
+  </div>
+  <div style="border:2.5px dashed rgba(38,32,51,.4);border-radius:999px;padding:13px 20px;text-align:center;font-size:15px;font-weight:700;color:rgba(38,32,51,.65)">+ something else</div>
+  <div style="flex:1"></div>
+  <div style="background:#FFF3E2;border-radius:30px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 18px 40px rgba(38,32,51,.2)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg width="44" height="32" viewBox="0 0 54 40"><rect x="4" y="10" width="46" height="9" rx="4.5" fill="#E1A05C"></rect><rect x="10" y="19" width="7" height="15" rx="3" fill="#C9884A"></rect><rect x="37" y="19" width="7" height="15" rx="3" fill="#C9884A"></rect></svg>
+      <div style="flex:1">
+        <div style="font-size:18px;font-weight:800">Coffee table</div>
+        <div style="font-size:13px;font-weight:600;color:rgba(38,32,51,.5)">est. 15 min &#183; goes in the scene instantly</div>
+      </div>
+    </div>
+    <div style="background:#262033;border-radius:999px;padding:15px;display:flex;align-items:center;justify-content:center;color:#F6EBDC;font-size:17px;font-weight:800">Sketch it in</div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Adding = placing a dashed shape into the room. No forms, no due dates.</div>
+</div>
+
+<!-- ═══ 3d SUNDAY RECAP ═══ -->
+<div class="dv-opt" id="3d">
+<div class="dv-olabel"><a class="dv-oid" href="#3d">3d</a>Sunday recap — the weekly ritual, dusk</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:linear-gradient(175deg,#232040 0%,#3A3560 70%,#4A3F6B 100%);padding:76px 24px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px;font-family:Gabarito,system-ui,sans-serif;color:#F1EDFF;overflow:hidden">
+  <div>
+    <div style="font-size:13px;font-weight:700;letter-spacing:.16em;color:#9F97D9">SUNDAY &#183; WEEK 9</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.05;text-wrap:pretty">The house grew this week.</div>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:110px;font-weight:800;line-height:1;letter-spacing:-.05em;color:#FFC531">+9<span style="font-size:56px">%</span></span>
+  </div>
+  <!-- week bar: before/after -->
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="height:24px;border-radius:999px;background:rgba(241,237,255,.14);overflow:hidden;position:relative">
+      <div style="position:absolute;inset:0;width:52%;border-radius:999px;background:#FFC531"></div>
+      <div style="position:absolute;inset:0;width:43%;border-radius:999px;background:#D9A32A"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:#9F97D9"><span>last Sunday: 43%</span><span style="color:#FFC531">now: 52%</span></div>
+  </div>
+  <!-- what appeared -->
+  <div style="font-size:13px;font-weight:700;letter-spacing:.14em;color:#9F97D9;margin-top:4px">WHAT APPEARED</div>
+  <div style="display:flex;gap:10px">
+    <div style="flex:1;background:rgba(241,237,255,.1);border:1.5px solid rgba(241,237,255,.16);border-radius:22px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="48" height="34" viewBox="0 0 54 40"><rect x="4" y="10" width="46" height="9" rx="4.5" fill="#E1A05C"></rect><rect x="10" y="19" width="7" height="15" rx="3" fill="#C9884A"></rect><rect x="37" y="19" width="7" height="15" rx="3" fill="#C9884A"></rect></svg>
+      <span style="font-size:12.5px;font-weight:700">Coffee table</span>
+    </div>
+    <div style="flex:1;background:rgba(241,237,255,.1);border:1.5px solid rgba(241,237,255,.16);border-radius:22px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="48" height="34" viewBox="0 0 54 40"><rect x="12" y="4" width="10" height="32" rx="5" fill="#7C8CF8"></rect><rect x="32" y="4" width="10" height="32" rx="5" fill="#7C8CF8"></rect></svg>
+      <span style="font-size:12.5px;font-weight:700">Curtains</span>
+    </div>
+    <div style="flex:1;background:rgba(241,237,255,.1);border:1.5px solid rgba(241,237,255,.16);border-radius:22px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <svg width="48" height="34" viewBox="0 0 54 40"><rect x="8" y="22" width="38" height="6" rx="3" fill="#F1EDFF"></rect><rect x="14" y="10" width="8" height="12" rx="2" fill="#FF6B57"></rect><rect x="26" y="12" width="8" height="10" rx="2" fill="#5FBE8B"></rect></svg>
+      <span style="font-size:12.5px;font-weight:700">Spice rack</span>
+    </div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="text-align:center;font-size:16px;font-weight:600;color:#B9B1E8;text-wrap:pretty">Two people. One drill. Zero casualties.</div>
+  <div style="background:#FFC531;color:#262033;border-radius:999px;padding:17px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:800;box-shadow:0 18px 44px rgba(255,197,49,.3)">Go admire the house <span>&#8594;</span></div>
+</div>
+</x-import>
+</div>
+
+<!-- ═══ 3e ADMIRE AT DUSK ═══ -->
+<div class="dv-opt" id="3e">
+<div class="dv-olabel"><a class="dv-oid" href="#3e">3e</a>Admire mode at dusk — the lights come on as rooms finish</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:linear-gradient(178deg,#1D1A36 0%,#2E2A4E 55%,#463C68 100%);padding:74px 22px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;font-family:Gabarito,system-ui,sans-serif;color:#F1EDFF;overflow:hidden">
+  <div style="padding:0 4px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.16em;color:#9F97D9">YOUR DIGITAL HOUSE</div>
+    <div style="font-family:'Bricolage Grotesque',Gabarito,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.08">The lights are coming on.</div>
+  </div>
+  <svg width="100%" viewBox="0 0 360 330" style="display:block">
+    <circle cx="46" cy="26" r="2" fill="#F1EDFF" opacity=".7"></circle>
+    <circle cx="304" cy="14" r="1.6" fill="#F1EDFF" opacity=".5"></circle>
+    <circle cx="212" cy="8" r="2.2" fill="#F1EDFF" opacity=".6"></circle>
+    <circle cx="330" cy="52" r="1.6" fill="#F1EDFF" opacity=".45"></circle>
+    <circle cx="24" cy="70" r="1.8" fill="#F1EDFF" opacity=".4"></circle>
+    <circle cx="290" cy="80" r="14" fill="#FFF3E2" opacity=".9"></circle>
+    <polygon points="24,110 180,28 336,110" fill="#D95845"></polygon>
+    <rect x="252" y="46" width="22" height="42" rx="5" fill="#17152B"></rect>
+    <rect x="28" y="110" width="304" height="206" rx="10" fill="#37325A"></rect>
+    <!-- bedroom lit -->
+    <rect x="44" y="126" width="136" height="84" rx="12" fill="#FFD98C"></rect>
+    <rect x="44" y="126" width="136" height="84" rx="12" fill="none" stroke="#FFC531" stroke-width="4" opacity=".5"></rect>
+    <rect x="56" y="164" width="9" height="36" rx="4" fill="#37325A"></rect>
+    <rect x="62" y="178" width="66" height="15" rx="7" fill="#FF6B57"></rect>
+    <rect x="68" y="167" width="24" height="11" rx="5" fill="#37325A"></rect>
+    <circle cx="152" cy="148" r="9" fill="#FF6B57"></circle>
+    <!-- living lit -->
+    <rect x="44" y="218" width="136" height="84" rx="12" fill="#FFD98C"></rect>
+    <rect x="44" y="218" width="136" height="84" rx="12" fill="none" stroke="#FFC531" stroke-width="4" opacity=".5"></rect>
+    <rect x="56" y="252" width="70" height="21" rx="10" fill="#FF6B57"></rect>
+    <rect x="64" y="258" width="22" height="11" rx="5" fill="#FFD066"></rect>
+    <rect x="92" y="258" width="22" height="11" rx="5" fill="#FFD066"></rect>
+    <rect x="136" y="248" width="34" height="8" rx="4" fill="#C9884A"></rect>
+    <!-- kitchen: half lit -->
+    <rect x="188" y="126" width="128" height="84" rx="12" fill="#5F567F"></rect>
+    <rect x="198" y="184" width="108" height="17" rx="6" fill="#8B80AE"></rect>
+    <rect x="216" y="164" width="30" height="20" rx="4" fill="#262033"></rect>
+    <g fill="none" stroke="#B9B1E8" stroke-width="2" stroke-dasharray="5 5" opacity=".5">
+      <rect x="258" y="140" width="24" height="19" rx="4"></rect>
+      <rect x="288" y="140" width="20" height="19" rx="4"></rect>
+    </g>
+    <!-- hallway: sketch -->
+    <rect x="188" y="218" width="128" height="84" rx="12" fill="#443E68"></rect>
+    <g fill="none" stroke="#B9B1E8" stroke-width="2" stroke-dasharray="5 5" opacity=".5">
+      <rect x="200" y="230" width="32" height="60" rx="6"></rect>
+      <rect x="242" y="236" width="24" height="18" rx="4"></rect>
+      <ellipse cx="284" cy="286" rx="22" ry="6"></ellipse>
+    </g>
+  </svg>
+  <div style="flex:1"></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="height:24px;border-radius:999px;background:rgba(241,237,255,.14);overflow:hidden"><div style="height:100%;width:52%;border-radius:999px;background:#FFC531"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span style="font-size:18px;font-weight:800">52% a home</span>
+      <span style="font-size:14px;font-weight:600;color:#9F97D9">two rooms glowing. two to go.</span>
+    </div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Motion: windows warm up one by one on open; finished rooms flicker softly like real lamps.</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "make <a class="dv-oid" href="#2c">2c</a>'s pop animation a real interactive prototype" &#183; "apply the dusk treatment to the recap in <a class="dv-oid" href="#3d">3d</a> everywhere" &#183; "swap Bricolage for something rounder"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">The Digital House — Sims &#215; Apple &#215; Headspace &#215; Ditto</span></div>
+<p class="dv-note">New identity: no white backgrounds, no checklists. Every screen is a huge block of color; every room is a flat-geometric illustration where finished items are in full color and unfinished ones are dashed sketches. <a class="dv-oid" href="#2a">2a</a> home = the house at a glance, <a class="dv-oid" href="#2b">2b</a> room board, <a class="dv-oid" href="#2c">2c</a> the tick-moment (table pops into the scene, no "task complete" sheet), <a class="dv-oid" href="#2d">2d</a> admire mode — the whole dollhouse. Motion notes under each phone; canvas preview shows the resting frame.</p>
+<div class="dv-opts">
+
+<!-- ═══ 2a HOME ═══ -->
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Home — the house at a glance</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#F6EBDC;padding:72px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="padding:0 6px 2px">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.12em;color:#B09877">TUESDAY</div>
+    <div style="font-size:34px;font-weight:800;letter-spacing:-.01em;line-height:1.05">52% a home.</div>
+  </div>
+  <!-- living: big block -->
+  <div style="background:#FFC531;border-radius:34px;padding:20px 22px 18px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <div style="font-size:21px;font-weight:800">Living room</div>
+        <div style="font-size:44px;font-weight:900;letter-spacing:-.03em;line-height:1">64%</div>
+      </div>
+      <svg width="120" height="74" viewBox="0 0 120 74">
+        <rect x="4" y="18" width="112" height="36" rx="15" fill="#FF6B57"></rect>
+        <rect x="18" y="26" width="38" height="22" rx="9" fill="#FFF3E2"></rect>
+        <rect x="63" y="26" width="38" height="22" rx="9" fill="#FFF3E2"></rect>
+        <rect x="0" y="42" width="120" height="22" rx="11" fill="#EA5847"></rect>
+        <rect x="14" y="62" width="10" height="10" rx="3" fill="#B8452F"></rect>
+        <rect x="96" y="62" width="10" height="10" rx="3" fill="#B8452F"></rect>
+      </svg>
+    </div>
+    <div style="height:20px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#262033"></div></div>
+  </div>
+  <!-- bedroom + kitchen -->
+  <div style="display:flex;gap:12px">
+    <div style="flex:1;background:#7C8CF8;border-radius:30px;padding:18px;display:flex;flex-direction:column;gap:10px;color:#F4F1FF">
+      <svg width="64" height="44" viewBox="0 0 64 44">
+        <rect x="2" y="4" width="8" height="36" rx="4" fill="#F4F1FF"></rect>
+        <rect x="8" y="20" width="54" height="14" rx="7" fill="#FFC531"></rect>
+        <rect x="12" y="10" width="20" height="10" rx="5" fill="#F4F1FF"></rect>
+        <rect x="8" y="32" width="54" height="8" rx="4" fill="#5B67C7"></rect>
+      </svg>
+      <div style="font-size:17px;font-weight:800">Bedroom</div>
+      <div style="font-size:32px;font-weight:900;letter-spacing:-.03em;line-height:1">82%</div>
+      <div style="height:14px;border-radius:999px;background:rgba(244,241,255,.3);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#F4F1FF"></div></div>
+    </div>
+    <div style="flex:1;background:#FF6B57;border-radius:30px;padding:18px;display:flex;flex-direction:column;gap:10px;color:#FFF3E2">
+      <svg width="64" height="44" viewBox="0 0 64 44">
+        <rect x="2" y="26" width="60" height="14" rx="6" fill="#FFF3E2"></rect>
+        <rect x="14" y="12" width="24" height="14" rx="4" fill="#262033"></rect>
+        <circle cx="26" cy="8" r="4" fill="#FFC531"></circle>
+        <rect x="46" y="16" width="12" height="10" rx="3" fill="#FFC531"></rect>
+      </svg>
+      <div style="font-size:17px;font-weight:800">Kitchen</div>
+      <div style="font-size:32px;font-weight:900;letter-spacing:-.03em;line-height:1">41%</div>
+      <div style="height:14px;border-radius:999px;background:rgba(255,243,226,.3);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#FFF3E2"></div></div>
+    </div>
+  </div>
+  <!-- hallway slim -->
+  <div style="background:#5FBE8B;border-radius:26px;padding:16px 20px;display:flex;align-items:center;gap:14px;color:#F0FBF3">
+    <div style="font-size:17px;font-weight:800;flex:1">Hallway</div>
+    <div style="width:130px;height:14px;border-radius:999px;background:rgba(240,251,243,.3);overflow:hidden"><div style="height:100%;width:12%;border-radius:999px;background:#F0FBF3"></div></div>
+    <div style="font-size:20px;font-weight:900">12%</div>
+  </div>
+  <div style="flex:1"></div>
+  <!-- next pill -->
+  <div style="background:#262033;border-radius:999px;padding:16px 22px;display:flex;align-items:center;gap:12px;color:#F6EBDC">
+    <div style="width:16px;height:16px;border-radius:5px;background:#FFC531;flex-shrink:0"></div>
+    <div style="font-size:17px;font-weight:800;flex:1">Next: coffee table</div>
+    <div style="font-size:14px;font-weight:600;opacity:.6">15 min</div>
+    <span style="font-size:19px;font-weight:800">&#8594;</span>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Motion: blocks settle in with a soft spring; bars fill left&#8594;right on open.</div>
+</div>
+
+<!-- ═══ 2b ROOM BOARD ═══ -->
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Room board — items fade into color, sketches wait their turn</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#FFC531;padding:70px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="display:flex;align-items:center;gap:12px;padding:0 4px">
+    <div style="width:44px;height:44px;border-radius:999px;background:rgba(38,32,51,.12);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">&#8592;</div>
+    <div style="font-size:30px;font-weight:800;letter-spacing:-.01em;flex:1">Living room</div>
+    <div style="font-size:30px;font-weight:900;letter-spacing:-.02em">64%</div>
+  </div>
+  <div style="height:22px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden;margin:0 4px"><div style="height:100%;width:64%;border-radius:999px;background:#262033"></div></div>
+  <!-- scene -->
+  <div style="background:#FFF3E2;border-radius:34px;overflow:hidden">
+    <svg width="100%" viewBox="0 0 360 250" style="display:block">
+      <rect x="0" y="0" width="360" height="192" fill="#FFF3E2"></rect>
+      <rect x="0" y="192" width="360" height="58" fill="#F1D7B2"></rect>
+      <ellipse cx="190" cy="228" rx="118" ry="15" fill="#5FBE8B"></ellipse>
+      <rect x="36" y="40" width="88" height="74" rx="10" fill="#AFCFFF" stroke="#FFFDF7" stroke-width="5"></rect>
+      <circle cx="68" cy="78" r="13" fill="#FFC531"></circle>
+      <rect x="22" y="30" width="16" height="100" rx="8" fill="#7C8CF8"></rect>
+      <rect x="130" y="30" width="16" height="100" rx="8" fill="#7C8CF8"></rect>
+      <rect x="14" y="196" width="30" height="8" rx="4" fill="#262033"></rect>
+      <rect x="27" y="150" width="4" height="48" fill="#262033"></rect>
+      <circle cx="29" cy="138" r="15" fill="#FF6B57"></circle>
+      <rect x="148" y="118" width="152" height="48" rx="20" fill="#FF6B57"></rect>
+      <rect x="168" y="128" width="52" height="30" rx="12" fill="#FFD066"></rect>
+      <rect x="228" y="128" width="52" height="30" rx="12" fill="#FFD066"></rect>
+      <rect x="146" y="154" width="156" height="34" rx="14" fill="#EA5847"></rect>
+      <rect x="160" y="188" width="12" height="14" rx="4" fill="#B8452F"></rect>
+      <rect x="276" y="188" width="12" height="14" rx="4" fill="#B8452F"></rect>
+      <g fill="rgba(38,32,51,.05)" stroke="#262033" stroke-width="2.5" stroke-dasharray="6 6" opacity=".45">
+        <rect x="186" y="40" width="36" height="46" rx="6"></rect>
+        <rect x="232" y="54" width="28" height="32" rx="6"></rect>
+        <rect x="270" y="36" width="42" height="36" rx="6"></rect>
+        <rect x="316" y="158" width="28" height="26" rx="6"></rect>
+        <circle cx="330" cy="140" r="15"></circle>
+        <circle cx="318" cy="124" r="11"></circle>
+        <circle cx="344" cy="124" r="11"></circle>
+        <rect x="66" y="206" width="100" height="12" rx="6"></rect>
+        <rect x="76" y="218" width="10" height="20" rx="3"></rect>
+        <rect x="146" y="218" width="10" height="20" rx="3"></rect>
+      </g>
+    </svg>
+  </div>
+  <!-- item chips -->
+  <div style="display:flex;flex-wrap:wrap;gap:8px;padding:0 2px">
+    <div style="background:#FF6B57;color:#FFF3E2;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px"><svg width="13" height="11" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#FFF3E2" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Sofa</div>
+    <div style="background:#7C8CF8;color:#F4F1FF;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px"><svg width="13" height="11" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#F4F1FF" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Curtains</div>
+    <div style="background:#5FBE8B;color:#F0FBF3;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px"><svg width="13" height="11" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#F0FBF3" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Rug</div>
+    <div style="background:#EA5847;color:#FFF3E2;border-radius:999px;padding:10px 16px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px"><svg width="13" height="11" viewBox="0 0 14 12"><path d="M2 6.5l3.5 3.5L12 2" stroke="#FFF3E2" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>Lamp</div>
+    <div style="border:2.5px dashed rgba(38,32,51,.45);color:rgba(38,32,51,.65);border-radius:999px;padding:8px 16px;font-size:15px;font-weight:700">Coffee table</div>
+    <div style="border:2.5px dashed rgba(38,32,51,.45);color:rgba(38,32,51,.65);border-radius:999px;padding:8px 16px;font-size:15px;font-weight:700">Gallery wall</div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="background:#262033;border-radius:28px;padding:18px 22px;display:flex;align-items:center;gap:14px;color:#F6EBDC">
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:700;letter-spacing:.12em;color:#C9BFA8">NEXT &#183; 15 MIN</div>
+      <div style="font-size:22px;font-weight:800;line-height:1.1">Coffee table</div>
+    </div>
+    <div style="width:52px;height:52px;border-radius:999px;background:#FFC531;color:#262033;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;flex-shrink:0">&#8594;</div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Motion: sketched items breathe gently; tapping a chip pulses its shape in the scene.</div>
+</div>
+
+<!-- ═══ 2c THE TICK MOMENT ═══ -->
+<div class="dv-opt" id="2c">
+<div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>The tick — coffee table pops into the room, no "task complete" sheet</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#FFC531;padding:70px 18px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;font-family:Gabarito,system-ui,sans-serif;color:#262033;overflow:hidden">
+  <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px">
+    <div style="font-size:30px;font-weight:800;letter-spacing:-.01em">Living room</div>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <span style="background:#262033;color:#FFC531;border-radius:999px;padding:4px 10px;font-size:14px;font-weight:800">+17</span>
+      <span style="font-size:30px;font-weight:900;letter-spacing:-.02em">81%</span>
+    </div>
+  </div>
+  <div style="height:22px;border-radius:999px;background:rgba(38,32,51,.16);overflow:hidden;margin:0 4px"><div style="height:100%;width:81%;border-radius:999px;background:#262033"></div></div>
+  <!-- scene: table just landed -->
+  <div style="background:#FFF3E2;border-radius:34px;overflow:hidden">
+    <svg width="100%" viewBox="0 0 360 250" style="display:block">
+      <rect x="0" y="0" width="360" height="192" fill="#FFF3E2"></rect>
+      <rect x="0" y="192" width="360" height="58" fill="#F1D7B2"></rect>
+      <ellipse cx="190" cy="228" rx="118" ry="15" fill="#5FBE8B"></ellipse>
+      <rect x="36" y="40" width="88" height="74" rx="10" fill="#AFCFFF" stroke="#FFFDF7" stroke-width="5"></rect>
+      <circle cx="68" cy="78" r="13" fill="#FFC531"></circle>
+      <rect x="22" y="30" width="16" height="100" rx="8" fill="#7C8CF8"></rect>
+      <rect x="130" y="30" width="16" height="100" rx="8" fill="#7C8CF8"></rect>
+      <rect x="14" y="196" width="30" height="8" rx="4" fill="#262033"></rect>
+      <rect x="27" y="150" width="4" height="48" fill="#262033"></rect>
+      <circle cx="29" cy="138" r="15" fill="#FF6B57"></circle>
+      <rect x="148" y="118" width="152" height="48" rx="20" fill="#FF6B57"></rect>
+      <rect x="168" y="128" width="52" height="30" rx="12" fill="#FFD066"></rect>
+      <rect x="228" y="128" width="52" height="30" rx="12" fill="#FFD066"></rect>
+      <rect x="146" y="154" width="156" height="34" rx="14" fill="#EA5847"></rect>
+      <rect x="160" y="188" width="12" height="14" rx="4" fill="#B8452F"></rect>
+      <rect x="276" y="188" width="12" height="14" rx="4" fill="#B8452F"></rect>
+      <g fill="rgba(38,32,51,.05)" stroke="#262033" stroke-width="2.5" stroke-dasharray="6 6" opacity=".45">
+        <rect x="186" y="40" width="36" height="46" rx="6"></rect>
+        <rect x="232" y="54" width="28" height="32" rx="6"></rect>
+        <rect x="270" y="36" width="42" height="36" rx="6"></rect>
+        <rect x="316" y="158" width="28" height="26" rx="6"></rect>
+        <circle cx="330" cy="140" r="15"></circle>
+        <circle cx="318" cy="124" r="11"></circle>
+        <circle cx="344" cy="124" r="11"></circle>
+      </g>
+      <!-- the table, landed -->
+      <circle cx="116" cy="206" r="52" fill="none" stroke="#FF6B57" stroke-width="3" opacity=".5"></circle>
+      <rect x="66" y="206" width="100" height="12" rx="6" fill="#E1A05C"></rect>
+      <rect x="76" y="218" width="10" height="20" rx="3" fill="#C9884A"></rect>
+      <rect x="146" y="218" width="10" height="20" rx="3" fill="#C9884A"></rect>
+      <!-- confetti -->
+      <circle cx="60" cy="176" r="4" fill="#FF6B57"></circle>
+      <rect x="94" y="160" width="8" height="8" rx="2" fill="#7C8CF8"></rect>
+      <circle cx="140" cy="170" r="4" fill="#5FBE8B"></circle>
+      <rect x="170" y="192" width="7" height="7" rx="2" fill="#FF6B57"></rect>
+      <circle cx="48" cy="214" r="3.5" fill="#7C8CF8"></circle>
+      <rect x="180" y="216" width="7" height="7" rx="2" fill="#FFC531" stroke="#262033" stroke-width="1"></rect>
+    </svg>
+  </div>
+  <div style="text-align:center;padding:6px 20px 0">
+    <div style="font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.15">The room just got better.</div>
+    <div style="font-size:15px;font-weight:600;color:rgba(38,32,51,.55);margin-top:4px">You felt that, right?</div>
+  </div>
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:10px">
+    <div style="flex:1;border:2.5px dashed rgba(38,32,51,.4);border-radius:999px;padding:15px 20px;font-size:16px;font-weight:700;color:rgba(38,32,51,.7);text-align:center">Admire it</div>
+    <div style="flex:1;background:#262033;color:#F6EBDC;border-radius:999px;padding:15px 20px;font-size:16px;font-weight:800;text-align:center">Next: gallery wall</div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Motion: table scales in with an overshoot spring, ring ripples out, bar surges 64&#8594;81, confetti drifts and fades. Whole thing &#8776;1.2s, then settles.</div>
+</div>
+
+<!-- ═══ 2d ADMIRE MODE ═══ -->
+<div class="dv-opt" id="2d">
+<div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Admire mode — the whole dollhouse, replaces any timeline</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#7C8CF8;padding:72px 22px 30px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;font-family:Gabarito,system-ui,sans-serif;color:#F4F1FF;overflow:hidden">
+  <div style="padding:0 4px">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.12em;color:#C3CBFF">WEEK 9</div>
+    <div style="font-size:33px;font-weight:800;letter-spacing:-.01em;line-height:1.08;text-wrap:pretty">Look how far you two have come.</div>
+  </div>
+  <!-- dollhouse -->
+  <svg width="100%" viewBox="0 0 360 322" style="display:block">
+    <polygon points="24,96 180,14 336,96" fill="#FF6B57"></polygon>
+    <rect x="252" y="30" width="22" height="44" rx="5" fill="#262033"></rect>
+    <rect x="28" y="96" width="304" height="214" rx="10" fill="#FFF3E2"></rect>
+    <!-- bedroom: 82% -->
+    <rect x="44" y="112" width="136" height="88" rx="12" fill="#8D9BFA"></rect>
+    <rect x="56" y="152" width="9" height="38" rx="4" fill="#F4F1FF"></rect>
+    <rect x="62" y="168" width="66" height="16" rx="8" fill="#FFC531"></rect>
+    <rect x="68" y="156" width="24" height="12" rx="6" fill="#F4F1FF"></rect>
+    <circle cx="152" cy="136" r="10" fill="#FFC531"></circle>
+    <rect x="140" y="168" width="26" height="22" rx="5" fill="none" stroke="#262033" stroke-width="2" stroke-dasharray="5 5" opacity=".4"></rect>
+    <!-- kitchen: 41% -->
+    <rect x="188" y="112" width="128" height="88" rx="12" fill="#FF8371"></rect>
+    <rect x="198" y="172" width="108" height="18" rx="6" fill="#FFF3E2"></rect>
+    <rect x="216" y="150" width="30" height="22" rx="4" fill="#262033"></rect>
+    <g fill="none" stroke="#262033" stroke-width="2" stroke-dasharray="5 5" opacity=".4">
+      <rect x="258" y="126" width="24" height="20" rx="4"></rect>
+      <rect x="288" y="126" width="20" height="20" rx="4"></rect>
+      <circle cx="270" cy="160" r="9"></circle>
+    </g>
+    <!-- living: 64% -->
+    <rect x="44" y="208" width="136" height="88" rx="12" fill="#FFCE4F"></rect>
+    <rect x="56" y="244" width="70" height="22" rx="10" fill="#FF6B57"></rect>
+    <rect x="64" y="250" width="22" height="12" rx="6" fill="#FFD066"></rect>
+    <rect x="92" y="250" width="22" height="12" rx="6" fill="#FFD066"></rect>
+    <rect x="58" y="222" width="26" height="20" rx="4" fill="#AFCFFF"></rect>
+    <g fill="none" stroke="#262033" stroke-width="2" stroke-dasharray="5 5" opacity=".4">
+      <rect x="138" y="238" width="34" height="8" rx="4"></rect>
+      <circle cx="152" cy="222" r="9"></circle>
+    </g>
+    <!-- hallway: 12% -->
+    <rect x="188" y="208" width="128" height="88" rx="12" fill="#F1E4CE"></rect>
+    <g fill="none" stroke="#262033" stroke-width="2" stroke-dasharray="5 5" opacity=".4">
+      <rect x="200" y="222" width="34" height="62" rx="6"></rect>
+      <rect x="244" y="228" width="26" height="20" rx="4"></rect>
+      <ellipse cx="284" cy="278" rx="24" ry="7"></ellipse>
+      <circle cx="290" cy="238" r="10"></circle>
+    </g>
+    <rect x="244" y="264" width="60" height="10" rx="5" fill="#5FBE8B"></rect>
+  </svg>
+  <div style="flex:1"></div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="height:24px;border-radius:999px;background:rgba(38,32,51,.25);overflow:hidden"><div style="height:100%;width:52%;border-radius:999px;background:#F4F1FF"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span style="font-size:19px;font-weight:800">52% a home</span>
+      <span style="font-size:15px;font-weight:600;color:#C3CBFF">Open it just to stare. That's allowed.</span>
+    </div>
+  </div>
+</div>
+</x-import>
+<div class="dv-olabel" style="max-width:402px">Motion: rooms glow on as you scroll; finished items shimmer once. This screen replaces any timeline/history.</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: "build out the remaining screens (onboarding, add-a-thing, week recap) in this direction" &#183; "make <a class="dv-oid" href="#2c">2c</a> a real interactive prototype with the pop animation" &#183; "try a dusk palette for admire mode"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">HomeQuest — home screen, 3 layout &#215; color directions</span></div>
+<p class="dv-note">Assumptions: shared account (no attribution), organized by room, light only, no points/coins — the % itself is the reward. Each option pairs a different card structure with a different color mood: <a class="dv-oid" href="#1a">1a</a> warm stack, <a class="dv-oid" href="#1b">1b</a> playful one-big-thing, <a class="dv-oid" href="#1c">1c</a> editorial ledger. Bars animate in on load.</p>
+<div class="dv-opts">
+
+<!-- ═══════════ 1a — THE STACK · warm & cozy ═══════════ -->
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>The Stack — giant next-action card, rooms below · warm &amp; cozy</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#FFF7EE;padding:74px 20px 34px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;font-family:Gabarito,system-ui,sans-serif;color:#3A2620;overflow:hidden">
+  <!-- greeting -->
+  <div style="padding:2px 6px">
+    <div style="font-size:15px;font-weight:600;color:#B58A6C;letter-spacing:.04em">TUESDAY</div>
+    <div style="font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-.01em;text-wrap:pretty">The house is 52% a&nbsp;home.</div>
+  </div>
+  <!-- next action -->
+  <div style="background:#E8663C;border-radius:32px;padding:24px 24px 22px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 28px rgba(232,102,60,.28)">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.1em;color:#FFD9BE">NEXT &#183; 10 MIN</div>
+    <div style="font-size:32px;font-weight:800;line-height:1.05;color:#FFF7EE;letter-spacing:-.01em">Hang the big mirror</div>
+    <div style="font-size:15px;font-weight:500;line-height:1.35;color:#FFD9BE">It has leaned on that wall for 31 days. It knows.</div>
+    <div style="display:flex;margin-top:8px">
+      <div style="background:#FFD66B;color:#3A2620;border-radius:999px;padding:14px 26px;font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px;min-height:44px;box-sizing:border-box">Do it <span style="display:inline-block;animation:qNudge 2.4s ease-in-out infinite">&#8594;</span></div>
+    </div>
+  </div>
+  <!-- rooms -->
+  <div style="font-size:14px;font-weight:700;letter-spacing:.08em;color:#B58A6C;padding:4px 6px 0">ROOMS</div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="background:#FFD66B;border-radius:24px;padding:16px 20px;display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:19px;font-weight:800">Bedroom</span><span style="font-size:19px;font-weight:800">82%</span></div>
+      <div style="height:16px;border-radius:999px;background:rgba(58,38,32,.14);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#3A2620"></div></div>
+      <div style="font-size:13px;font-weight:600;color:rgba(58,38,32,.6)">So close it hurts.</div>
+    </div>
+    <div style="background:#FFB88A;border-radius:24px;padding:16px 20px;display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:19px;font-weight:800">Living room</span><span style="font-size:19px;font-weight:800">64%</span></div>
+      <div style="height:16px;border-radius:999px;background:rgba(58,38,32,.14);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#3A2620"></div></div>
+    </div>
+    <div style="background:#F7B8AC;border-radius:24px;padding:16px 20px;display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:19px;font-weight:800">Kitchen</span><span style="font-size:19px;font-weight:800">41%</span></div>
+      <div style="height:16px;border-radius:999px;background:rgba(58,38,32,.14);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#3A2620"></div></div>
+    </div>
+    <div style="background:#EFE0CD;border-radius:24px;padding:16px 20px;display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:19px;font-weight:800">Hallway</span><span style="font-size:19px;font-weight:800">12%</span></div>
+      <div style="height:16px;border-radius:999px;background:rgba(58,38,32,.12);overflow:hidden"><div style="height:100%;width:12%;border-radius:999px;background:#3A2620"></div></div>
+      <div style="font-size:13px;font-weight:600;color:rgba(58,38,32,.55)">Still just a corridor. For now.</div>
+    </div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- ═══════════ 1b — ONE BIG THING · playful primaries ═══════════ -->
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>One Big Thing — huge meter, room carousel, pinned action · playful primaries</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#F7F5EF;padding:74px 0 30px;box-sizing:border-box;display:flex;flex-direction:column;font-family:Gabarito,system-ui,sans-serif;color:#17181C;overflow:hidden">
+  <!-- header + hero number -->
+  <div style="padding:6px 26px 0">
+    <div style="font-size:14px;font-weight:700;letter-spacing:.12em;color:#9A968A">TUESDAY &#183; WEEK 9</div>
+    <div style="display:flex;align-items:baseline;gap:12px">
+      <span style="font-size:104px;font-weight:900;line-height:1;letter-spacing:-.04em">52<span style="font-size:56px;font-weight:800">%</span></span>
+    </div>
+    <div style="font-size:19px;font-weight:600;color:#5A574C;margin-top:2px">house &#8594; home. Up 4 this week.</div>
+  </div>
+  <!-- segmented home meter -->
+  <div style="display:flex;gap:6px;padding:18px 26px 8px">
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF;opacity:.25"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF;opacity:.25"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF;opacity:.25"></div>
+    <div style="flex:1;height:22px;border-radius:999px;background:#3D7BFF;opacity:.25"></div>
+  </div>
+  <!-- room carousel -->
+  <div style="display:flex;gap:14px;padding:16px 0 4px 26px;overflow:hidden">
+    <div style="flex:none;width:236px;height:264px;background:#FF5A47;border-radius:32px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;color:#FFF6F0;box-shadow:0 14px 30px rgba(255,90,71,.3)">
+      <div style="font-size:15px;font-weight:700;letter-spacing:.08em;opacity:.85">LIVING ROOM</div>
+      <div>
+        <div style="font-size:62px;font-weight:900;line-height:1;letter-spacing:-.03em">64%</div>
+        <div style="font-size:15px;font-weight:600;opacity:.85;margin-top:4px">3 things to go</div>
+      </div>
+      <div style="height:18px;border-radius:999px;background:rgba(255,255,255,.28);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#FFF6F0"></div></div>
+    </div>
+    <div style="flex:none;width:236px;height:264px;background:#FFC531;border-radius:32px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;color:#17181C">
+      <div style="font-size:15px;font-weight:700;letter-spacing:.08em;opacity:.7">BEDROOM</div>
+      <div>
+        <div style="font-size:62px;font-weight:900;line-height:1;letter-spacing:-.03em">82%</div>
+        <div style="font-size:15px;font-weight:600;opacity:.7;margin-top:4px">1 thing to go</div>
+      </div>
+      <div style="height:18px;border-radius:999px;background:rgba(23,24,28,.16);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#17181C"></div></div>
+    </div>
+  </div>
+  <!-- carousel dots -->
+  <div style="display:flex;gap:6px;justify-content:center;padding:10px 0 0">
+    <div style="width:8px;height:8px;border-radius:999px;background:#17181C"></div>
+    <div style="width:8px;height:8px;border-radius:999px;background:rgba(23,24,28,.2)"></div>
+    <div style="width:8px;height:8px;border-radius:999px;background:rgba(23,24,28,.2)"></div>
+    <div style="width:8px;height:8px;border-radius:999px;background:rgba(23,24,28,.2)"></div>
+  </div>
+  <div style="flex:1"></div>
+  <!-- pinned next action -->
+  <div style="margin:0 20px;background:#3D7BFF;border-radius:30px;padding:20px 22px;display:flex;align-items:center;gap:16px;color:#F2F6FF;box-shadow:0 16px 34px rgba(61,123,255,.35)">
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+      <div style="font-size:13px;font-weight:700;letter-spacing:.1em;color:#BFD5FF">NEXT &#183; 10 MIN</div>
+      <div style="font-size:23px;font-weight:800;line-height:1.1">Hang the mirror</div>
+      <div style="font-size:14px;font-weight:500;color:#BFD5FF">Zero excuses remain.</div>
+    </div>
+    <div style="width:56px;height:56px;border-radius:999px;background:#F7F5EF;color:#17181C;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;flex-shrink:0"><span style="display:inline-block;animation:qNudge 2.4s ease-in-out infinite">&#8594;</span></div>
+  </div>
+</div>
+</x-import>
+</div>
+
+<!-- ═══════════ 1c — THE LEDGER · editorial cream + vermillion ═══════════ -->
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>The Ledger — editorial headline, rooms as ruled rows · cream + vermillion</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;background:#F6F1E7;padding:74px 26px 30px;box-sizing:border-box;display:flex;flex-direction:column;font-family:Gabarito,system-ui,sans-serif;color:#1D1A14;overflow:hidden">
+  <!-- masthead -->
+  <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2.5px solid #1D1A14;padding-bottom:10px">
+    <span style="font-size:14px;font-weight:800;letter-spacing:.18em">HOMEQUEST</span>
+    <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:16px;color:#8C8271">Tuesday, week nine</span>
+  </div>
+  <!-- headline -->
+  <div style="font-family:'Instrument Serif',serif;font-size:46px;line-height:1.04;letter-spacing:-.01em;padding:20px 0 6px;text-wrap:pretty">The bedroom is <em style="color:#E4572E">82%</em> a bedroom.</div>
+  <div style="font-size:15px;font-weight:500;color:#8C8271;padding-bottom:18px">One mirror stands between you and glory.</div>
+  <!-- ledger rows -->
+  <div style="display:flex;flex-direction:column">
+    <div style="border-top:1.5px solid rgba(29,26,20,.25);padding:14px 0 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-family:'Instrument Serif',serif;font-size:24px">Bedroom</span><span style="font-size:26px;font-weight:800;letter-spacing:-.02em;color:#E4572E">82</span></div>
+      <div style="height:14px;border-radius:999px;background:rgba(29,26,20,.1);overflow:hidden"><div style="height:100%;width:82%;border-radius:999px;background:#E4572E"></div></div>
+    </div>
+    <div style="border-top:1.5px solid rgba(29,26,20,.25);padding:14px 0 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-family:'Instrument Serif',serif;font-size:24px">Living room</span><span style="font-size:26px;font-weight:800;letter-spacing:-.02em">64</span></div>
+      <div style="height:14px;border-radius:999px;background:rgba(29,26,20,.1);overflow:hidden"><div style="height:100%;width:64%;border-radius:999px;background:#1D1A14"></div></div>
+    </div>
+    <div style="border-top:1.5px solid rgba(29,26,20,.25);padding:14px 0 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-family:'Instrument Serif',serif;font-size:24px">Kitchen</span><span style="font-size:26px;font-weight:800;letter-spacing:-.02em">41</span></div>
+      <div style="height:14px;border-radius:999px;background:rgba(29,26,20,.1);overflow:hidden"><div style="height:100%;width:41%;border-radius:999px;background:#1D1A14"></div></div>
+    </div>
+    <div style="border-top:1.5px solid rgba(29,26,20,.25);padding:14px 0 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-family:'Instrument Serif',serif;font-size:24px">Hallway</span><span style="font-size:26px;font-weight:800;letter-spacing:-.02em;opacity:.45">12</span></div>
+      <div style="height:14px;border-radius:999px;background:rgba(29,26,20,.1);overflow:hidden"><div style="height:100%;width:12%;border-radius:999px;background:#1D1A14;opacity:.45"></div></div>
+    </div>
+  </div>
+  <div style="flex:1"></div>
+  <!-- next action banner -->
+  <div style="background:#E4572E;border-radius:26px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;color:#F6F1E7;box-shadow:0 14px 30px rgba(228,87,46,.3)">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-size:12px;font-weight:700;letter-spacing:.14em;opacity:.8">DO NEXT &#183; 10 MIN</span>
+      <span style="font-family:'Instrument Serif',serif;font-size:26px;line-height:1.05">Hang the mirror.</span>
+    </div>
+    <span style="font-size:26px;font-weight:800;display:inline-block;animation:qNudge 2.4s ease-in-out infinite">&#8594;</span>
+  </div>
+</div>
+</x-import>
+</div>
+
+</div>
+<p class="dv-next">Try next: "riff on <a class="dv-oid" href="#1a">1a</a> with the vermillion from <a class="dv-oid" href="#1c">1c</a>" &#183; "design the room detail + completion moment for <a class="dv-oid" href="#1b">1b</a>" &#183; "make one interactive"</p>
+</section>
+
+</x-dc>
+</body>
+</html>

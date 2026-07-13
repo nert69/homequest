@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&amp;family=DM+Sans:wght@500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,1,0&amp;display=block" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes hq-pop{
+  0%{transform:translate(-50%,-50%) scale(.2) rotate(-16deg);opacity:0}
+  12%{opacity:1}
+  34%{transform:translate(-50%,-50%) scale(1.16) rotate(6deg)}
+  50%{transform:translate(-50%,-50%) scale(.95) rotate(-3deg)}
+  60%{transform:translate(-50%,-50%) scale(1) rotate(0)}
+  82%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(.7) rotate(0);opacity:0}
+}
+@keyframes hq-rays{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(60deg)}}
+@keyframes hq-ribbon{
+  0%{opacity:0;transform:translate(-50%,12px)}
+  28%{opacity:0;transform:translate(-50%,12px)}
+  44%{opacity:1;transform:translate(-50%,0)}
+  82%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-8px)}
+}
+@keyframes hq-fade{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes hq-confetti{
+  from{transform:translate(-50%,-50%) rotate(0);opacity:1}
+  to{transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot));opacity:0}
+}
+@keyframes hq-toast{
+  0%{transform:translate(-50%,14px);opacity:0}
+  14%{transform:translate(-50%,0);opacity:1}
+  86%{transform:translate(-50%,0);opacity:1}
+  100%{transform:translate(-50%,-8px);opacity:0}
+}
+@keyframes hq-sheet{from{transform:translateY(100%)}to{transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#F6EBDC;display:flex;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box;font-family:'Space Grotesk',sans-serif">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;position:relative;background:{{ theme.mat }};overflow:hidden;color:#241A33">
+
+  <div style="position:absolute;inset:0;overflow-y:auto;padding:72px 16px 40px;box-sizing:border-box">
+
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="position:relative;background:{{ theme.cream }};border-radius:18px;padding:18px 18px 16px;margin-bottom:20px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px">
+          <div>
+            <div style="font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(36,26,51,.5);margin-bottom:6px">&#10022; HOMEQUEST</div>
+            <div style="font-weight:800;font-size:22px;line-height:1.15">{{ headline }}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;padding-top:2px">
+            <div style="font-weight:800;font-size:28px;line-height:1">{{ overallPct }}%</div>
+            <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:11px;color:rgba(36,26,51,.55);margin-top:2px">{{ allDone }}/{{ allTotal }} tasks</div>
+          </div>
+        </div>
+        <div style="height:10px;border-radius:999px;background:rgba(36,26,51,.1);overflow:hidden;margin-bottom:10px"><div style="height:100%;border-radius:999px;background:{{ theme.accent }};width:{{ overallPct }}%;transition:width .5s ease"></div></div>
+        <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:11px;color:rgba(36,26,51,.55);margin-top:7px">{{ roomsDone }} of {{ roomCount }} rooms done &#183; {{ monthlyCount }} stickers this month</div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-left:2px;margin-bottom:12px">
+        <div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:{{ matText80 }}">Your rooms</div>
+        <button style="background:none;border:none;color:{{ matText80 }};font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.15em;cursor:pointer;padding:0" onClick="{{ openCapture }}">+ Add a job</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <sc-for list="{{ bentoRooms }}" as="room" hint-placeholder-count="4">
+
+          <sc-if value="{{ room.isWide }}">
+            <div style="grid-column:span 2;position:relative;background:{{ room.gradient }};border-radius:16px;padding:16px 15px 13px;cursor:pointer;color:{{ room.textColor }}" onClick="{{ room.onOpen }}">
+              <div style="display:flex;align-items:center;gap:11px;margin-bottom:9px">
+                <div style="width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:24px;line-height:1;background:{{ room.iconBadgeBg }}">{{ room.icon }}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:800;font-size:16px;line-height:1.2">{{ room.name }}</div>
+                  <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:{{ room.subColor }}">{{ room.done }} of {{ room.total }} tasks complete</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0">
+                  <div style="font-weight:800;font-size:19px">{{ room.pct }}%</div>
+                </div>
+                <button style="flex-shrink:0;width:26px;height:26px;border:none;background:transparent;color:{{ room.addBtnColor }};font-size:18px;font-weight:700;border-radius:8px;cursor:pointer;padding:0" onClick="{{ room.onQuickAdd }}">+</button>
+              </div>
+              <div style="height:8px;border-radius:999px;background:{{ room.barTrack }};overflow:hidden"><div style="height:100%;width:{{ room.pct }}%;border-radius:999px;background:{{ room.barFill }};transition:width .5s ease"></div></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ room.isTall }}">
+            <div style="grid-column:span 1;grid-row:span 2;position:relative;background:{{ room.gradient }};border-radius:16px;padding:16px 15px 13px;display:flex;flex-direction:column;cursor:pointer;color:{{ room.textColor }}" onClick="{{ room.onOpen }}">
+              <div style="width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:24px;line-height:1;margin-bottom:9px;background:{{ room.iconBadgeBg }}">{{ room.icon }}</div>
+              <div style="font-weight:800;font-size:16px;line-height:1.2">{{ room.name }}</div>
+              <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:{{ room.subColor }}">{{ room.done }} of {{ room.total }} tasks complete</div>
+              <div style="flex:1"></div>
+              <div style="font-weight:800;font-size:19px;margin-bottom:9px">{{ room.pct }}%</div>
+              <div style="height:8px;border-radius:999px;background:{{ room.barTrack }};overflow:hidden"><div style="height:100%;width:{{ room.pct }}%;border-radius:999px;background:{{ room.barFill }};transition:width .5s ease"></div></div>
+              <button style="position:absolute;top:14px;right:13px;width:26px;height:26px;border:none;background:transparent;color:{{ room.addBtnColor }};font-size:18px;font-weight:700;border-radius:8px;cursor:pointer;padding:0" onClick="{{ room.onQuickAdd }}">+</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ room.isSm }}">
+            <div style="grid-column:span 1;position:relative;background:{{ room.gradient }};border-radius:16px;padding:16px 15px 13px;cursor:pointer;color:{{ room.textColor }}" onClick="{{ room.onOpen }}">
+              <div style="width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:24px;line-height:1;margin-bottom:9px;background:{{ room.iconBadgeBg }}">{{ room.icon }}</div>
+              <div style="font-weight:800;font-size:16px;line-height:1.2">{{ room.name }}</div>
+              <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:{{ room.subColor }}">{{ room.done }} of {{ room.total }} tasks complete</div>
+              <div style="font-weight:800;font-size:19px;margin-top:8px">{{ room.pct }}%</div>
+              <div style="height:8px;border-radius:999px;background:{{ room.barTrack }};overflow:hidden;margin-top:8px"><div style="height:100%;width:{{ room.pct }}%;border-radius:999px;background:{{ room.barFill }};transition:width .5s ease"></div></div>
+              <button style="position:absolute;top:14px;right:13px;width:26px;height:26px;border:none;background:transparent;color:{{ room.addBtnColor }};font-size:18px;font-weight:700;border-radius:8px;cursor:pointer;padding:0" onClick="{{ room.onQuickAdd }}">+</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ room.isBig }}">
+            <div style="grid-column:span 2;grid-row:span 2;position:relative;background:{{ room.gradient }};border-radius:18px;padding:20px 19px 17px;display:flex;flex-direction:column;cursor:pointer;color:{{ room.textColor }}" onClick="{{ room.onOpen }}">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px">
+                <div style="width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:24px;line-height:1;background:{{ room.iconBadgeBg }}">{{ room.icon }}</div>
+                <div style="display:flex;align-items:flex-start;gap:8px">
+                  <div style="text-align:right;flex-shrink:0;padding-top:4px">
+                    <div style="font-weight:800;font-size:19px;line-height:1">{{ room.pct }}%</div>
+                  </div>
+                  <button style="flex-shrink:0;width:28px;height:28px;border:none;background:transparent;color:{{ room.addBtnColor }};font-size:19px;font-weight:700;border-radius:8px;cursor:pointer;padding:0" onClick="{{ room.onQuickAdd }}">+</button>
+                </div>
+              </div>
+              <div style="flex:1"></div>
+              <div style="font-weight:800;font-size:16px;line-height:1.2">{{ room.name }}</div>
+              <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;color:{{ room.subColor }};margin-bottom:10px">{{ room.done }} of {{ room.total }} tasks complete</div>
+              <div style="height:10px;border-radius:999px;background:{{ room.barTrack }};overflow:hidden"><div style="height:100%;width:{{ room.pct }}%;border-radius:999px;background:{{ room.barFill }};transition:width .5s ease"></div></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ room.isDone }}">
+            <div style="grid-column:span 1;position:relative;background:{{ room.gradient }};border-radius:16px;padding:14px 15px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;min-height:88px;color:{{ room.textColor }}" onClick="{{ room.onOpen }}">
+              <div style="font-weight:800;font-size:16px">{{ room.name }}</div>
+              <div style="border-radius:5px;padding:3px 8px;font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.5px;background:#241A33;color:#FFFCF3;align-self:flex-start">DONE &#10003;</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ room.isDoneWide }}">
+            <div style="grid-column:span 2;position:relative;background:{{ room.gradient }};border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;color:{{ room.textColor }}" onClick="{{ room.onOpen }}">
+              <div style="display:flex;align-items:center;gap:11px;min-width:0">
+                <div style="width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:24px;line-height:1;background:{{ room.iconBadgeBg }}">{{ room.icon }}</div>
+                <div style="font-weight:800;font-size:16px;line-height:1.2">{{ room.name }}</div>
+              </div>
+              <div style="border-radius:5px;padding:3px 8px;font-weight:800;font-size:9px;text-transform:uppercase;letter-spacing:.5px;background:#241A33;color:#FFFCF3;flex-shrink:0">DONE &#10003;</div>
+            </div>
+          </sc-if>
+
+        </sc-for>
+
+        <div style="grid-column:span 2;border:2.5px dashed {{ matBorder50 }};border-radius:16px;padding:15px;text-align:center;font-weight:800;font-size:14px;color:{{ matText75 }};cursor:pointer" onClick="{{ openAddRoom }}">+ add a room</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isRoom }}">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px">
+        <button style="width:44px;height:44px;border-radius:999px;background:{{ theme.cream }};display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;padding:0;flex-shrink:0" onClick="{{ goHome }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241A33" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+        </button>
+        <div style="display:flex;gap:4px">
+          <button style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:12px;color:{{ matText75 }};background:transparent;border:none;border-radius:8px;padding:8px 10px;cursor:pointer" style-hover="color:#241A33;background:rgba(36,26,51,.08)" onClick="{{ openRenameRoom }}">Rename</button>
+          <button style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:12px;color:{{ matText75 }};background:transparent;border:none;border-radius:8px;padding:8px 10px;cursor:pointer" style-hover="color:#E2542D;background:rgba(226,84,45,.1)" onClick="{{ confirmDeleteRoom }}">Delete room</button>
+        </div>
+      </div>
+
+      <div style="border-radius:18px;padding:16px;background:{{ roomDetail.bg }};color:{{ roomDetail.textColor }}">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:28px;line-height:1;background:{{ roomDetail.tileBg }};flex-shrink:0">{{ roomDetail.icon }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:800;font-size:20px;line-height:1.1">{{ roomDetail.name }}</div>
+            <div style="font-family:DM Sans,sans-serif;font-weight:700;font-size:12px;opacity:.8;margin-top:3px">{{ roomDetail.done }} of {{ roomDetail.total }} done</div>
+          </div>
+          <div style="font-weight:800;font-size:22px;flex-shrink:0">{{ roomDetail.pct }}%</div>
+        </div>
+        <div style="height:10px;border-radius:999px;overflow:hidden;margin-top:13px;background:{{ roomDetail.barTrack }}"><div style="height:100%;border-radius:999px;width:{{ roomDetail.pct }}%;background:{{ roomDetail.textColor }};transition:width .5s ease"></div></div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:{{ matText80 }}">To do &#183; {{ roomDetail.left }} left</div>
+          <button style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;padding:6px 12px;border-radius:999px;border:1.5px solid rgba(36,26,51,.18);cursor:pointer;background:{{ roomDetail.hideDoneBg }};color:{{ roomDetail.hideDoneColor }}" onClick="{{ roomDetail.onToggleHideDone }}">{{ roomDetail.hideDoneLabel }}</button>
+        </div>
+        <sc-if value="{{ roomDetail.allClear }}">
+          <div style="text-align:center;color:{{ matText75 }};font-weight:700;font-size:13px;padding:26px 0">All done in here &#10003;</div>
+        </sc-if>
+        <div style="background:{{ theme.cream }};border-radius:16px;overflow:hidden" data-jobs-list="{{ roomDetail.id }}">
+          <sc-for list="{{ roomDetail.tasksView }}" as="t" hint-placeholder-count="6">
+            <div style="border-bottom:1px solid rgba(36,26,51,.08)" data-task-row="{{ t.id }}">
+              <div style="display:flex;align-items:center;gap:9px;padding:12px 16px 12px 10px;cursor:pointer;background:{{ t.rowBg }}">
+                <div style="width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:19px;color:rgba(36,26,51,.28);cursor:grab;touch-action:none" onPointerDown="{{ t.onDragStart }}">drag_indicator</div>
+                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:{{ t.checkFont }};font-variation-settings:'FILL' 1;font-size:{{ t.checkSize }};font-weight:800;background:{{ t.checkBg }};color:{{ t.checkColor }};border:{{ t.checkBorder }}" onClick="{{ t.onToggle }}">{{ t.checkMark }}</div>
+                <span style="flex:1;font-family:DM Sans,sans-serif;font-weight:700;font-size:14px;line-height:1.4;color:{{ t.labelColor }};text-decoration:{{ t.strike }}" onClick="{{ t.onToggle }}">{{ t.label }}<sc-if value="{{ t.hasSubs }}"><span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:rgba(36,26,51,.4);margin-left:7px">{{ t.subCountLabel }}</span></sc-if></span>
+                <sc-if value="{{ t.hasSubs }}" hint-placeholder-val="{{ false }}">
+                  <button style="width:24px;height:24px;border:none;background:transparent;color:rgba(36,26,51,.45);font-family:'Material Symbols Rounded';font-size:19px;cursor:pointer;flex-shrink:0;padding:0;transform:{{ t.chevronRotate }}" onClick="{{ t.onToggleExpand }}">expand_more</button>
+                </sc-if>
+                <sc-if value="{{ t.showActions }}" hint-placeholder-val="{{ true }}">
+                  <button style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:{{ t.costColor }};background:rgba(36,26,51,.06);border:none;border-radius:999px;padding:5px 10px;cursor:pointer;flex-shrink:0;white-space:nowrap" onClick="{{ t.onCostClick }}">{{ t.costLabel }}</button>
+                  <button style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;color:rgba(36,26,51,.55);background:rgba(36,26,51,.06);border:none;border-radius:999px;padding:5px 10px;cursor:pointer;flex-shrink:0;white-space:nowrap" onClick="{{ t.onStepsClick }}">+ steps</button>
+                </sc-if>
+                <button style="width:28px;height:28px;border:none;background:transparent;color:rgba(36,26,51,.4);font-size:17px;cursor:pointer;border-radius:8px;flex-shrink:0;padding:0" onClick="{{ t.onEdit }}">&#8943;</button>
+              </div>
+              <sc-if value="{{ t.chevOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:2px 16px 12px 45px">
+                  <sc-for list="{{ t.subsView }}" as="s" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 6px;cursor:pointer;border-radius:10px">
+                      <div style="width:21px;height:21px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 1;font-size:13px;font-weight:800;background:{{ s.checkBg }};color:{{ s.checkColor }};border:{{ s.checkBorder }}" onClick="{{ s.onToggle }}">{{ s.checkMark }}</div>
+                      <span style="flex:1;font-family:DM Sans,sans-serif;font-weight:600;font-size:13px;color:{{ s.labelColor }};text-decoration:{{ s.strike }}" onClick="{{ s.onToggle }}">{{ s.label }}</span>
+                      <button style="border:none;background:transparent;color:rgba(36,26,51,.35);font-size:15px;cursor:pointer;padding:0 4px" onClick="{{ s.onDelete }}">&#215;</button>
+                    </div>
+                  </sc-for>
+                  <div style="display:flex;align-items:center;padding:8px 6px 8px 31px;cursor:pointer;opacity:.65" onClick="{{ t.onStepsClick }}">
+                    <span style="font-family:DM Sans,sans-serif;font-weight:600;font-size:13px;color:rgba(36,26,51,.5)">+ add a step</span>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <button style="margin-top:14px;background:transparent;border:none;color:{{ matText75 }};font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;cursor:pointer;padding:6px 4px" style-hover="color:#241A33" onClick="{{ roomDetail.onAddJob }}">+ add a job</button>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{ sheetOpen }}">
+    <div style="position:absolute;inset:0;background:rgba(33,30,24,.42);display:flex;align-items:flex-end;justify-content:center;z-index:80" onClick="{{ closeSheet }}">
+      <div style="width:100%;background:{{ theme.cream }};border-radius:24px 24px 0 0;padding:24px 20px 34px;animation:hq-sheet .26s cubic-bezier(.16,1,.3,1);box-sizing:border-box" onClick="{{ stopClick }}">
+        <div style="font-weight:700;font-size:20px;color:#241A33;margin-bottom:16px">{{ sheet.title }}</div>
+
+        <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:rgba(36,26,51,.55);margin:0 2px 6px">{{ sheet.fieldLabel }}</div>
+        <input style="width:100%;font-weight:500;font-size:15px;color:#241A33;background:#fff;border:2px solid rgba(36,26,51,.15);border-radius:14px;padding:12px 14px;box-sizing:border-box;font-family:DM Sans,sans-serif;outline:none" style-focus="border-color:#2F43E0;outline:none" placeholder="{{ sheet.placeholder }}" value="{{ sheet.name }}" onChange="{{ setSheetName }}" onKeyDown="{{ sheetKeyDown }}" autoFocus="{{ true }}" inputMode="{{ sheet.inputMode }}"/>
+
+        <sc-if value="{{ sheet.showRoomPick }}">
+          <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:rgba(36,26,51,.55);margin:12px 2px 6px">Room</div>
+          <select style="width:100%;font-weight:500;font-size:15px;color:#241A33;background:#fff;border:2px solid rgba(36,26,51,.15);border-radius:14px;padding:12px 14px;box-sizing:border-box;font-family:DM Sans,sans-serif;outline:none" style-focus="border-color:#2F43E0;outline:none" value="{{ sheet.roomId }}" onChange="{{ setSheetRoom }}">
+            <sc-for list="{{ sheet.roomOptions }}" as="c" hint-placeholder-count="5">
+              <option value="{{ c.id }}">{{ c.name }}</option>
+            </sc-for>
+          </select>
+        </sc-if>
+
+        <sc-if value="{{ sheet.showCostStatus }}">
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:rgba(36,26,51,.55);margin:0 2px 6px">Estimated cost</div>
+              <div style="display:flex;align-items:center;border:2px solid rgba(36,26,51,.15);border-radius:14px;background:#fff;padding-left:12px;box-sizing:border-box">
+                <span style="color:rgba(36,26,51,.4);font-weight:700;font-family:DM Sans,sans-serif;font-size:15px;line-height:1">&#163;</span>
+                <input style="border:none;flex:1;width:0;padding:12px 14px 12px 4px;font-family:DM Sans,sans-serif;font-size:15px;color:#241A33;outline:none;background:transparent;box-sizing:border-box" type="number" inputMode="numeric" placeholder="0" value="{{ sheet.cost }}" onChange="{{ setSheetCost }}"/>
+              </div>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:rgba(36,26,51,.55);margin:0 2px 6px">Status</div>
+              <select style="width:100%;font-weight:500;font-size:15px;color:#241A33;background:#fff;border:2px solid rgba(36,26,51,.15);border-radius:14px;padding:12px 14px;box-sizing:border-box;font-family:DM Sans,sans-serif;outline:none" style-focus="border-color:#2F43E0;outline:none" value="{{ sheet.status }}" onChange="{{ setSheetStatus }}">
+                <option value="todo">To do</option>
+                <option value="doing">Doing</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:10px;margin-top:22px">
+          <button style="flex-shrink:0;font-weight:600;font-size:14px;color:rgba(36,26,51,.65);background:rgba(36,26,51,.08);border:none;border-radius:14px;padding:12px 20px;cursor:pointer" onClick="{{ closeSheet }}">Cancel</button>
+          <sc-if value="{{ sheet.showDelete }}">
+            <button style="flex-shrink:0;font-weight:700;font-size:14px;color:#fff;background:#E2542D;border:none;border-radius:14px;padding:12px 18px;cursor:pointer" onClick="{{ deleteJob }}">Delete</button>
+          </sc-if>
+          <button style="flex:1;font-weight:600;font-size:15px;color:#241A33;background:{{ sheet.accent }};border:none;border-radius:14px;padding:12px;cursor:pointer;" onClick="{{ saveSheet }}">{{ sheet.saveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ celebration }}">
+    <div style="position:absolute;inset:0;z-index:65;pointer-events:none;overflow:hidden">
+      <div style="position:absolute;inset:0;background:rgba(36,26,51,.34);animation:hq-fade {{ celebration.duration }}s ease forwards"></div>
+      <div style="position:absolute;top:44%;left:50%;width:360px;height:360px;transform:translate(-50%,-50%);border-radius:50%;opacity:.25;background:repeating-conic-gradient({{ celebration.accent }} 0 10deg, transparent 10deg 22deg);-webkit-mask:radial-gradient(circle,#000 26%,transparent 68%);mask:radial-gradient(circle,#000 26%,transparent 68%);animation:hq-rays {{ celebration.duration }}s linear forwards"></div>
+      <div style="position:absolute;top:44%;left:50%;width:{{ celebration.stickerSize }}px;height:{{ celebration.stickerSize }}px;animation:hq-pop {{ celebration.duration }}s cubic-bezier(.2,1.3,.4,1) forwards;filter:drop-shadow(2px 4px 2px rgba(36,26,51,.45));background:{{ celebration.shapeColor }};clip-path:{{ celebration.shapeClip }};border-radius:{{ celebration.shapeRadius }}"></div>
+      <div style="position:absolute;top:62%;left:50%;background:#241A33;border:3px solid {{ theme.accent }};border-radius:8px;padding:9px 20px;font-weight:800;font-size:14px;color:{{ theme.accent }};text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;animation:hq-ribbon {{ celebration.duration }}s ease forwards">{{ celebration.label }}</div>
+      <sc-for list="{{ celebration.particles }}" as="p" hint-placeholder-count="22">
+        <div style="position:absolute;top:44%;left:50%;width:11px;height:15px;border-radius:{{ p.radius }};background:{{ p.color }};animation:hq-confetti {{ p.duration }}ms cubic-bezier(.15,.7,.3,1) forwards;animation-delay:{{ p.delay }}ms;--tx:{{ p.tx }}px;--ty:{{ p.ty }}px;--rot:{{ p.rot }}deg"></div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:absolute;bottom:104px;left:50%;z-index:70;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:{{ theme.accent }};background:#241A33;padding:10px 22px;border-radius:8px;border:2px solid {{ theme.accent }};animation:hq-toast 1.9s ease forwards;pointer-events:none;white-space:nowrap;transform:translate(-50%,0)">{{ toast.msg }}</div>
+  </sc-if>
+
+</div>
+</x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;theme&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;camp&quot;, &quot;options&quot;: [&quot;camp&quot;, &quot;sunset&quot;, &quot;ocean&quot;], &quot;tsType&quot;: &quot;'camp'|'sunset'|'ocean'&quot;, &quot;section&quot;: &quot;Feel&quot;},
+  &quot;layout&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;bento&quot;, &quot;options&quot;: [&quot;bento&quot;, &quot;list&quot;], &quot;tsType&quot;: &quot;'bento'|'list'&quot;, &quot;section&quot;: &quot;Feel&quot;},
+  &quot;campMat&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F3EFE5&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Background&quot;},
+  &quot;sunsetMat&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F6ECDF&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Background&quot;},
+  &quot;oceanMat&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#EBEFEC&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Background&quot;},
+  &quot;campBox1&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F2542D&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox2&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#2E86AB&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox3&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#FFB100&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox4&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#2F7A5C&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox5&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#1B998B&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox6&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#E893B3&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox7&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3D348B&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;campBox8&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#FFCF44&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Camp box colors&quot;},
+  &quot;sunsetBox1&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#E85D4D&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox2&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F7B32B&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox3&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#6A4C93&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox4&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#2E9E7A&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox5&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F0A6A0&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox6&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#4A6FA5&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox7&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#D9552B&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;sunsetBox8&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#8E5FBF&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sunset box colors&quot;},
+  &quot;oceanBox1&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#1B998B&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox2&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F4A259&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox3&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#3D5A80&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox4&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#E07A5F&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox5&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#98C1D9&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox6&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#293241&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox7&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#5FD0C6&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;},
+  &quot;oceanBox8&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#EE6C4D&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ocean box colors&quot;}
+}">
+const ROOM_ICON_MAP = [
+  ['downstairs hall','door_front'], ['front','house'], ['toilet','wc'], ['wc','wc'], ['kitchen','countertops'],
+  ['hall','stairs'], ['landing','stairs'], ['stairs','stairs'], ['living','weekend'], ['lounge','weekend'],
+  ['bed','bed'], ['bath','bathtub'], ['ensuite','shower'], ['shower','shower'],
+  ['garden','yard'], ['yard','yard'], ['office','desk'], ['study','desk'], ['dining','table_restaurant'],
+  ['garage','garage'], ['utility','local_laundry_service'], ['laundry','local_laundry_service'],
+  ['nursery','crib'], ['kids','crib'], ['attic','roofing'], ['loft','roofing'], ['porch','deck'],
+];
+const ROOM_ICON_POOL = ['chair','light','door_front','window'];
+const SHAPES = [
+  { clip: 'none', radius: '50%' },
+];
+const THEMES = {
+  camp: {
+    mat: '#F3EFE5', cream: '#FFFCF3', accent: '#E8A93F',
+    palette: ['#F2542D', '#2E86AB', '#FFB100', '#2F7A5C', '#1B998B', '#E893B3', '#3D348B', '#FFCF44'],
+    solids: ['#F2542D', '#2E86AB', '#FFB100', '#2F7A5C', '#1B998B', '#E893B3', '#3D348B', '#FFCF44'],
+  },
+  sunset: {
+    mat: '#F6ECDF', cream: '#FFF3E4', accent: '#E8A93F',
+    palette: ['#E85D4D', '#F7B32B', '#6A4C93', '#2E9E7A', '#F0A6A0', '#4A6FA5', '#D9552B', '#8E5FBF'],
+    solids: ['#E85D4D', '#F7B32B', '#6A4C93', '#2E9E7A', '#F0A6A0', '#4A6FA5', '#D9552B', '#8E5FBF'],
+  },
+  ocean: {
+    mat: '#EBEFEC', cream: '#EAF6F6', accent: '#6FBDB6',
+    palette: ['#1B998B', '#F4A259', '#3D5A80', '#E07A5F', '#98C1D9', '#293241', '#5FD0C6', '#EE6C4D'],
+    solids: ['#1B998B', '#F4A259', '#3D5A80', '#E07A5F', '#98C1D9', '#293241', '#5FD0C6', '#EE6C4D'],
+  },
+};
+const STORAGE_KEY = 'homequest-sticker-board-v2';
+
+class Component extends DCLogic {
+  state = {
+    screen: 'home',
+    activeRoomId: null,
+    rooms: [],
+    sheet: null,
+    celebration: null,
+    toast: null,
+    activePlayer: 'p1',
+    hideDone: false,
+    expandedTasks: {},
+  };
+
+  componentDidMount() {
+    let rooms = null;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (Array.isArray(saved) && saved.length) rooms = saved;
+      }
+    } catch (e) {}
+    if (!rooms) rooms = this.buildDefaultRooms();
+    let activePlayer = 'p1';
+    try {
+      const savedP = localStorage.getItem(STORAGE_KEY + '-player');
+      if (savedP === 'p1' || savedP === 'p2') activePlayer = savedP;
+    } catch (e) {}
+    this.setState({ rooms, activePlayer });
+  }
+
+  hashOf(str) {
+    const l = String(str).toLowerCase();
+    let h = 0;
+    for (let i = 0; i < l.length; i++) h = (h * 31 + l.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  iconFor(name) {
+    const l = String(name).toLowerCase();
+    for (const [k, ic] of ROOM_ICON_MAP) if (l.includes(k)) return ic;
+    return ROOM_ICON_POOL[this.hashOf(l) % ROOM_ICON_POOL.length];
+  }
+
+  lumOf(hex) {
+    const n = parseInt(String(hex).replace('#', ''), 16);
+    return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+  }
+
+  shapePalette(theme) {
+    const bright = theme.palette.filter(c => this.lumOf(c) > 0.42);
+    return bright.length >= 3 ? bright : theme.palette;
+  }
+
+  shapeFor(label, palette) {
+    const h = this.hashOf(label);
+    const s = SHAPES[h % SHAPES.length];
+    return { stickerColor: palette[(h >>> 3) % palette.length], stickerClip: s.clip, stickerRadius: s.radius };
+  }
+
+  mk(id, label, state) {
+    const doing = state === 'doing';
+    const done = state === true || state === 'done';
+    return { id, label, done, doing, completedBy: done ? 'p1' : null, completedAt: done ? Date.now() : null, cost: 0, subs: [] };
+  }
+
+  // keep a subs-having task's done/doing in sync with its steps
+  resyncSubs(t) {
+    if (!t.subs || !t.subs.length) return { ...t, done: false, doing: false };
+    const doneN = t.subs.filter(s => s.done).length;
+    return { ...t, done: doneN === t.subs.length, doing: doneN > 0 && doneN < t.subs.length };
+  }
+
+  buildDefaultRooms() {
+    return [
+      { id: 'front', name: 'Front', emoji: '\u{1F3E1}', tasks: [
+        this.mk('fr1', 'New stones', 'doing'), this.mk('fr2', 'Outdoor Govee light', 'done'), this.mk('fr3', 'New house number', false),
+        this.mk('fr4', 'Paint peak', false), this.mk('fr5', 'Remove moss on driveway', false), this.mk('fr6', 'Cut down bush', false),
+        this.mk('fr7', 'Remove weeds', false), this.mk('fr8', 'Ring doorbell', false),
+      ]},
+      { id: 'dhall', name: 'Downstairs Hallway', emoji: '\u{1F9E5}', tasks: [
+        this.mk('dh1', 'Lampshade', false), this.mk('dh2', 'Frames', false), this.mk('dh3', 'Paint', false),
+      ]},
+      { id: 'dtoilet', name: 'Downstairs Toilet', emoji: '\u{1F6BD}', tasks: [
+        this.mk('dt1', 'Govee bulb', false), this.mk('dt2', 'Frame', false), this.mk('dt3', 'Wings put up', false), this.mk('dt4', 'Mirror put up', false),
+        this.mk('dt5', 'Internal door', false), this.mk('dt6', 'Replace tiles', false), this.mk('dt7', 'Fix sealant', false), this.mk('dt8', 'Paint', false),
+      ]},
+      { id: 'kitchen', name: 'Kitchen', emoji: '\u{1F37D}\uFE0F', tasks: [
+        this.mk('k1', 'Internal door', false), this.mk('k2', 'Blinds', false), this.mk('k3', 'Frames', false), this.mk('k4', 'Govee bulbs', false),
+        this.mk('k5', 'Fix sealant', false), this.mk('k6', 'Paint', false), this.mk('k7', 'Window sill', false),
+      ]},
+      { id: 'hallway', name: 'Hallway', emoji: '\u{1F5BC}\uFE0F', tasks: [
+        this.mk('h1', 'Frames', false), this.mk('h2', 'Internal doors', false), this.mk('h3', 'Strip banister', false),
+        this.mk('h4', 'Paint', false), this.mk('h5', 'Carpet', false),
+      ]},
+      { id: 'living', name: 'Living Room', emoji: '\u{1F6CB}\uFE0F', tasks: [
+        this.mk('l1', 'Coffee table', false), this.mk('l2', 'Rug', false), this.mk('l3', 'Wooden floor', false), this.mk('l4', 'Blinds', false),
+        this.mk('l5', 'Light fixture', false), this.mk('l6', 'Fix & fill holes', false), this.mk('l7', 'Internal doors', false),
+        this.mk('l8', 'Paint', false), this.mk('l9', 'Internal windows', false), this.mk('l10', 'Radiator', false),
+      ]},
+      { id: 'bedroom', name: 'Bedroom', emoji: '\u{1F6CF}\uFE0F', tasks: [
+        this.mk('b1', 'Internal door', false), this.mk('b2', 'Anchor points', false), this.mk('b3', 'New mirror', false), this.mk('b4', 'Update frames', false),
+        this.mk('b5', 'Bedside tables', false), this.mk('b6', 'TV', false), this.mk('b7', 'Blinds', false), this.mk('b8', 'Paint', false), this.mk('b9', 'Frames', false),
+      ]},
+      { id: 'bathroom', name: 'Bathroom', emoji: '\u{1F6C1}', tasks: [
+        this.mk('ba1', 'Internal door', false), this.mk('ba2', 'New blinds', false), this.mk('ba3', 'Reseal shower', false),
+        this.mk('ba4', 'Fix skirting', false), this.mk('ba5', 'Paint', false),
+      ]},
+    ];
+  }
+
+  save(rooms) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms)); } catch (e) {} }
+
+  // Packs rooms into a 2-column bento grid with zero gaps, guaranteed.
+  // Each "unit" below always advances both columns by an equal number of
+  // rows before the next unit starts, so the grid can never end up with a
+  // dangling half-filled row (which is what left the hole beside a
+  // finished room before). Completed rooms are only ever placed as a
+  // compact 1x1 'done' cell (or a full-width 'doneWide' if they're left
+  // dangling alone at the very end) — never as a tall/wide/big cell — so
+  // their shorter card content never mismatches a taller neighbor.
+  packShapes(rooms) {
+    const n = rooms.length;
+    const shapes = new Array(n).fill('sm');
+    const choices = ['trio', 'wide', 'pair', 'big', 'trio', 'pair', 'wide'];
+    let i = 0, choiceIdx = 0, bigUsed = false;
+    while (i < n) {
+      const remaining = n - i;
+      if (rooms[i].complete) {
+        if (remaining >= 2) {
+          shapes[i] = 'done';
+          shapes[i + 1] = rooms[i + 1].complete ? 'done' : 'sm';
+          i += 2;
+        } else {
+          shapes[i] = 'doneWide';
+          i += 1;
+        }
+        continue;
+      }
+      let unit = choices[choiceIdx % choices.length]; choiceIdx++;
+      if (unit === 'big' && bigUsed) unit = 'wide';
+      if (unit === 'trio' && remaining < 3) unit = 'wide';
+      if (unit === 'pair' && remaining < 2) unit = 'wide';
+      if (unit === 'wide') { shapes[i] = 'wide'; i += 1; }
+      else if (unit === 'big') { shapes[i] = 'big'; bigUsed = true; i += 1; }
+      else if (unit === 'pair') {
+        shapes[i] = 'sm';
+        shapes[i + 1] = rooms[i + 1].complete ? 'done' : 'sm';
+        i += 2;
+      } else if (unit === 'trio') {
+        shapes[i] = 'tall';
+        shapes[i + 1] = rooms[i + 1].complete ? 'done' : 'sm';
+        shapes[i + 2] = rooms[i + 2].complete ? 'done' : 'sm';
+        i += 3;
+      }
+    }
+    return shapes;
+  }
+
+  headlineFor(pct) {
+    if (pct <= 0) return 'Nothing\u2019s done yet.\nLet\u2019s fix that.';
+    if (pct < 25) return 'Building-site chic.';
+    if (pct < 50) return 'Getting somewhere.';
+    if (pct < 75) return 'Past the halfway wall.';
+    if (pct < 100) return 'Nearly liveable.';
+    return 'House. Officially\na home.';
+  }
+
+  textFor(bg) {
+    const n = parseInt(bg.replace('#', ''), 16);
+    const lum = (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255;
+    return lum > 0.62 ? '#241A33' : '#FFFCF3';
+  }
+
+  roomColor(rooms, roomId) {
+    const theme = THEMES[this.props.theme] || THEMES.camp;
+    const idx = rooms.findIndex(r => r.id === roomId);
+    return theme.palette[(idx < 0 ? 0 : idx) % theme.palette.length];
+  }
+
+  smartCaptureRoom() {
+    const rooms = this.state.rooms;
+    let best = null, bestPct = -1;
+    rooms.forEach(r => {
+      const total = r.tasks.length;
+      const done = r.tasks.filter(t => t.done).length;
+      if (total && done === total) return;
+      const pct = total ? done / total : 0;
+      if (pct > bestPct) { bestPct = pct; best = r.id; }
+    });
+    return best || (rooms[0] ? rooms[0].id : null);
+  }
+
+  openCapture = () => this.setState({ sheet: { mode: 'capture', roomId: this.smartCaptureRoom(), name: '', cost: '', status: 'todo' } });
+  pickCaptureRoom = (id) => this.setState(s => ({ sheet: { ...s.sheet, roomId: id } }));
+  setSheetRoom = (e) => this.setState(s => ({ sheet: { ...s.sheet, roomId: e.target.value } }));
+  setSheetCost = (e) => this.setState(s => ({ sheet: { ...s.sheet, cost: e.target.value } }));
+  setSheetStatus = (e) => this.setState(s => ({ sheet: { ...s.sheet, status: e.target.value } }));
+  sheetKeyDown = (e) => { if (e && e.key === 'Enter') this.saveSheet(); };
+  toggleHideDone = () => this.setState(s => ({ hideDone: !s.hideDone }));
+  toggleExpandTask = (taskId) => this.setState(s => ({ expandedTasks: { ...s.expandedTasks, [taskId]: !s.expandedTasks[taskId] } }));
+
+  openCostSheet = (roomId, taskId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const room = this.state.rooms.find(r => r.id === roomId);
+    const task = room.tasks.find(t => t.id === taskId);
+    this.setState({ sheet: { mode: 'cost', roomId, taskId, name: task.cost ? String(task.cost) : '' } });
+  };
+
+  openStepSheet = (roomId, taskId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    this.setState({ sheet: { mode: 'step', roomId, taskId, name: '' } });
+  };
+
+  toggleSub = (roomId, taskId, subId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const rooms = this.state.rooms.map(r => r.id !== roomId ? r : {
+      ...r, tasks: r.tasks.map(t => t.id !== taskId ? t : this.resyncSubs({ ...t, subs: t.subs.map(s => s.id === subId ? { ...s, done: !s.done } : s) }))
+    });
+    this.save(rooms);
+    this.setState({ rooms });
+  };
+
+  deleteSub = (roomId, taskId, subId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const rooms = this.state.rooms.map(r => r.id !== roomId ? r : {
+      ...r, tasks: r.tasks.map(t => t.id !== taskId ? t : this.resyncSubs({ ...t, subs: t.subs.filter(s => s.id !== subId) }))
+    });
+    this.save(rooms);
+    this.setState({ rooms });
+  };
+
+  openRenameRoom = () => {
+    const room = this.state.rooms.find(r => r.id === this.state.activeRoomId);
+    if (!room) return;
+    this.setState({ sheet: { mode: 'renameRoom', roomId: room.id, name: room.name } });
+  };
+
+  confirmDeleteRoom = () => {
+    const room = this.state.rooms.find(r => r.id === this.state.activeRoomId);
+    if (!room) return;
+    const n = room.tasks.length;
+    const msg = n ? `Delete "${room.name}" and its ${n} job${n !== 1 ? 's' : ''}? This can't be undone.` : `Delete "${room.name}"?`;
+    if (typeof window !== 'undefined' && window.confirm && !window.confirm(msg)) return;
+    const rooms = this.state.rooms.filter(r => r.id !== room.id);
+    this.save(rooms);
+    this.setState({ rooms, screen: 'home', activeRoomId: null });
+  };
+
+  // ── drag-to-reorder jobs within a room ──
+  onDragStart = (roomId, taskId, e) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    const container = e.currentTarget.closest('[data-jobs-list]');
+    if (!container) return;
+    this._drag = { roomId, taskId, container };
+    document.addEventListener('pointermove', this.onDragMove);
+    document.addEventListener('pointerup', this.onDragEnd);
+  };
+
+  onDragMove = (ev) => {
+    if (!this._drag) return;
+    const { roomId, taskId, container } = this._drag;
+    const rows = [...container.querySelectorAll('[data-task-row]')];
+    let targetId = null;
+    for (const row of rows) {
+      const rect = row.getBoundingClientRect();
+      if (ev.clientY < rect.top + rect.height / 2) { targetId = row.getAttribute('data-task-row'); break; }
+    }
+    const room = this.state.rooms.find(r => r.id === roomId);
+    if (!room) return;
+    const tasks = [...room.tasks];
+    const fromIdx = tasks.findIndex(t => t.id === taskId);
+    let toIdx = targetId ? tasks.findIndex(t => t.id === targetId) : tasks.length;
+    if (fromIdx === -1 || toIdx === -1) return;
+    if (toIdx === fromIdx || toIdx === fromIdx + 1) return;
+    const [moved] = tasks.splice(fromIdx, 1);
+    if (toIdx > fromIdx) toIdx--;
+    tasks.splice(toIdx, 0, moved);
+    const rooms = this.state.rooms.map(r => r.id === roomId ? { ...r, tasks } : r);
+    this.setState({ rooms });
+  };
+
+  onDragEnd = () => {
+    document.removeEventListener('pointermove', this.onDragMove);
+    document.removeEventListener('pointerup', this.onDragEnd);
+    if (this._drag) this.save(this.state.rooms);
+    this._drag = null;
+  };
+
+  openRoom = (id) => this.setState({ screen: 'room', activeRoomId: id, celebration: null });
+  goHome = () => this.setState({ screen: 'home', activeRoomId: null, celebration: null });
+  stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
+
+
+  toggleTask = (roomId, taskId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    // Tapping a job cycles it: todo -> doing -> done -> todo.
+    const rooms = this.state.rooms.map(r => r.id !== roomId ? r : {
+      ...r, tasks: r.tasks.map(t => {
+        if (t.id !== taskId) return t;
+        if (!t.doing && !t.done) return { ...t, doing: true };
+        if (t.doing && !t.done) return { ...t, doing: false, done: true, completedBy: 'p2', completedAt: Date.now() };
+        return { ...t, done: false, doing: false, completedBy: null, completedAt: null };
+      })
+    });
+    const room = rooms.find(r => r.id === roomId);
+    const task = room.tasks.find(t => t.id === taskId);
+    this.save(rooms);
+    this.setState({ rooms });
+    if (task.done) {
+      const roomJustCompleted = room.tasks.every(t => t.done);
+      if (roomJustCompleted) this.flashToast(room.name + ' complete!');
+    }
+  };
+
+  celebrate(shape, accent, opts) {
+    opts = opts || {};
+    const big = !!opts.big;
+    const theme = THEMES[this.props.theme] || THEMES.camp;
+    const count = big ? 36 : 22;
+    const duration = big ? 2.2 : 1.5;
+    const colors = [accent, theme.accent, theme.palette[0], theme.palette[2]];
+    const particles = Array.from({ length: count }).map((_, i) => {
+      const angle = (Math.PI * 2 * i / count) + (Math.random() * 0.4 - 0.2);
+      const dist = (big ? 100 : 70) + Math.random() * (big ? 170 : 110);
+      return {
+        id: i,
+        tx: Math.round(Math.cos(angle) * dist),
+        ty: Math.round(Math.sin(angle) * dist),
+        rot: Math.round(Math.random() * 540),
+        color: colors[i % colors.length],
+        radius: i % 3 === 0 ? '50%' : '3px',
+        duration: 900 + Math.round(Math.random() * 500),
+        delay: Math.round(Math.random() * 90),
+      };
+    });
+    this.setState({ celebration: { shapeColor: shape.stickerColor, shapeClip: shape.stickerClip, shapeRadius: shape.stickerRadius, accent, particles, label: opts.label || 'Sticker earned!', duration, stickerSize: big ? 150 : 96 } });
+    clearTimeout(this._celT);
+    this._celT = setTimeout(() => this.setState({ celebration: null }), duration * 1000 + 50);
+  }
+
+  flashToast(msg) {
+    this.setState({ toast: { msg } });
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(() => this.setState({ toast: null }), 1900);
+  }
+
+  openAddJob = (roomId, e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ sheet: { mode: 'job', roomId, name: '', cost: '', status: 'todo' } }); };
+  openAddRoom = () => this.setState({ sheet: { mode: 'room', name: '', emoji: '' } });
+  openEditJob = (roomId, taskId, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const room = this.state.rooms.find(r => r.id === roomId);
+    const task = room.tasks.find(t => t.id === taskId);
+    this.setState({ sheet: { mode: 'edit', roomId, taskId, name: task.label, emoji: '' } });
+  };
+  closeSheet = () => this.setState({ sheet: null });
+  setSheetName = (e) => this.setState(s => ({ sheet: { ...s.sheet, name: e.target.value } }));
+
+  saveSheet = () => {
+    const s = this.state.sheet;
+    const name = (s.name || '').trim();
+    if (!name && s.mode !== 'cost') return;
+    let rooms = this.state.rooms;
+    if (s.mode === 'cost') {
+      const val = parseFloat(name.replace(/[^0-9.]/g, '')) || 0;
+      rooms = rooms.map(r => r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map(t => t.id === s.taskId ? { ...t, cost: val } : t) });
+      this.flashToast('Cost saved');
+    } else if (s.mode === 'step') {
+      rooms = rooms.map(r => r.id !== s.roomId ? r : {
+        ...r, tasks: r.tasks.map(t => t.id !== s.taskId ? t : this.resyncSubs({ ...t, subs: [...(t.subs || []), { id: 'sub' + Date.now(), label: name, done: false }] }))
+      });
+      this.setState(s2 => ({ expandedTasks: { ...s2.expandedTasks, [s.taskId]: true } }));
+      this.flashToast('Step added');
+    } else if (s.mode === 'edit') {
+      rooms = rooms.map(r => r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map(t => t.id === s.taskId ? { ...t, label: name } : t) });
+      this.flashToast('Saved');
+    } else if (s.mode === 'renameRoom') {
+      if (rooms.some(r => r.id !== s.roomId && r.name.toLowerCase() === name.toLowerCase())) {
+        this.flashToast('You already have a room called that');
+        return;
+      }
+      rooms = rooms.map(r => r.id !== s.roomId ? r : { ...r, name });
+      this.flashToast('Renamed');
+    } else if (s.mode === 'job' || s.mode === 'capture') {
+      const target = rooms.find(r => r.id === s.roomId) || rooms[0];
+      const cost = parseFloat(String(s.cost).replace(/[^0-9.]/g, '')) || 0;
+      const isDone = s.status === 'done', isDoing = s.status === 'doing';
+      rooms = rooms.map(r => r.id !== target.id ? r : { ...r, tasks: [...r.tasks, { id: 't' + Date.now(), label: name, cost, done: isDone, doing: isDoing, completedBy: isDone ? 'p1' : null, completedAt: isDone ? Date.now() : null }] });
+      this.flashToast(s.mode === 'capture' ? 'Added to ' + target.name : 'Job added');
+    } else {
+      rooms = [...rooms, { id: 'r' + Date.now(), name, tasks: [] }];
+      this.flashToast('Room added');
+    }
+    this.save(rooms);
+    this.setState({ rooms, sheet: null });
+  };
+
+  deleteJob = () => {
+    const s = this.state.sheet;
+    const rooms = this.state.rooms.map(r => r.id !== s.roomId ? r : { ...r, tasks: r.tasks.filter(t => t.id !== s.taskId) });
+    this.save(rooms);
+    this.flashToast('Job deleted');
+    this.setState({ rooms, sheet: null });
+  };
+
+  renderVals() {
+    const { screen, activeRoomId, rooms, sheet, celebration, toast } = this.state;
+
+    const theme = THEMES[this.props.theme] || THEMES.camp;
+    const layout = this.props.layout || 'bento';
+    const themeKey = this.props.theme || 'camp';
+    const paletteOverride = [1,2,3,4,5,6,7,8].map(n => this.props[themeKey + 'Box' + n]).filter(Boolean);
+    if (paletteOverride.length === 8) { theme.solids = paletteOverride; theme.palette = paletteOverride; }
+    const matOverride = this.props[themeKey + 'Mat'];
+    if (matOverride) theme.mat = matOverride;
+    const matIsLight = this.textFor(theme.mat) === '#241A33';
+    const matText80 = matIsLight ? 'rgba(36,26,51,.8)' : 'rgba(255,252,243,.8)';
+    const matText75 = matIsLight ? 'rgba(36,26,51,.65)' : 'rgba(255,252,243,.75)';
+    const matBorder50 = matIsLight ? 'rgba(36,26,51,.3)' : 'rgba(255,252,243,.5)';
+
+    let allDone = 0, allTotal = 0, roomsDone = 0, p1Count = 0, p2Count = 0, monthlyCount = 0;
+    const now = new Date();
+    rooms.forEach(r => r.tasks.forEach(t => {
+      if (!t.done) return;
+      if (t.completedBy === 'p1') p1Count++;
+      if (t.completedBy === 'p2') p2Count++;
+      if (t.completedAt) {
+        const d = new Date(t.completedAt);
+        if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) monthlyCount++;
+      }
+    }));
+
+    const shapeColors = this.shapePalette(theme);
+    const gradientSet = theme.solids || theme.palette || [];
+    const roomStats = rooms.map((r, idx) => {
+      const bg = gradientSet.length ? gradientSet[idx % gradientSet.length] : '#9C8ED1';
+      const gradient = bg;
+      const textColor = this.textFor(bg);
+      const dark = textColor === '#241A33';
+      const done = r.tasks.filter(t => t.done).length;
+      const total = r.tasks.length;
+      allDone += done; allTotal += total;
+      const pct = total ? Math.round(done / total * 100) : 0;
+      const complete = total > 0 && done === total;
+      if (complete) roomsDone++;
+      return {
+        id: r.id, name: r.name, icon: this.iconFor(r.name), bg, gradient, done, total, pct, complete,
+        textAccent: bg, textColor,
+        iconBadgeBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
+        subColor: dark ? 'rgba(36,26,51,.6)' : 'rgba(255,252,243,.75)',
+        barTrack: dark ? 'rgba(36,26,51,.16)' : 'rgba(255,252,243,.3)',
+        barFill: textColor,
+        addBtnColor: dark ? 'rgba(36,26,51,.45)' : 'rgba(255,252,243,.8)',
+        onOpen: () => this.openRoom(r.id),
+        onQuickAdd: (e) => this.openAddJob(r.id, e),
+      };
+    });
+    const overallPct = allTotal ? Math.round(allDone / allTotal * 100) : 0;
+
+    // Keep rooms in their stored order so the grid doesn't reshuffle every time a
+    // single task is ticked — only a room fully finishing moves it (to the end).
+    const sorted = [...roomStats].sort((a, b) => {
+      if (a.complete !== b.complete) return a.complete ? 1 : -1;
+      return 0;
+    });
+    const shapeSeq = layout === 'list' ? sorted.map(r => r.complete ? 'doneWide' : 'wide') : this.packShapes(sorted);
+    const bentoRooms = sorted.map((r, i) => {
+      const shape = shapeSeq[i];
+      return {
+        ...r,
+        isWide: shape === 'wide', isTall: shape === 'tall', isSm: shape === 'sm',
+        isBig: shape === 'big', isDone: shape === 'done', isDoneWide: shape === 'doneWide',
+      };
+    });
+
+    let roomDetail = null;
+    const activeRoomIdx = rooms.findIndex(r => r.id === activeRoomId);
+    const activeRoom = activeRoomIdx >= 0 ? rooms[activeRoomIdx] : null;
+    if (activeRoom) {
+      const bg = theme.palette[activeRoomIdx % theme.palette.length];
+      const done = activeRoom.tasks.filter(t => t.done).length;
+      const total = activeRoom.tasks.length;
+      const pct = total ? Math.round(done / total * 100) : 0;
+      const complete = total > 0 && done === total;
+      const textColor = this.textFor(bg);
+      const dark = textColor === '#241A33';
+      const tasksView = activeRoom.tasks.map((t, i) => {
+        const hasSubs = !!(t.subs && t.subs.length);
+        const chevOpen = !!this.state.expandedTasks[t.id];
+        const subsView = hasSubs ? t.subs.map(s => ({
+          id: s.id, label: s.label,
+          checkMark: s.done ? 'check' : '',
+          checkBg: s.done ? theme.accent : 'transparent',
+          checkColor: s.done ? '#241A33' : 'transparent',
+          checkBorder: s.done ? 'none' : '2px solid rgba(36,26,51,.25)',
+          labelColor: s.done ? 'rgba(36,26,51,.35)' : '#241A33',
+          strike: s.done ? 'line-through' : 'none',
+          onToggle: (e) => this.toggleSub(activeRoom.id, t.id, s.id, e),
+          onDelete: (e) => this.deleteSub(activeRoom.id, t.id, s.id, e),
+        })) : [];
+        return {
+          id: t.id, label: t.label, ...this.shapeFor(t.label, shapeColors),
+          rot: (i % 2 ? 1 : -1) * (2 + i % 3),
+          rowBg: t.done ? 'rgba(36,26,51,.05)' : t.doing ? 'rgba(232,169,63,.1)' : 'transparent',
+          labelColor: t.done ? 'rgba(36,26,51,.35)' : '#241A33',
+          strike: t.done ? 'line-through' : 'none',
+          checkBg: t.done ? '#241A33' : t.doing ? ('linear-gradient(90deg, ' + theme.accent + ' 50%, transparent 50%)') : 'transparent',
+          checkColor: t.done ? theme.accent : 'transparent',
+          checkBorder: t.done ? 'none' : t.doing ? ('2px solid ' + theme.accent) : '2px solid rgba(36,26,51,.25)',
+          checkMark: t.done ? 'check' : '',
+          checkFont: "'Material Symbols Rounded'",
+          checkSize: '16px',
+          isDone: t.done,
+          hasSubs, chevOpen, subsView,
+          showActions: !hasSubs,
+          chevronRotate: chevOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          subCountLabel: hasSubs ? (t.subs.filter(s => s.done).length + '/' + t.subs.length) : '',
+          costLabel: t.cost ? ('\u00A3' + t.cost.toLocaleString('en-GB')) : '+ cost',
+          costColor: t.cost ? 'rgba(36,26,51,.75)' : 'rgba(36,26,51,.4)',
+          onToggle: hasSubs ? (() => this.toggleExpandTask(t.id)) : ((e) => this.toggleTask(activeRoom.id, t.id, e)),
+          onToggleExpand: () => this.toggleExpandTask(t.id),
+          onEdit: (e) => this.openEditJob(activeRoom.id, t.id, e),
+          onDragStart: (e) => this.onDragStart(activeRoom.id, t.id, e),
+          onCostClick: (e) => this.openCostSheet(activeRoom.id, t.id, e),
+          onStepsClick: (e) => this.openStepSheet(activeRoom.id, t.id, e),
+        };
+      });
+      const hideDone = !!this.state.hideDone;
+      const orderedTasksView = [...tasksView].sort((a, b) => (a.isDone === b.isDone) ? 0 : (a.isDone ? 1 : -1));
+      const visibleTasksView = hideDone ? orderedTasksView.filter(t => !t.isDone) : orderedTasksView;
+      roomDetail = {
+        id: activeRoom.id, name: activeRoom.name, icon: this.iconFor(activeRoom.name), bg, textColor,
+        tileBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
+        barTrack: dark ? 'rgba(36,26,51,.14)' : 'rgba(255,255,255,.3)',
+        done, total, pct, complete, left: total - done,
+        tasksView: visibleTasksView,
+        allClear: hideDone && total > 0 && visibleTasksView.length === 0,
+        hideDone,
+        hideDoneLabel: hideDone ? 'Showing to-do' : 'Hide done',
+        hideDoneBg: hideDone ? '#241A33' : 'transparent',
+        hideDoneColor: hideDone ? '#FFFCF3' : 'rgba(36,26,51,.6)',
+        onToggleHideDone: this.toggleHideDone,
+        onAddJob: (e) => this.openAddJob(activeRoom.id, e),
+      };
+    }
+
+    let sheetView = null;
+    if (sheet) {
+      const isEdit = sheet.mode === 'edit';
+      const isRoomMode = sheet.mode === 'room';
+      const isCapture = sheet.mode === 'capture';
+      const isRename = sheet.mode === 'renameRoom';
+      const isCost = sheet.mode === 'cost';
+      const isStep = sheet.mode === 'step';
+      const isJob = sheet.mode === 'job';
+      const roomTied = isJob || isEdit || isCost || isStep || isRename;
+      const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? this.roomColor(rooms, sheet.roomId) : theme.accent;
+      sheetView = {
+        accent: sheetAccent,
+        name: sheet.name,
+        title: isEdit ? 'Edit job' : isRename ? 'Rename room' : isCost ? 'Estimated cost' : isStep ? 'Add a step' : isRoomMode ? 'Add a room' : isCapture ? 'Quick add' : 'Add a job',
+        fieldLabel: isRoomMode || isRename ? 'Room name' : isCost ? 'Estimated cost' : isStep ? 'Step' : 'Job',
+        placeholder: isRoomMode || isRename ? 'Room name\u2026' : isCost ? 'e.g. 120' : isStep ? 'New step\u2026' : isCapture ? 'What needs doing\u2026' : 'e.g. Tile the splashback',
+        showDelete: isEdit, saveLabel: (isEdit || isRename || isCost) ? 'Save' : 'Add job',
+        inputMode: isCost ? 'numeric' : 'text',
+        showRoomPick: isCapture || isJob,
+        roomId: sheet.roomId,
+        roomOptions: (isCapture || isJob) ? rooms.map(r => ({ id: r.id, name: r.name })) : [],
+        showCostStatus: isCapture || isJob,
+        cost: sheet.cost || '',
+        status: sheet.status || 'todo',
+      };
+    }
+
+    return {
+      isHome: screen === 'home' && !!rooms.length,
+      isRoom: screen === 'room' && !!roomDetail,
+      headline: this.headlineFor(overallPct),
+      overallPct, allDone, allTotal, roomsDone, roomCount: rooms.length, stickerCount: allDone,
+      theme, bentoRooms, roomDetail,
+      matText80, matText75, matBorder50,
+      p1Count, p2Count, monthlyCount,
+      sheet: sheetView, sheetOpen: !!sheet,
+      celebration, toast,
+      goHome: this.goHome, openAddRoom: this.openAddRoom, openCapture: this.openCapture,
+      openRenameRoom: this.openRenameRoom, confirmDeleteRoom: this.confirmDeleteRoom,
+      closeSheet: this.closeSheet, stopClick: this.stopClick,
+      saveSheet: this.saveSheet, deleteJob: this.deleteJob,
+      setSheetName: this.setSheetName, sheetKeyDown: this.sheetKeyDown,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

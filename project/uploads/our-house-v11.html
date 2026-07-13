@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f1e6">
+<title>Our House</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f6f1e6; --card:#fffdf7; --ink:#211e18; --ink-2:#6f6857; --ink-3:#a8a08c;
+    --line:#ece2cd; --grey:#e6dfd0; --grey-2:#d8d0bd;
+    --klein:#2f43e0; --chilli:#e63c23; --xanth:#f6bc3f; --sea:#1f9d57;
+    --plum:#8a5cd6; --teal:#0e8aa8; --amber:#e6921b;
+    --font:'Plus Jakarta Sans',system-ui,sans-serif;
+    --display:'Fredoka',system-ui,sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { height:100%; }
+  html { background:var(--bg); }
+  body { background:var(--bg); min-height:100dvh; font-family:var(--font); color:var(--ink); -webkit-font-smoothing:antialiased; padding:0 0 60px; }
+  .wrap { max-width:520px; margin:0 auto; padding:38px 20px 0; min-height:100dvh; background:var(--bg); }
+
+  .screen { display:none; animation:fade .25s ease; }
+  .screen.active { display:block; min-height:100dvh; background:var(--bg); }
+  @keyframes fade { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  .head h1 { font-family:var(--display); font-size:2.1rem; font-weight:700; letter-spacing:-0.02em; line-height:1; }
+  .head .sub { font-size:0.92rem; color:var(--ink-2); font-weight:500; margin-top:7px; }
+  .head .sub b { color:var(--sea); font-weight:700; }
+
+  .overall { display:flex; align-items:center; gap:16px; background:var(--card); border-radius:22px;
+    padding:16px 18px; margin:20px 0 24px; box-shadow:0 3px 14px rgba(33,30,24,0.05); }
+  .overall .meta { flex:1; }
+  .overall .big { font-family:var(--display); font-size:1.5rem; font-weight:700; line-height:1; }
+  .overall .small { font-size:0.8rem; color:var(--ink-2); font-weight:500; margin-top:3px; }
+  .overall .cash { font-size:0.72rem; color:var(--ink-3); font-weight:600; margin-top:6px; }
+
+  .section-label { font-family:var(--display); font-size:0.78rem; font-weight:600; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--ink-3); margin:0 0 12px 4px; }
+
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  .room { position:relative; border-radius:20px; height:132px; padding:15px 16px; overflow:hidden; cursor:pointer;
+    background:var(--grey); transition:transform .15s, box-shadow .15s; display:flex; flex-direction:column;
+    justify-content:space-between; border:1px solid rgba(0,0,0,0.03); }
+  .room:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(33,30,24,0.1); }
+  .room:active { transform:translateY(0); }
+  .room .fill { position:absolute; left:0; right:0; bottom:0; height:0%; background:var(--rc,var(--sea));
+    transition:height .7s cubic-bezier(.4,0,.2,1); z-index:0; }
+  .room .fill::before { content:''; position:absolute; top:-6px; left:0; right:0; height:12px;
+    background:var(--rc,var(--sea)); border-radius:50%; opacity:0.55; }
+  .room .top, .room .bot { position:relative; z-index:1; }
+  .room .emoji { font-size:1.7rem; line-height:1; }
+  .room .name { font-family:var(--display); font-weight:600; font-size:1.02rem; margin-top:auto; }
+  .room .count { font-size:0.74rem; font-weight:600; opacity:0.85; margin-top:2px; }
+  .room .badge { position:absolute; top:13px; right:14px; z-index:1; font-size:0.72rem; font-weight:700; font-family:var(--display); }
+  .room.todo { color:var(--ink-3); }
+  .room.todo .emoji { filter:grayscale(0.7); opacity:0.5; }
+  .room.doing { color:var(--ink); }
+  .room.done { color:#fff; background:var(--rc,var(--sea)); }
+  .room.done .emoji { filter:none; opacity:1; }
+  .room.done .fill { height:100% !important; }
+  .room.done .check { position:absolute; z-index:1; top:11px; right:12px; width:22px; height:22px;
+    background:rgba(255,255,255,0.25); border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:0.8rem; font-weight:800; color:#fff; }
+  .foot { text-align:center; margin-top:26px; font-size:0.74rem; color:var(--ink-3); font-weight:500; }
+
+  .back { display:inline-flex; align-items:center; gap:7px; background:none; border:none; cursor:pointer;
+    font-family:var(--font); font-weight:700; font-size:0.86rem; color:var(--ink-2); padding:4px 0; }
+  .back:hover { color:var(--ink); }
+  .room-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .room-actions { display:flex; gap:8px; }
+  .room-act { background:none; border:none; cursor:pointer; font-family:var(--font); font-weight:700;
+    font-size:0.78rem; color:var(--ink-3); padding:5px 8px; border-radius:8px; }
+  .room-act:hover { color:var(--ink); background:rgba(0,0,0,0.04); }
+  .room-act.del:hover { color:var(--chilli); }
+
+  .room.addroom { background:transparent; border:2px dashed var(--grey-2); box-shadow:none;
+    display:flex; align-items:center; justify-content:center; color:var(--ink-3); }
+  .room.addroom:hover { border-color:var(--ink-3); color:var(--ink); transform:translateY(-2px); box-shadow:none; }
+  .addroom-inner { text-align:center; font-family:var(--display); font-weight:600; font-size:0.92rem; }
+  .addroom-inner .plus { font-size:1.8rem; line-height:1; margin-bottom:2px; }
+
+  .room-hero { border-radius:24px; padding:20px; color:#fff; position:relative; overflow:hidden; }
+  .room-hero .rh-emoji { font-size:2.2rem; }
+  .room-hero h2 { font-family:var(--display); font-size:1.7rem; font-weight:700; margin-top:6px; }
+  .room-hero .rh-sub { font-size:0.85rem; font-weight:600; opacity:0.92; margin-top:2px; }
+  .room-hero .fillbar { height:14px; border-radius:999px; background:rgba(255,255,255,0.28); margin-top:14px; overflow:hidden; }
+  .room-hero .fillbar i { display:block; height:100%; background:#fff; border-radius:999px; width:0%;
+    transition:width .6s cubic-bezier(.4,0,.2,1); }
+  .room-hero .rh-pct { position:absolute; top:20px; right:22px; font-family:var(--display); font-weight:700; font-size:1.5rem; }
+
+  .jobs { margin-top:20px; display:flex; flex-direction:column; gap:10px; }
+  .job { background:var(--card); border-radius:16px; padding:0;
+    box-shadow:0 2px 10px rgba(33,30,24,0.04); transition:background .12s; overflow:hidden; }
+  .jobmain { display:flex; align-items:center; gap:13px; padding:15px 16px; cursor:pointer; }
+  .job:hover { background:#fffaf0; }
+  .tick { width:26px; height:26px; border-radius:50%; border:2.5px solid var(--grey-2); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:800; color:#fff;
+    transition:all .15s; background:transparent; }
+  .job.done .tick { background:var(--rc,var(--sea)); border-color:var(--rc,var(--sea)); }
+  .job .jtitle { font-weight:600; font-size:0.96rem; flex:1; cursor:pointer; }
+  .job.done .jtitle { color:var(--ink-3); }
+  .job.doing .tick { background:transparent; border-color:var(--rc,var(--sea)); color:var(--rc,var(--sea)); }
+  .doingtag { font-size:0.66rem; font-weight:700; color:var(--rc,var(--sea)); background:rgba(0,0,0,0.04);
+    padding:1px 7px; border-radius:999px; margin-left:6px; vertical-align:middle; }
+  .addjob-link { display:inline-block; margin:14px 4px 0; background:none; border:none;
+    color:var(--ink-3); font-family:var(--font); font-weight:700; font-size:0.86rem;
+    cursor:pointer; padding:6px 4px; transition:color .15s; }
+  .addjob-link:hover { color:var(--ink); }
+  .job .jcost { font-size:0.82rem; font-weight:700; color:var(--ink-3); cursor:pointer; }
+  .addcost { color:var(--ink-3); font-weight:600; opacity:0.55; font-size:0.78rem; }
+
+  /* notes under a job */
+  .jnote { font-size:0.78rem; color:var(--ink-3); font-weight:500; padding:0 16px 12px 55px; margin-top:-4px; }
+
+  /* sub-task jobs */
+  .subcount { font-size:0.72rem; font-weight:700; color:var(--ink-3); margin-left:8px; }
+  .chev { color:var(--ink-3); font-size:1.1rem; transition:transform .2s; flex-shrink:0; }
+  .chev.open { transform:rotate(180deg); }
+  .tick.subsummary { border-style:dashed; }
+  .job.hassubs.done .tick.subsummary { border-style:solid; }
+  .subs:not(:empty) { padding:2px 16px 10px 16px; }
+  .sub { display:flex; align-items:center; gap:11px; padding:9px 8px 9px 39px; cursor:pointer; border-radius:10px; }
+  .sub:hover { background:rgba(0,0,0,0.03); }
+  .subtick { width:21px; height:21px; border-radius:50%; border:2px solid var(--grey-2); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:800; color:#fff;
+    transition:all .15s; }
+  .sub.done .subtick { background:var(--rc,var(--sea)); border-color:var(--rc,var(--sea)); }
+  .subtitle { font-size:0.9rem; font-weight:500; flex:1; }
+  .sub.done .subtitle { color:var(--ink-3); }
+  .subdel { border:none; background:transparent; color:var(--ink-3); font-size:1.05rem; line-height:1;
+    cursor:pointer; padding:0 4px; opacity:0.35; }
+  .subdel:hover { opacity:1; color:var(--chilli); }
+  .sub.addstep { cursor:pointer; }
+  .subtick.plus { border-style:dashed; color:var(--ink-3); font-weight:700; }
+  .addsteptxt { color:var(--ink-3); font-weight:600; opacity:0.7; }
+  .sub.addstep:hover .addsteptxt, .sub.addstep:hover .subtick.plus { color:var(--ink); opacity:1; }
+  .jstep { border:none; background:rgba(0,0,0,0.04); color:var(--ink-3); font-family:var(--font);
+    font-weight:700; font-size:0.72rem; padding:4px 9px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .jstep:hover { color:var(--ink); background:rgba(0,0,0,0.08); }
+  .draghandle { color:var(--ink-3); font-size:1.1rem; cursor:grab; opacity:0.35; flex-shrink:0;
+    touch-action:none; user-select:none; padding:0 2px; }
+  .draghandle:hover { opacity:0.8; }
+  .draghandle:active { cursor:grabbing; }
+  .job.dragging { box-shadow:0 10px 30px rgba(33,30,24,0.18); opacity:0.96; }
+  .drop-ph { border:2px dashed var(--grey-2); border-radius:16px; margin:0; background:rgba(0,0,0,0.02); }
+  .filterbar { display:flex; gap:8px; margin:18px 0 4px; }
+  .filterchip { border:1.5px solid var(--line); background:var(--card); color:var(--ink-2);
+    font-family:var(--font); font-weight:700; font-size:0.78rem; padding:7px 14px; border-radius:999px; cursor:pointer; }
+  .filterchip.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .allclear { text-align:center; color:var(--ink-3); font-weight:600; font-size:0.9rem; padding:30px 0; }
+  .jdel { border:none; background:transparent; color:var(--ink-3); font-size:1.3rem; line-height:1;
+    cursor:pointer; padding:0 2px 0 10px; opacity:0.4; transition:opacity .15s, color .15s; }
+  .jdel:hover { opacity:1; color:var(--chilli); }
+
+  .addjob { display:flex; gap:10px; margin-top:14px; }
+  .addjob input { flex:1; border:2px solid var(--line); background:var(--card); border-radius:14px;
+    padding:12px 14px; font-family:var(--font); font-size:0.9rem; outline:none; }
+  .addjob input:focus { border-color:var(--rc,var(--sea)); }
+  .addjob button { border:none; background:var(--ink); color:#fff; font-family:var(--font); font-weight:700;
+    font-size:0.86rem; padding:0 18px; border-radius:14px; cursor:pointer; }
+
+  .confetti { position:fixed; width:9px; height:9px; z-index:999; pointer-events:none; border-radius:2px; }
+
+  /* add button on home */
+  .add-btn { margin-top:14px; border:none; background:var(--ink); color:#fff; font-family:var(--display);
+    font-weight:600; font-size:0.92rem; padding:11px 20px; border-radius:999px; cursor:pointer;
+    box-shadow:0 3px 12px rgba(33,30,24,0.12); }
+  .add-btn:hover { transform:translateY(-1px); }
+
+  /* modal */
+  .overlay { position:fixed; inset:0; background:rgba(33,30,24,0.42); display:none; align-items:flex-end;
+    justify-content:center; z-index:500; padding:0; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--card); border-radius:26px 26px 0 0; padding:24px 22px calc(24px + env(safe-area-inset-bottom));
+    width:100%; max-width:520px; animation:slideup .22s ease-out; }
+  @keyframes slideup { from{transform:translateY(40px);opacity:.6;} to{transform:none;opacity:1;} }
+  .modal h3 { font-family:var(--display); font-size:1.4rem; font-weight:700; margin-bottom:16px; }
+  .fl { display:block; font-size:0.74rem; font-weight:700; color:var(--ink-2); text-transform:uppercase;
+    letter-spacing:0.04em; margin:12px 2px 6px; }
+  .fi { width:100%; border:2px solid var(--line); background:#fff; border-radius:14px; padding:12px 14px;
+    font-family:var(--font); font-size:0.95rem; outline:none; color:var(--ink); }
+  .fi:focus { border-color:var(--klein); }
+  select.fi { appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236f6857' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
+  .frow { display:flex; gap:12px; }
+  .cost-in { display:flex; align-items:center; border:2px solid var(--line); border-radius:14px; background:#fff; padding-left:12px; }
+  .cost-in:focus-within { border-color:var(--klein); }
+  .cost-in span { color:var(--ink-3); font-weight:700; }
+  .cost-in input { border:none; flex:1; padding:12px 14px 12px 4px; font-family:var(--font); font-size:0.95rem; outline:none; background:transparent; }
+  .mbtns { display:flex; gap:10px; margin-top:22px; }
+  .btn-ghost { flex:0 0 auto; border:none; background:var(--inset,#f0e9da); color:var(--ink-2); font-family:var(--display);
+    font-weight:600; font-size:0.92rem; padding:12px 20px; border-radius:14px; cursor:pointer; }
+  .btn-go { flex:1; border:none; background:var(--sea); color:#fff; font-family:var(--display);
+    font-weight:600; font-size:0.95rem; padding:12px; border-radius:14px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="screen active" id="homeScreen">
+  <div class="wrap">
+    <div class="head">
+      <h1>Our House ✦</h1>
+      <div class="sub" id="sub"></div>
+      <button class="add-btn" onclick="openAdd()">+ Add a job</button>
+    </div>
+    <div class="overall">
+      <div class="ring">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="27" fill="none" stroke="#e9e1cf" stroke-width="9"/>
+          <circle id="ringFill" cx="32" cy="32" r="27" fill="none" stroke="#1f9d57" stroke-width="9"
+                  stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"
+                  transform="rotate(-90 32 32)" style="transition:stroke-dashoffset .8s ease"/>
+        </svg>
+      </div>
+      <div class="meta">
+        <div class="big" id="overallPct">0%</div>
+        <div class="small" id="overallTasks">getting started</div>
+        <div class="cash" id="cashLine"></div>
+      </div>
+    </div>
+    <div class="section-label">Rooms</div>
+    <div class="grid" id="grid"></div>
+    <div class="foot">tap a room to see what's left in it</div>
+    <div style="text-align:center;margin-top:20px">
+      <button onclick="startFresh()" style="background:none;border:none;color:var(--ink-3);font-family:var(--font);font-weight:600;font-size:0.74rem;cursor:pointer;padding:8px 14px;border-radius:999px">Clear the demo & start my real house</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="roomScreen">
+  <div class="wrap">
+    <div class="room-topbar">
+      <button class="back" onclick="goHome()">‹ All rooms</button>
+      <div class="room-actions">
+        <button class="room-act" onclick="renameRoom()">Rename</button>
+        <button class="room-act del" onclick="deleteRoom()">Delete room</button>
+      </div>
+    </div>
+    <div class="room-hero" id="roomHero">
+      <div class="rh-pct" id="rhPct">0%</div>
+      <div class="rh-emoji" id="rhEmoji">🍳</div>
+      <h2 id="rhName">Kitchen</h2>
+      <div class="rh-sub" id="rhSub">0 of 0 jobs done</div>
+      <div class="fillbar"><i id="rhBar"></i></div>
+    </div>
+    <div class="filterbar" id="filterbar">
+      <button class="filterchip" id="hideDoneBtn" onclick="toggleHideDone()">Hide done</button>
+    </div>
+    <div class="jobs" id="jobs"></div>
+    <button class="addjob-link" onclick="openAdd(currentRoom)">+ add a job</button>
+  </div>
+</div>
+
+<!-- ══ ADD JOB MODAL ══ -->
+<div class="overlay" id="addOverlay" onclick="if(event.target===this)closeAdd()">
+  <div class="modal">
+    <h3 id="addTitle">Add a job</h3>
+    <label class="fl">Job</label>
+    <input id="aTitle" class="fi" placeholder="e.g. Tile the splashback">
+    <label class="fl">Room</label>
+    <select id="aRoom" class="fi"></select>
+    <div class="frow">
+      <div style="flex:1">
+        <label class="fl">Estimated cost</label>
+        <div class="cost-in"><span>£</span><input id="aCost" class="fi" type="number" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <div style="flex:1">
+        <label class="fl">Status</label>
+        <select id="aStatus" class="fi">
+          <option value="todo">To do</option>
+          <option value="doing">Doing</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="btn-ghost" onclick="closeAdd()">Cancel</button>
+      <button class="btn-go" id="addGoBtn" onclick="saveAdd()">Add job</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DEFAULT_ROOMS = [
+    { name:'Front',              emoji:'🏡', color:'#1f9d57' },
+    { name:'Downstairs Hallway', emoji:'🪞', color:'#2f43e0' },
+    { name:'Downstairs Toilet',  emoji:'🧴', color:'#0e8aa8' },
+    { name:'Kitchen',            emoji:'🍴', color:'#e63c23' },
+    { name:'Hallway',            emoji:'🖼️', color:'#e6921b' },
+    { name:'Living Room',        emoji:'🛋️', color:'#8a5cd6' },
+    { name:'Bedroom',            emoji:'🛏️', color:'#d62872' },
+    { name:'Bathroom',           emoji:'🚽', color:'#0f9b8e' },
+  ];
+  let ROOMS = DEFAULT_ROOMS.map(r => ({...r}));
+
+  // helper to build a job with optional subs/note
+  const J = (room, title, opts={}) => ({
+    room, title, cost:opts.cost||0, note:opts.note||'',
+    status:'todo',
+    subs: (opts.subs||[]).map(t => ({title:t, done:false}))
+  });
+
+  let JOBS = [
+    J('Front','New Stones'), J('Front','Outdoor Govee Light'), J('Front','New House Number'),
+    J('Front','Paint Peak'), J('Front','Remove Moss on Driveway'), J('Front','Cut Down Bush'),
+    J('Front','Remove Weeds'), J('Front','Ring Doorbell'),
+
+    J('Downstairs Hallway','Lampshade'), J('Downstairs Hallway','Frames'),
+    J('Downstairs Hallway','Paint',{subs:['Skirting','Walls']}),
+
+    J('Downstairs Toilet','Govee Bulb'), J('Downstairs Toilet','Frame'),
+    J('Downstairs Toilet','Wings Put Up'), J('Downstairs Toilet','Mirror Put Up'),
+    J('Downstairs Toilet','Internal Door'), J('Downstairs Toilet','Replace Tiles'),
+    J('Downstairs Toilet','Fix Sealant'),
+    J('Downstairs Toilet','Paint',{subs:['Radiator','Skirting','Ceiling','Walls']}),
+
+    J('Kitchen','Internal Door'), J('Kitchen','Blinds'), J('Kitchen','Frames'),
+    J('Kitchen','Govee Bulbs'), J('Kitchen','Fix Sealant'),
+    J('Kitchen','Paint',{subs:['Radiator','Skirting','Ceiling','Walls']}),
+    J('Kitchen','Window Sill'),
+
+    J('Hallway','Frames'), J('Hallway','Internal Doors'), J('Hallway','Strip Banister'),
+    J('Hallway','Paint',{subs:['Radiator','Banister','Walls','Skirting']}),
+    J('Hallway','Carpet'),
+
+    J('Living Room','Coffee Table'), J('Living Room','Rug'), J('Living Room','Wooden Floor'),
+    J('Living Room','Blinds'), J('Living Room','Light Fixture'), J('Living Room','Fix & Fill Holes'),
+    J('Living Room','Internal Doors'),
+    J('Living Room','Paint',{subs:['Ceiling','Walls','Window Sill','Skirting']}),
+    J('Living Room','Internal Windows'), J('Living Room','Radiator'),
+
+    J('Bedroom','Internal Door'), J('Bedroom','Anchor Points'),
+    J('Bedroom','New Mirror',{note:'Large mirror from The Range'}),
+    J('Bedroom','Update Frames',{note:'Tom of Finland inspired'}),
+    J('Bedroom','Bedside Tables'), J('Bedroom','TV',{note:'New smart TV'}),
+    J('Bedroom','Blinds',{note:'Blackout'}),
+    J('Bedroom','Paint',{subs:['Behind TV','Skirting','Internal Windows','Radiator']}),
+    J('Bedroom','Frames'),
+
+    J('Bathroom','Internal Door'), J('Bathroom','New Blinds'), J('Bathroom','Reseal Shower'),
+    J('Bathroom','Fix Skirting'),
+    J('Bathroom','Paint',{subs:['Ceiling','Skirting']}),
+  ];
+
+  let currentRoom = null;
+
+  // ── SAVING ──
+  const STORE_KEY = 'our-house-v1';
+  function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify({rooms:ROOMS, jobs:JOBS})); } catch(e){} }
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (Array.isArray(data)) { JOBS = data; } // old format = just jobs
+        else {
+          if (Array.isArray(data.jobs)) JOBS = data.jobs;
+          if (Array.isArray(data.rooms) && data.rooms.length) ROOMS = data.rooms;
+        }
+      }
+    } catch(e){}
+  }
+  load();
+
+  function startFresh(){
+    if(!confirm('Clear everything and start with an empty house? You can then add your own rooms and jobs.')) return;
+    JOBS = [];
+    ROOMS = [];
+    save();
+    renderHome();
+  }
+
+  // palette to cycle through when adding new rooms
+  const ROOM_COLORS = ['#2f43e0','#e63c23','#0e8aa8','#8a5cd6','#e6921b','#1f9d57','#d62872','#0f9b8e','#b45309'];
+  function nextColor(){ return ROOM_COLORS[ROOMS.length % ROOM_COLORS.length]; }
+
+  const roomMeta = name => ROOMS.find(r => r.name === name);
+  const roomJobs = name => JOBS.filter(j => j.room === name);
+
+  // sub-task aware progress: a job is worth its sub-count (min 1).
+  const jobUnits = j => (j.subs && j.subs.length) ? j.subs.length : 1;
+  const jobDoneUnits = j => (j.subs && j.subs.length)
+    ? j.subs.filter(s=>s.done).length
+    : (j.status==='done' ? 1 : 0);
+  // a job counts as fully done when all its units are done
+  const jobIsDone = j => (j.subs && j.subs.length)
+    ? j.subs.every(s=>s.done)
+    : j.status==='done';
+
+  function roomUnits(name){ const js=roomJobs(name); let t=0,d=0;
+    js.forEach(j=>{ t+=jobUnits(j); d+=jobDoneUnits(j); }); return {t,d}; }
+  const roomPct = name => { const {t,d}=roomUnits(name); return t?Math.round(d/t*100):0; };
+
+  function renderHome() {
+    const grid = document.getElementById('grid'); grid.innerHTML='';
+    let total=0, done=0, spent=0;
+    ROOMS.forEach((r, ri) => {
+      const js=roomJobs(r.name);
+      const {t,d}=roomUnits(r.name);
+      total+=t; done+=d;
+      js.forEach(j=>{ if(jobIsDone(j)) spent+=j.cost; });
+      const pct=roomPct(r.name);
+      const state=pct===0?'todo':pct===100?'done':'doing';
+      const badge=pct===100?'':`<div class="badge">${pct}%</div>`;
+      const check=pct===100?'<div class="check">✓</div>':'';
+      const jobsDone=js.filter(jobIsDone).length;
+      grid.insertAdjacentHTML('beforeend', `
+        <div class="room ${state}" style="--rc:${r.color}" onclick="openRoomByIndex(${ri})">
+          <div class="fill" style="height:${pct}%"></div>
+          ${badge}${check}
+          <div class="top"><div class="emoji">${r.emoji}</div></div>
+          <div class="bot"><div class="name">${esc(r.name)}</div><div class="count">${jobsDone}/${js.length} done</div></div>
+        </div>`);
+    });
+    // + Add room tile
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="room addroom" onclick="openRoomEditor()">
+        <div class="addroom-inner"><div class="plus">+</div><div>Add a room</div></div>
+      </div>`);
+    const op=total?Math.round(done/total*100):0;
+    document.getElementById('overallPct').textContent=op+'%';
+    const roomsDone=ROOMS.filter(r=>roomPct(r.name)===100).length;
+    document.getElementById('overallTasks').textContent=`${done} of ${total} jobs done · ${roomsDone} rooms finished`;
+    document.getElementById('sub').innerHTML = ROOMS.length===0
+      ? `let's set up your house — tap <b>+ Add a room</b> to start`
+      : op===100
+      ? `the whole house is <b>done</b> — incredible 🎉`
+      : `you're <b>${op}%</b> of the way there — keep chipping ✦`;
+    document.getElementById('cashLine').textContent='£'+spent.toLocaleString('en-GB')+' spent so far';
+    const circ=169.6;
+    document.getElementById('ringFill').style.strokeDashoffset=circ-(circ*op/100);
+  }
+
+  function openRoom(name){ currentRoom=name;
+    document.getElementById('homeScreen').classList.remove('active');
+    document.getElementById('roomScreen').classList.add('active');
+    window.scrollTo(0,0); renderRoom(); }
+  function openRoomByIndex(i){ openRoom(ROOMS[i].name); }
+  function goHome(){ document.getElementById('roomScreen').classList.remove('active');
+    document.getElementById('homeScreen').classList.add('active'); renderHome(); window.scrollTo(0,0); }
+
+  // ── ROOM EDITOR (add / rename / delete rooms) ──
+  function openRoomEditor(){
+    const name = prompt('Name your new room (e.g. Office, Loft, En-suite):');
+    if(!name || !name.trim()) return;
+    const nm = name.trim();
+    if(ROOMS.some(r => r.name.toLowerCase() === nm.toLowerCase())){
+      alert('You already have a room called that.'); return;
+    }
+    const emoji = prompt('Pick an emoji for it (optional — leave blank for 🏠):', '🏠') || '🏠';
+    ROOMS.push({ name:nm, emoji:emoji.trim()||'🏠', color:nextColor() });
+    save(); renderHome();
+  }
+
+  function renameRoom(){
+    const r = roomMeta(currentRoom);
+    const name = prompt('Rename this room:', r.name);
+    if(!name || !name.trim()) return;
+    const nm = name.trim();
+    if(nm !== r.name && ROOMS.some(x => x.name.toLowerCase() === nm.toLowerCase())){
+      alert('You already have a room called that.'); return;
+    }
+    // move jobs to the new name, update the room
+    JOBS.forEach(j => { if(j.room === r.name) j.room = nm; });
+    r.name = nm;
+    currentRoom = nm;
+    save(); renderRoom();
+  }
+
+  function deleteRoom(){
+    const r = roomMeta(currentRoom);
+    const n = roomJobs(currentRoom).length;
+    const msg = n ? `Delete "${r.name}" and its ${n} job${n!==1?'s':''}? This can't be undone.`
+                  : `Delete "${r.name}"?`;
+    if(!confirm(msg)) return;
+    JOBS = JOBS.filter(j => j.room !== r.name);
+    ROOMS = ROOMS.filter(x => x.name !== r.name);
+    save(); goHome();
+  }
+
+  let expanded = {}; // which sub-task jobs are open, by job index
+  let hideDone = false;
+  function toggleHideDone(){ hideDone=!hideDone;
+    document.getElementById('hideDoneBtn').classList.toggle('on', hideDone);
+    document.getElementById('hideDoneBtn').textContent = hideDone?'Showing to-do':'Hide done';
+    renderRoom(); }
+
+  function renderRoom(){
+    const r=roomMeta(currentRoom); const js=roomJobs(currentRoom);
+    const jobsDone=js.filter(jobIsDone).length; const pct=roomPct(currentRoom);
+    const hero=document.getElementById('roomHero'); hero.style.background=r.color;
+    document.getElementById('rhEmoji').textContent=r.emoji;
+    document.getElementById('rhName').textContent=r.name;
+    document.getElementById('rhSub').textContent=`${jobsDone} of ${js.length} jobs done`;
+    document.getElementById('rhPct').textContent=pct+'%';
+    document.getElementById('rhBar').style.width=pct+'%';
+    const box=document.getElementById('jobs'); box.innerHTML='';
+    const visible = hideDone ? js.filter(j=>!jobIsDone(j)) : js;
+    if(hideDone && !visible.length){
+      box.innerHTML = `<div class="allclear">All done in here 🎉</div>`;
+    }
+    visible.forEach(j => {
+      const gi=JOBS.indexOf(j);
+      const hasSubs = j.subs && j.subs.length;
+      const note = j.note ? `<div class="jnote">${esc(j.note)}</div>` : '';
+
+      if(hasSubs){
+        const doneN = j.subs.filter(s=>s.done).length;
+        const allDone = doneN===j.subs.length;
+        const someDone = doneN>0 && !allDone;
+        const isOpen = !!expanded[gi];
+        const tickMark = allDone?'✓':someDone?'◐':'';
+        const subRows = isOpen ? j.subs.map((s,si)=>`
+          <div class="sub ${s.done?'done':''}">
+            <div class="subtick" onclick="toggleSub(${gi},${si},event)">${s.done?'✓':''}</div>
+            <div class="subtitle" onclick="toggleSub(${gi},${si},event)">${esc(s.title)}</div>
+            <button class="subdel" onclick="delSub(${gi},${si},event)" title="Remove step">×</button>
+          </div>`).join('') + `
+          <div class="sub addstep" onclick="addSub(${gi},event)">
+            <div class="subtick plus">+</div>
+            <div class="subtitle addsteptxt">add a step</div>
+          </div>` : '';
+        box.insertAdjacentHTML('beforeend', `
+          <div class="job ${allDone?'done':someDone?'doing':''} hassubs" data-gi="${gi}" style="--rc:${r.color}">
+            <div class="jobmain">
+              <div class="draghandle" title="Drag to reorder">⠿</div>
+              <div class="tick subsummary" onclick="toggleExpand(${gi})">${tickMark}</div>
+              <div class="jtitle" onclick="toggleExpand(${gi})">${esc(j.title)}<span class="subcount">${doneN}/${j.subs.length}</span></div>
+              <button class="jdel" onclick="delJob(${gi})" title="Delete">×</button>
+              <div class="chev ${isOpen?'open':''}" onclick="toggleExpand(${gi})">⌄</div>
+            </div>
+            ${note}
+            <div class="subs">${subRows}</div>
+          </div>`);
+      } else {
+        box.insertAdjacentHTML('beforeend', `
+          <div class="job ${j.status}" data-gi="${gi}" style="--rc:${r.color}">
+            <div class="jobmain">
+              <div class="draghandle" title="Drag to reorder">⠿</div>
+              <div class="tick" onclick="toggleJob(${gi}, event)">${j.status==='done'?'✓':j.status==='doing'?'◐':''}</div>
+              <div class="jtitle" onclick="openEdit(${gi})">${esc(j.title)}${j.status==='doing'?' <span class="doingtag">doing</span>':''}</div>
+              <div class="jcost" onclick="openEdit(${gi})">${j.cost?'£'+j.cost.toLocaleString('en-GB'):'<span class="addcost">+ cost</span>'}</div>
+              <button class="jstep" onclick="addSub(${gi},event)" title="Break into steps">+ steps</button>
+              <button class="jdel" onclick="delJob(${gi})" title="Delete">×</button>
+            </div>
+            ${note}
+          </div>`);
+      }
+    });
+    setupDrag();
+  }
+
+  // ── DRAG TO REORDER (pointer-based, works on touch) ──
+  function setupDrag(){
+    const box=document.getElementById('jobs');
+    let dragEl=null, startY=0, placeholder=null, items=[];
+
+    box.querySelectorAll('.draghandle').forEach(handle=>{
+      handle.addEventListener('pointerdown', e=>{
+        e.preventDefault();
+        dragEl = handle.closest('.job');
+        items = [...box.querySelectorAll('.job')];
+        startY = e.clientY;
+        const rect = dragEl.getBoundingClientRect();
+        dragEl.classList.add('dragging');
+        dragEl.style.width = rect.width+'px';
+        placeholder = document.createElement('div');
+        placeholder.className = 'drop-ph';
+        placeholder.style.height = rect.height+'px';
+        dragEl.parentNode.insertBefore(placeholder, dragEl.nextSibling);
+        dragEl.style.position='fixed';
+        dragEl.style.zIndex=1000;
+        dragEl.style.left=rect.left+'px';
+        dragEl.style.top=rect.top+'px';
+        dragEl.style.pointerEvents='none';
+
+        const move = ev=>{
+          dragEl.style.top = (rect.top + (ev.clientY-startY))+'px';
+          // find which item we're hovering
+          const others = items.filter(it=>it!==dragEl);
+          let placed=false;
+          for(const it of others){
+            const r=it.getBoundingClientRect();
+            if(ev.clientY < r.top + r.height/2){
+              box.insertBefore(placeholder, it); placed=true; break;
+            }
+          }
+          if(!placed) box.appendChild(placeholder);
+        };
+        const up = ()=>{
+          document.removeEventListener('pointermove', move);
+          document.removeEventListener('pointerup', up);
+          box.insertBefore(dragEl, placeholder);
+          placeholder.remove();
+          dragEl.classList.remove('dragging');
+          dragEl.style=''; dragEl.setAttribute('style', '--rc:'+roomMeta(currentRoom).color);
+          commitOrder();
+        };
+        document.addEventListener('pointermove', move);
+        document.addEventListener('pointerup', up);
+      });
+    });
+
+    function commitOrder(){
+      // new order of this room's jobs from DOM
+      const order = [...box.querySelectorAll('.job')].map(el=>parseInt(el.dataset.gi,10));
+      const roomName = currentRoom;
+      const moved = order.map(gi=>JOBS[gi]);
+      // remove this room's jobs from JOBS, then splice back in new order at first position
+      const firstIdx = JOBS.findIndex(j=>j.room===roomName);
+      const rest = JOBS.filter(j=>j.room!==roomName);
+      // rebuild: keep other rooms' relative order, insert moved block where room started
+      let before = JOBS.filter((j,idx)=> j.room!==roomName && idx<firstIdx);
+      let after  = JOBS.filter((j,idx)=> j.room!==roomName && idx>=firstIdx);
+      JOBS = [...before, ...moved, ...after];
+      save(); renderRoom();
+    }
+  }
+
+  function toggleExpand(i){ expanded[i]=!expanded[i]; renderRoom(); }
+
+  function toggleSub(gi, si, ev){
+    if(ev) ev.stopPropagation();
+    const j=JOBS[gi]; const wasDone=j.subs[si].done;
+    j.subs[si].done=!wasDone;
+    j.status = j.subs.every(s=>s.done) ? 'done' : (j.subs.some(s=>s.done)?'doing':'todo');
+    save(); renderRoom();
+    if(!wasDone && ev){ const rect=ev.currentTarget.getBoundingClientRect();
+      confettiBurst(rect.left+18, rect.top+18, roomMeta(currentRoom).color); }
+  }
+
+  function addSub(gi, ev){
+    if(ev) ev.stopPropagation();
+    const j=JOBS[gi];
+    const t=prompt('Add a step to "'+j.title+'":');
+    if(!t || !t.trim()) return;
+    if(!j.subs) j.subs=[];
+    j.subs.push({title:t.trim(), done:false});
+    j.status = j.subs.every(s=>s.done) ? 'done' : (j.subs.some(s=>s.done)?'doing':'todo');
+    expanded[gi]=true;
+    save(); renderRoom();
+  }
+
+  function delSub(gi, si, ev){
+    if(ev) ev.stopPropagation();
+    const j=JOBS[gi];
+    j.subs.splice(si,1);
+    if(j.subs.length){
+      j.status = j.subs.every(s=>s.done) ? 'done' : (j.subs.some(s=>s.done)?'doing':'todo');
+    } else {
+      j.status='todo'; // back to a plain job
+    }
+    save(); renderRoom();
+  }
+
+  function toggleJob(i, ev){
+    if(ev) ev.stopPropagation();
+    const order={todo:'doing',doing:'done',done:'todo'};
+    const was=JOBS[i].status; JOBS[i].status=order[was]||'doing';
+    save();
+    renderRoom();
+    if(JOBS[i].status==='done' && ev){ const rect=ev.currentTarget.getBoundingClientRect();
+      confettiBurst(rect.left+20, rect.top+20, roomMeta(currentRoom).color); }
+  }
+
+  function delJob(i){
+    if(!confirm('Delete "'+JOBS[i].title+'"?')) return;
+    JOBS.splice(i,1);
+    save();
+    renderRoom();
+  }
+
+  // ── ADD MODAL ──
+  let editingIndex = null;
+
+  function openAdd(preRoom){
+    if(!ROOMS.length){ alert('Add a room first, then you can add jobs to it.'); return; }
+    editingIndex = null;
+    const sel=document.getElementById('aRoom');
+    sel.innerHTML = ROOMS.map(r=>`<option value="${esc(r.name)}">${r.emoji} ${esc(r.name)}</option>`).join('');
+    if(preRoom) sel.value=preRoom;
+    document.getElementById('addTitle').textContent='Add a job';
+    document.getElementById('addGoBtn').textContent='Add job';
+    document.getElementById('aTitle').value='';
+    document.getElementById('aCost').value='';
+    document.getElementById('aStatus').value='todo';
+    document.getElementById('addOverlay').classList.add('open');
+    setTimeout(()=>document.getElementById('aTitle').focus(),50);
+  }
+
+  function openEdit(i){
+    editingIndex = i;
+    const j = JOBS[i];
+    const sel=document.getElementById('aRoom');
+    sel.innerHTML = ROOMS.map(r=>`<option value="${esc(r.name)}">${r.emoji} ${esc(r.name)}</option>`).join('');
+    sel.value = j.room;
+    document.getElementById('addTitle').textContent='Edit job';
+    document.getElementById('addGoBtn').textContent='Save';
+    document.getElementById('aTitle').value=j.title;
+    document.getElementById('aCost').value=j.cost||'';
+    document.getElementById('aStatus').value=j.status;
+    document.getElementById('addOverlay').classList.add('open');
+    setTimeout(()=>document.getElementById('aTitle').focus(),50);
+  }
+
+  function closeAdd(){ document.getElementById('addOverlay').classList.remove('open'); editingIndex=null; }
+
+  function saveAdd(){
+    const t=document.getElementById('aTitle').value.trim();
+    if(!t){ document.getElementById('aTitle').focus(); return; }
+    const room=document.getElementById('aRoom').value;
+    const cost=parseFloat(document.getElementById('aCost').value)||0;
+    const status=document.getElementById('aStatus').value;
+    if(editingIndex!==null){
+      const prev = JOBS[editingIndex];
+      JOBS[editingIndex] = {room, title:t, cost, status,
+        note: prev.note||'', subs: prev.subs||[]};
+      // if it has subs, keep status derived from them
+      if(JOBS[editingIndex].subs.length){
+        const s=JOBS[editingIndex].subs;
+        JOBS[editingIndex].status = s.every(x=>x.done)?'done':(s.some(x=>x.done)?'doing':'todo');
+      }
+    } else {
+      JOBS.push({room, title:t, cost, status, note:'', subs:[]});
+    }
+    save();
+    closeAdd();
+    if(document.getElementById('roomScreen').classList.contains('active')) renderRoom();
+    else renderHome();
+  }
+  document.getElementById('aTitle').addEventListener('keydown', e=>{ if(e.key==='Enter') saveAdd(); });
+
+  function esc(s){ return s.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  function confettiBurst(x,y,color,n=14){
+    for(let k=0;k<n;k++){
+      const p=document.createElement('div');
+      p.className='confetti'; p.style.left=x+'px'; p.style.top=y+'px'; p.style.background=color;
+      document.body.appendChild(p);
+      const ang=Math.random()*Math.PI*2, vel=40+Math.random()*60;
+      const dx=Math.cos(ang)*vel, dy=Math.sin(ang)*vel-40;
+      p.animate([{transform:'translate(0,0) rotate(0)',opacity:1},
+        {transform:`translate(${dx}px,${dy+80}px) rotate(${Math.random()*360}deg)`,opacity:0}],
+        {duration:700+Math.random()*300,easing:'cubic-bezier(.2,.6,.4,1)'}).onfinish=()=>p.remove();
+    }
+  }
+
+  renderHome();
+</script>
+</body>
+</html>
