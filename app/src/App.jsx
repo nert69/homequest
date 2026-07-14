@@ -10,6 +10,11 @@ import SheetModal from './components/SheetModal.jsx';
 import Celebration from './components/Celebration.jsx';
 import Toast from './components/Toast.jsx';
 import SettingsSheet from './components/SettingsSheet.jsx';
+import OnboardSheet from './components/OnboardSheet.jsx';
+import {
+  syncEnabled, loadHouseholdCode, saveHouseholdCode, generateCode,
+  fetchHousehold, pushHousehold, subscribeHousehold,
+} from './sync.js';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -22,15 +27,75 @@ export default function App() {
   const [hideDone, setHideDone] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [householdCode, setHouseholdCodeState] = useState(loadHouseholdCode);
+  const [joinError, setJoinError] = useState('');
+  const [joinBusy, setJoinBusy] = useState(false);
 
   const celTimer = useRef(null);
   const toastTimer = useRef(null);
   const dragRef = useRef(null);
   const roomsRef = useRef(rooms);
   useEffect(() => { roomsRef.current = rooms; });
+  const lastSyncedRef = useRef(null);
 
   const setRooms = (next) => { setRoomsState(next); saveRooms(next); };
   const setThemeKey = (t) => { setThemeKeyState(t); saveTheme(t); };
+
+  // ── household sync (optional — app works fully offline if unconfigured) ──
+  useEffect(() => {
+    if (!householdCode || !syncEnabled) return undefined;
+    let cancelled = false;
+    (async () => {
+      const remote = await fetchHousehold(householdCode);
+      if (cancelled || !remote.ok) return; // couldn't reach the server — keep using local data, try again next mount
+      if (remote.data) {
+        const { rooms: remoteRooms, theme: remoteTheme } = remote.data;
+        lastSyncedRef.current = JSON.stringify(remote.data);
+        if (Array.isArray(remoteRooms)) { setRoomsState(remoteRooms); saveRooms(remoteRooms); }
+        if (remoteTheme) { setThemeKeyState(remoteTheme); saveTheme(remoteTheme); }
+      } else {
+        const payload = { rooms: roomsRef.current, theme: themeKey };
+        lastSyncedRef.current = JSON.stringify(payload);
+        pushHousehold(householdCode, payload);
+      }
+    })();
+    const unsubscribe = subscribeHousehold(householdCode, (row) => {
+      if (!row || !row.data) return;
+      const serialized = JSON.stringify(row.data);
+      if (serialized === lastSyncedRef.current) return; // our own write echoed back
+      lastSyncedRef.current = serialized;
+      const { rooms: remoteRooms, theme: remoteTheme } = row.data;
+      if (Array.isArray(remoteRooms)) { setRoomsState(remoteRooms); saveRooms(remoteRooms); }
+      if (remoteTheme) { setThemeKeyState(remoteTheme); saveTheme(remoteTheme); }
+    });
+    return () => { cancelled = true; unsubscribe(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [householdCode]);
+
+  // push local changes up to the household row (debounced, skips echoes of our own remote-applied state)
+  useEffect(() => {
+    if (!householdCode || !syncEnabled) return undefined;
+    const payload = { rooms, theme: themeKey };
+    const serialized = JSON.stringify(payload);
+    if (serialized === lastSyncedRef.current) return undefined;
+    const t = setTimeout(() => {
+      lastSyncedRef.current = serialized;
+      pushHousehold(householdCode, payload);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [rooms, themeKey, householdCode]);
+
+  const handleCreateHousehold = () => generateCode();
+  const handleConfirmCreate = (code) => { saveHouseholdCode(code); setHouseholdCodeState(code); };
+  const handleJoinHousehold = async (code) => {
+    setJoinError(''); setJoinBusy(true);
+    const remote = await fetchHousehold(code);
+    setJoinBusy(false);
+    if (!remote.ok) { setJoinError("Couldn't reach the server — check your connection and try again."); return; }
+    if (!remote.data) { setJoinError("Couldn't find that code — double-check it with your partner."); return; }
+    saveHouseholdCode(code);
+    setHouseholdCodeState(code);
+  };
 
   const theme = THEMES[themeKey] || THEMES.camp;
 
@@ -478,6 +543,17 @@ export default function App() {
             onPick={(t) => { setThemeKey(t); setSettingsOpen(false); }}
             onClose={() => setSettingsOpen(false)}
             onStop={stopClick}
+            householdCode={householdCode}
+          />
+        )}
+
+        {syncEnabled && !householdCode && (
+          <OnboardSheet
+            onCreate={handleCreateHousehold}
+            onConfirmCreate={handleConfirmCreate}
+            onJoin={handleJoinHousehold}
+            joinError={joinError}
+            busy={joinBusy}
           />
         )}
       </div>
