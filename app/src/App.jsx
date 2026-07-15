@@ -221,8 +221,6 @@ export default function App() {
     const task = room.tasks.find((t) => t.id === taskId);
     setRooms(nextRooms);
     if (task.done) {
-      const shapeColors = shapePalette(theme);
-      celebrate(shapeFor(task.label, shapeColors), roomColor(rooms, theme, roomId), { label: 'Nice one!' });
       const roomJustCompleted = room.tasks.every((t) => t.done);
       if (roomJustCompleted) flashToast(room.name + ' complete!');
     }
