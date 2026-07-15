@@ -99,6 +99,14 @@ export default function App() {
 
   const theme = THEMES[themeKey] || THEMES.camp;
 
+  // iOS reveals the plain <html>/<body> background during rubber-band overscroll
+  // and behind the translucent status bar — keep it matched to the active theme
+  // so that never flashes white instead of the app's own background.
+  useEffect(() => {
+    document.documentElement.style.background = theme.mat;
+    document.body.style.background = theme.mat;
+  }, [theme.mat]);
+
   // ── celebration + toast ──
   function celebrate(shape, accent, opts = {}) {
     const big = !!opts.big;

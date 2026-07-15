@@ -12,6 +12,7 @@ body {
   margin: 0;
   font-family: 'Space Grotesk', sans-serif;
   overscroll-behavior-y: contain;
+  background: #F3EFE5; /* default theme's mat color; JS keeps this in sync with the active theme */
 }
 
 button, input, select {
