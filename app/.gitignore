@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .env
+homequest-app.zip
 
 # Editor directories and files
 .vscode/*
