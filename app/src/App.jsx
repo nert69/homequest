@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 15';
+const BUILD_LABEL = 'build 16';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -31,6 +31,8 @@ export default function App() {
   const [householdCode, setHouseholdCodeState] = useState(loadHouseholdCode);
   const [joinError, setJoinError] = useState('');
   const [joinBusy, setJoinBusy] = useState(false);
+  // Drives the home header collapsing once it's pinned to the top.
+  const [scrolled, setScrolled] = useState(false);
 
   const toastTimer = useRef(null);
   const dragRef = useRef(null);
@@ -126,6 +128,13 @@ export default function App() {
   }
 
   useEffect(() => () => { clearTimeout(toastTimer.current); }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // ── navigation ──
   const openRoom = (id) => { setScreen('room'); setActiveRoomId(id); };
@@ -509,24 +518,31 @@ export default function App() {
 
           {isHome && (
             <div>
-              <div style={{ position: 'relative', background: theme.cream, borderRadius: 18, padding: '18px 18px 16px', marginBottom: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
-                  <div>
-                    <div
-                      style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(36,26,51,.5)', marginBottom: 6 }}
-                    >&#10022; HOMEQUEST</div>
-                    <div style={{ fontWeight: 800, fontSize: 22, lineHeight: 1.15, whiteSpace: 'pre-line' }}>{headline}</div>
+              {/* Pinned to the top so cards scroll underneath a deliberate
+                  header rather than being clipped by the iOS status bar.
+                  Collapses to a compact bar once it's stuck. */}
+              <div style={{ position: 'sticky', top: 0, zIndex: 20, background: theme.mat, paddingTop: 6, paddingBottom: 12, marginBottom: 8 }}>
+                <div style={{ position: 'relative', background: theme.cream, borderRadius: 18, padding: scrolled ? '11px 14px' : '18px 18px 16px', transition: 'padding .22s ease' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
+                    <div>
+                      <div
+                        style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(36,26,51,.5)', marginBottom: scrolled ? 2 : 6, transition: 'margin-bottom .22s ease' }}
+                      >&#10022; HOMEQUEST</div>
+                      <div style={{ fontWeight: 800, fontSize: scrolled ? 15 : 22, lineHeight: 1.15, whiteSpace: 'pre-line', transition: 'font-size .22s ease' }}>{headline}</div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0, paddingTop: 2 }}>
+                      <div style={{ fontWeight: 800, fontSize: scrolled ? 19 : 28, lineHeight: 1, transition: 'font-size .22s ease' }}>{overallPct}%</div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 11, color: 'rgba(36,26,51,.55)', marginTop: 2 }}>{allDone}/{allTotal} tasks</div>
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0, paddingTop: 2 }}>
-                    <div style={{ fontWeight: 800, fontSize: 28, lineHeight: 1 }}>{overallPct}%</div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 11, color: 'rgba(36,26,51,.55)', marginTop: 2 }}>{allDone}/{allTotal} tasks</div>
+                  <div style={{ maxHeight: scrolled ? 0 : 60, opacity: scrolled ? 0 : 1, overflow: 'hidden', transition: 'max-height .22s ease, opacity .16s ease' }}>
+                    <div style={{ height: 10, borderRadius: 999, background: 'rgba(36,26,51,.1)', overflow: 'hidden', marginBottom: 10 }}>
+                      <div style={{ height: '100%', borderRadius: 999, background: theme.accent, width: `${overallPct}%`, transition: 'width .5s ease' }} />
+                    </div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 11, color: 'rgba(36,26,51,.55)', marginTop: 7 }}>
+                      {roomsDone} of {rooms.length} rooms done &#183; {monthlyCount} done this month
+                    </div>
                   </div>
-                </div>
-                <div style={{ height: 10, borderRadius: 999, background: 'rgba(36,26,51,.1)', overflow: 'hidden', marginBottom: 10 }}>
-                  <div style={{ height: '100%', borderRadius: 999, background: theme.accent, width: `${overallPct}%`, transition: 'width .5s ease' }} />
-                </div>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 11, color: 'rgba(36,26,51,.55)', marginTop: 7 }}>
-                  {roomsDone} of {rooms.length} rooms done &#183; {monthlyCount} done this month
                 </div>
               </div>
 
