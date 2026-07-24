@@ -8,10 +8,17 @@ html, body, #root {
   height: 100%;
 }
 
+/* `none` rather than `contain` — it stops Safari's rubber-band bounce, which
+   otherwise drags the pinned header away from the top and exposes the
+   background behind it when you pull past the top of the list. */
+html {
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   font-family: 'Space Grotesk', sans-serif;
-  overscroll-behavior-y: contain;
+  overscroll-behavior: none;
   background: #F3EFE5; /* default theme's mat color; JS keeps this in sync with the active theme */
 }
 
