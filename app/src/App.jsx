@@ -16,6 +16,8 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
+const BUILD_LABEL = 'build 13';
+
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
   const [themeKey, setThemeKeyState] = useState(loadTheme);
@@ -537,6 +539,10 @@ export default function App() {
               </div>
 
               <BentoGrid rooms={bentoRooms} matText75={matText75} cream={theme.cream} accent={theme.palette[1]} accentText={textFor(theme.palette[1])} onAddRoom={openAddRoom} />
+
+              {/* Lets us confirm at a glance which build a device is actually
+                  running, rather than guessing whether a deploy landed. */}
+              <div style={{ marginTop: 18, textAlign: 'center', fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: '.08em', color: 'rgba(36,26,51,.3)' }}>{BUILD_LABEL}</div>
             </div>
           )}
 

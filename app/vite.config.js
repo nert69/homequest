@@ -13,6 +13,8 @@ export default defineConfig({
         name: 'HomeQuest',
         short_name: 'HomeQuest',
         description: 'A calm, colourful way to track finishing your home, room by room.',
+        // Must be set explicitly — omitting it makes vite-plugin-pwa inject its
+        // own default (#42b883, a green) rather than leaving it out.
         theme_color: '#F3EFE5',
         background_color: '#F3EFE5',
         display: 'standalone',
