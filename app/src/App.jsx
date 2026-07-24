@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 19';
+const BUILD_LABEL = 'build 20';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -516,7 +516,7 @@ export default function App() {
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
         {/* No top padding — each screen's pinned header supplies its own, so
             spacing looks the same whether it's stuck to the top or not. */}
-        <div style={{ padding: '0 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
+        <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>

@@ -1,7 +1,7 @@
 export default function SettingsSheet({ onClose, onStop, householdCode }) {
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(33,30,24,.42)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 80 }} onClick={onClose}>
-      <div style={{ width: '100%', maxWidth: 480, background: '#FFFCF3', borderRadius: '24px 24px 0 0', padding: '24px 20px calc(env(safe-area-inset-bottom) + 34px)', animation: 'hq-sheet .26s cubic-bezier(.16,1,.3,1)', boxSizing: 'border-box' }} onClick={onStop}>
+      <div style={{ width: '100%', maxWidth: 480, background: '#FFFCF3', borderRadius: '24px 24px 0 0', padding: '24px 20px max(52px, calc(env(safe-area-inset-bottom) + 32px))', animation: 'hq-sheet .26s cubic-bezier(.16,1,.3,1)', boxSizing: 'border-box' }} onClick={onStop}>
         <div style={{ fontWeight: 800, fontSize: 20, color: '#241A33', marginBottom: 6 }}>your household</div>
         {householdCode ? (
           <>
