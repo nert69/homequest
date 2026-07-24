@@ -6,12 +6,10 @@
     <title>HomeQuest</title>
     <meta name="description" content="A calm, colourful way to track finishing your home, room by room." />
 
-    <link rel="manifest" href="/manifest.webmanifest" />
-
-    <!-- iOS "Add to Home Screen" standalone app behaviour.
-         black-translucent is the only style that lets the page run edge-to-edge
-         underneath the status bar (matching how it looks in Safari) instead of
-         iOS reserving its own opaque strip above the app. -->
+    <!-- iOS "Add to Home Screen" standalone app behaviour. Deliberately no
+         <link rel="manifest">: with a manifest present iOS paints its own solid
+         status-bar strip from the manifest's theme_color and ignores the
+         setting below, so the page can't run edge-to-edge under the clock. -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HomeQuest" />

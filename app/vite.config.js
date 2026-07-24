@@ -2,6 +2,19 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// With `manifest: false`, vite-plugin-pwa still injects a bare
+// `<link rel="manifest">` with no href. Strip it so iOS sees no manifest at
+// all and honours the Apple status-bar meta tag instead.
+function stripEmptyManifestLink() {
+  return {
+    name: 'strip-empty-manifest-link',
+    enforce: 'post',
+    transformIndexHtml(html) {
+      return html.replace(/<link rel="manifest"\s*>/g, '')
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -9,26 +22,17 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png'],
-      manifest: {
-        name: 'HomeQuest',
-        short_name: 'HomeQuest',
-        description: 'A calm, colourful way to track finishing your home, room by room.',
-        // Must be set explicitly — omitting it makes vite-plugin-pwa inject its
-        // own default (#42b883, a green) rather than leaving it out.
-        theme_color: '#F3EFE5',
-        background_color: '#F3EFE5',
-        display: 'standalone',
-        orientation: 'portrait',
-        start_url: '/',
-        icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-        ],
-      },
+      // No web app manifest on purpose. When one is present, iOS drives the
+      // Home Screen app's status bar from the manifest (painting a solid strip
+      // in its theme_color) and ignores apple-mobile-web-app-status-bar-style,
+      // so the page can never run edge-to-edge under the clock. Without it,
+      // the Apple meta tags in index.html govern instead — they already supply
+      // the app name, icon, and standalone behaviour on iOS.
+      manifest: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
       },
     }),
+    stripEmptyManifestLink(),
   ],
 })

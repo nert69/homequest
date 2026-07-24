@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 13';
+const BUILD_LABEL = 'build 14';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
