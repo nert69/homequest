@@ -495,7 +495,7 @@ export default function App() {
     <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
 
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
-        <div style={{ padding: '20px 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
+        <div style={{ padding: 'calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>
