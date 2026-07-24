@@ -30,6 +30,14 @@ const ROOM_ICON_POOL = ['chair', 'light', 'door_front', 'window'];
 export const STORAGE_KEY = 'homequest-v1';
 export const PLAYER_STORAGE_KEY = STORAGE_KEY + '-player';
 export const THEME_STORAGE_KEY = STORAGE_KEY + '-theme';
+export const SHOPPING_STORAGE_KEY = STORAGE_KEY + '-shopping';
+
+export function stageFor(done, total) {
+  if (!total || done === 0) return { key: 'not-started', label: 'Not started' };
+  if (done === total) return { key: 'done', label: 'Done' };
+  if (done / total >= 0.75) return { key: 'nearly-there', label: 'Nearly there' };
+  return { key: 'in-progress', label: 'In progress' };
+}
 
 export function hashOf(str) {
   const l = String(str).toLowerCase();
@@ -64,12 +72,12 @@ export function shapeFor(label, palette) {
 }
 
 export function headlineFor(pct) {
-  if (pct <= 0) return 'Nothing’s done yet.\nLet’s fix that.';
-  if (pct < 25) return 'Building-site chic.';
-  if (pct < 50) return 'Getting somewhere.';
-  if (pct < 75) return 'Past the halfway wall.';
-  if (pct < 100) return 'Nearly liveable.';
-  return 'House. Officially\na home.';
+  if (pct <= 0) return 'nothing’s done yet.\nlet’s fix that.';
+  if (pct < 25) return 'building-site chic.';
+  if (pct < 50) return 'getting somewhere.';
+  if (pct < 75) return 'past the halfway wall.';
+  if (pct < 100) return 'nearly liveable.';
+  return 'house. officially\na home.';
 }
 
 export function roomColor(rooms, theme, roomId) {
@@ -80,14 +88,33 @@ export function roomColor(rooms, theme, roomId) {
 export function mk(id, label, state) {
   const doing = state === 'doing';
   const done = state === true || state === 'done';
-  return { id, label, done, doing, completedAt: done ? Date.now() : null, cost: 0, subs: [] };
+  return { id, label, done, doing, completedAt: done ? Date.now() : null, subs: [] };
 }
 
 // keep a subs-having task's done/doing in sync with its steps
 export function resyncSubs(t) {
-  if (!t.subs || !t.subs.length) return { ...t, done: false, doing: false };
+  if (!t.subs || !t.subs.length) return { ...t, done: false, doing: false, completedAt: null };
   const doneN = t.subs.filter((s) => s.done).length;
-  return { ...t, done: doneN === t.subs.length, doing: doneN > 0 && doneN < t.subs.length };
+  const done = doneN === t.subs.length;
+  return {
+    ...t,
+    done,
+    doing: doneN > 0 && !done,
+    completedAt: done ? (t.completedAt || Date.now()) : null,
+  };
+}
+
+export function completionHistory(rooms) {
+  return rooms
+    .flatMap((room) => room.tasks
+      .filter((task) => task.done && task.completedAt)
+      .map((task) => ({
+        id: `${room.id}:${task.id}`,
+        label: task.label,
+        roomName: room.name,
+        completedAt: task.completedAt,
+      })))
+    .sort((a, b) => Number(b.completedAt) - Number(a.completedAt));
 }
 
 export function buildDefaultRooms() {
@@ -199,3 +226,24 @@ export function loadTheme() {
 export function saveTheme(theme) {
   try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch (e) { /* ignore */ }
 }
+
+
+
+
+
+
+
+export function loadShopping() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SHOPPING_STORAGE_KEY) || '[]');
+    return Array.isArray(saved) ? saved : [];
+  } catch (e) { return []; }
+}
+
+export function saveShopping(items) {
+  try { localStorage.setItem(SHOPPING_STORAGE_KEY, JSON.stringify(items)); } catch (e) { /* ignore */ }
+}
+
+
+
+

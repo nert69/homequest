@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  THEMES, loadRooms, saveRooms, loadTheme, saveTheme,
+  THEMES, loadRooms, saveRooms, loadTheme, saveTheme, loadShopping, saveShopping, stageFor,
   iconFor, textFor, shapePalette, shapeFor, headlineFor, roomColor,
-  resyncSubs, packShapes,
+  resyncSubs, packShapes, completionHistory,
 } from './data.js';
 import BentoGrid from './components/BentoGrid.jsx';
 import RoomDetail from './components/RoomDetail.jsx';
 import SheetModal from './components/SheetModal.jsx';
-import Celebration from './components/Celebration.jsx';
 import Toast from './components/Toast.jsx';
-import SettingsSheet from './components/SettingsSheet.jsx';
 import OnboardSheet from './components/OnboardSheet.jsx';
+import ShoppingList from './components/ShoppingList.jsx';
+import HistoryList from './components/HistoryList.jsx';
 import {
   syncEnabled, loadHouseholdCode, saveHouseholdCode, generateCode,
   fetchHousehold, pushHousehold, subscribeHousehold,
@@ -19,19 +19,17 @@ import {
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
   const [themeKey, setThemeKeyState] = useState(loadTheme);
+  const [shopping, setShoppingState] = useState(loadShopping);
   const [screen, setScreen] = useState('home');
   const [activeRoomId, setActiveRoomId] = useState(null);
   const [sheet, setSheet] = useState(null);
-  const [celebration, setCelebration] = useState(null);
   const [toast, setToast] = useState(null);
   const [hideDone, setHideDone] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [householdCode, setHouseholdCodeState] = useState(loadHouseholdCode);
   const [joinError, setJoinError] = useState('');
   const [joinBusy, setJoinBusy] = useState(false);
 
-  const celTimer = useRef(null);
   const toastTimer = useRef(null);
   const dragRef = useRef(null);
   const roomsRef = useRef(rooms);
@@ -39,7 +37,7 @@ export default function App() {
   const lastSyncedRef = useRef(null);
 
   const setRooms = (next) => { setRoomsState(next); saveRooms(next); };
-  const setThemeKey = (t) => { setThemeKeyState(t); saveTheme(t); };
+  const setShopping = (next) => { setShoppingState(next); saveShopping(next); };
 
   // ── household sync (optional — app works fully offline if unconfigured) ──
   useEffect(() => {
@@ -49,12 +47,13 @@ export default function App() {
       const remote = await fetchHousehold(householdCode);
       if (cancelled || !remote.ok) return; // couldn't reach the server — keep using local data, try again next mount
       if (remote.data) {
-        const { rooms: remoteRooms, theme: remoteTheme } = remote.data;
+        const { rooms: remoteRooms, theme: remoteTheme, shopping: remoteShopping } = remote.data;
         lastSyncedRef.current = JSON.stringify(remote.data);
         if (Array.isArray(remoteRooms)) { setRoomsState(remoteRooms); saveRooms(remoteRooms); }
         if (remoteTheme) { setThemeKeyState(remoteTheme); saveTheme(remoteTheme); }
+        if (Array.isArray(remoteShopping)) { setShoppingState(remoteShopping); saveShopping(remoteShopping); }
       } else {
-        const payload = { rooms: roomsRef.current, theme: themeKey };
+        const payload = { rooms: roomsRef.current, theme: themeKey, shopping };
         lastSyncedRef.current = JSON.stringify(payload);
         pushHousehold(householdCode, payload);
       }
@@ -64,9 +63,10 @@ export default function App() {
       const serialized = JSON.stringify(row.data);
       if (serialized === lastSyncedRef.current) return; // our own write echoed back
       lastSyncedRef.current = serialized;
-      const { rooms: remoteRooms, theme: remoteTheme } = row.data;
+      const { rooms: remoteRooms, theme: remoteTheme, shopping: remoteShopping } = row.data;
       if (Array.isArray(remoteRooms)) { setRoomsState(remoteRooms); saveRooms(remoteRooms); }
       if (remoteTheme) { setThemeKeyState(remoteTheme); saveTheme(remoteTheme); }
+        if (Array.isArray(remoteShopping)) { setShoppingState(remoteShopping); saveShopping(remoteShopping); }
     });
     return () => { cancelled = true; unsubscribe(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,7 +75,7 @@ export default function App() {
   // push local changes up to the household row (debounced, skips echoes of our own remote-applied state)
   useEffect(() => {
     if (!householdCode || !syncEnabled) return undefined;
-    const payload = { rooms, theme: themeKey };
+    const payload = { rooms, theme: themeKey, shopping };
     const serialized = JSON.stringify(payload);
     if (serialized === lastSyncedRef.current) return undefined;
     const t = setTimeout(() => {
@@ -83,7 +83,7 @@ export default function App() {
       pushHousehold(householdCode, payload);
     }, 500);
     return () => clearTimeout(t);
-  }, [rooms, themeKey, householdCode]);
+  }, [rooms, themeKey, shopping, householdCode]);
 
   const handleCreateHousehold = () => generateCode();
   const handleConfirmCreate = (code) => { saveHouseholdCode(code); setHouseholdCodeState(code); };
@@ -91,8 +91,8 @@ export default function App() {
     setJoinError(''); setJoinBusy(true);
     const remote = await fetchHousehold(code);
     setJoinBusy(false);
-    if (!remote.ok) { setJoinError("Couldn't reach the server — check your connection and try again."); return; }
-    if (!remote.data) { setJoinError("Couldn't find that code — double-check it with your partner."); return; }
+    if (!remote.ok) { setJoinError("couldn't reach the server — check your connection and try again."); return; }
+    if (!remote.data) { setJoinError("couldn't find that code — double-check it with your partner."); return; }
     saveHouseholdCode(code);
     setHouseholdCodeState(code);
   };
@@ -108,42 +108,33 @@ export default function App() {
   }, [theme.mat]);
 
   // ── celebration + toast ──
-  function celebrate(shape, accent, opts = {}) {
-    const big = !!opts.big;
-    const count = big ? 36 : 22;
-    const duration = big ? 2.2 : 1.5;
-    const colors = [accent, theme.accent, theme.palette[0], theme.palette[2]];
-    const particles = Array.from({ length: count }).map((_, i) => {
-      const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.4 - 0.2);
-      const dist = (big ? 100 : 70) + Math.random() * (big ? 170 : 110);
-      return {
-        id: i,
-        tx: Math.round(Math.cos(angle) * dist),
-        ty: Math.round(Math.sin(angle) * dist),
-        rot: Math.round(Math.random() * 540),
-        color: colors[i % colors.length],
-        radius: i % 3 === 0 ? '50%' : '3px',
-        duration: 900 + Math.round(Math.random() * 500),
-        delay: Math.round(Math.random() * 90),
-      };
-    });
-    setCelebration({ shapeColor: shape.stickerColor, accent, particles, label: opts.label || 'Nice one!', duration, stickerSize: big ? 150 : 96 });
-    clearTimeout(celTimer.current);
-    celTimer.current = setTimeout(() => setCelebration(null), duration * 1000 + 50);
-  }
-
-  function flashToast(msg) {
-    setToast({ msg });
+  function flashToast(msg, undo = null) {
     clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 1900);
+    const onAction = undo ? () => { undo(); setToast(null); clearTimeout(toastTimer.current); } : null;
+    setToast({ msg, onAction });
+    toastTimer.current = setTimeout(() => setToast(null), undo ? 4500 : 1900);
   }
 
-  useEffect(() => () => { clearTimeout(celTimer.current); clearTimeout(toastTimer.current); }, []);
+  useEffect(() => () => { clearTimeout(toastTimer.current); }, []);
 
   // ── navigation ──
-  const openRoom = (id) => { setScreen('room'); setActiveRoomId(id); setCelebration(null); };
-  const goHome = () => { setScreen('home'); setActiveRoomId(null); setCelebration(null); };
+  const openRoom = (id) => { setScreen('room'); setActiveRoomId(id); };
+  const goHome = () => { setScreen('home'); setActiveRoomId(null); };
   const stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
+  const openShopping = () => { setScreen('shopping'); setActiveRoomId(null); };
+  const openHistory = () => { setScreen('history'); setActiveRoomId(null); };
+  const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '' });
+  const toggleShopping = (itemId) => {
+    const previous = shopping;
+    const next = shopping.map((item) => (item.id === itemId ? { ...item, done: !item.done } : item));
+    setShopping(next);
+    flashToast(next.find((item) => item.id === itemId)?.done ? 'marked bought' : 'back on the list', () => setShopping(previous));
+  };
+  const deleteShopping = (itemId) => {
+    const previous = shopping;
+    setShopping(shopping.filter((item) => item.id !== itemId));
+    flashToast('item deleted', () => setShopping(previous));
+  };
 
   // ── quick capture ──
   const smartCaptureRoom = () => {
@@ -158,20 +149,15 @@ export default function App() {
     return best || (rooms[0] ? rooms[0].id : null);
   };
 
-  const openCapture = () => setSheet({ mode: 'capture', roomId: smartCaptureRoom(), name: '', cost: '', status: 'todo' });
-  const openAddJob = (roomId, e) => { stopClick(e); setSheet({ mode: 'job', roomId, name: '', cost: '', status: 'todo' }); };
+  const openCapture = () => setSheet({ mode: 'capture', roomId: smartCaptureRoom(), name: '', status: 'todo' });
+  const openAddJob = (roomId, e) => { stopClick(e); setSheet({ mode: 'job', roomId, name: '', status: 'todo' }); };
   const openAddRoom = () => setSheet({ mode: 'room', name: '' });
   const openEditJob = (roomId, taskId, e) => {
     stopClick(e);
     const room = rooms.find((r) => r.id === roomId);
     const task = room.tasks.find((t) => t.id === taskId);
-    setSheet({ mode: 'edit', roomId, taskId, name: task.label });
-  };
-  const openCostSheet = (roomId, taskId, e) => {
-    stopClick(e);
-    const room = rooms.find((r) => r.id === roomId);
-    const task = room.tasks.find((t) => t.id === taskId);
-    setSheet({ mode: 'cost', roomId, taskId, name: task.cost ? String(task.cost) : '' });
+    const status = task.done ? 'done' : task.stuck ? 'stuck' : task.doing ? 'doing' : 'todo';
+    setSheet({ mode: 'edit', roomId, taskId, name: task.label, status, stuckReason: task.stuckReason || '', notes: task.notes || '' });
   };
   const openStepSheet = (roomId, taskId, e) => { stopClick(e); setSheet({ mode: 'step', roomId, taskId, name: '' }); };
   const openRenameRoom = () => {
@@ -183,19 +169,19 @@ export default function App() {
   const confirmDeleteRoom = () => {
     const room = rooms.find((r) => r.id === activeRoomId);
     if (!room) return;
-    const n = room.tasks.length;
-    const msg = n ? `Delete "${room.name}" and its ${n} job${n !== 1 ? 's' : ''}? This can't be undone.` : `Delete "${room.name}"?`;
-    if (typeof window !== 'undefined' && window.confirm && !window.confirm(msg)) return;
+    const previous = rooms;
     setRooms(rooms.filter((r) => r.id !== room.id));
     setScreen('home');
     setActiveRoomId(null);
+    flashToast('room deleted', () => setRooms(previous));
   };
 
   const closeSheet = () => setSheet(null);
   const setSheetName = (e) => setSheet((s) => ({ ...s, name: e.target.value }));
   const setSheetRoom = (e) => setSheet((s) => ({ ...s, roomId: e.target.value }));
-  const setSheetCost = (e) => setSheet((s) => ({ ...s, cost: e.target.value }));
   const setSheetStatus = (e) => setSheet((s) => ({ ...s, status: e.target.value }));
+  const setSheetStuckReason = (e) => setSheet((s) => ({ ...s, stuckReason: e.target.value }));
+  const setSheetNotes = (e) => setSheet((s) => ({ ...s, notes: e.target.value }));
   const sheetKeyDown = (e) => { if (e && e.key === 'Enter') saveSheet(); };
   const toggleHideDone = () => setHideDone((v) => !v);
   const toggleExpandTask = (taskId) => setExpandedTasks((s) => ({ ...s, [taskId]: !s[taskId] }));
@@ -209,9 +195,11 @@ export default function App() {
 
   const deleteSub = (roomId, taskId, subId, e) => {
     stopClick(e);
+    const previous = rooms;
     setRooms(rooms.map((r) => (r.id !== roomId ? r : {
       ...r, tasks: r.tasks.map((t) => (t.id !== taskId ? t : resyncSubs({ ...t, subs: t.subs.filter((s) => s.id !== subId) }))),
     })));
+    flashToast('step deleted', () => setRooms(previous));
   };
 
   const toggleTask = (roomId, taskId, e) => {
@@ -220,18 +208,13 @@ export default function App() {
       ...r,
       tasks: r.tasks.map((t) => {
         if (t.id !== taskId) return t;
+        if (t.stuck) return { ...t, stuck: false, stuckReason: '', doing: true };
         if (!t.doing && !t.done) return { ...t, doing: true };
         if (t.doing && !t.done) return { ...t, doing: false, done: true, completedAt: Date.now() };
         return { ...t, done: false, doing: false, completedAt: null };
       }),
     }));
-    const room = nextRooms.find((r) => r.id === roomId);
-    const task = room.tasks.find((t) => t.id === taskId);
     setRooms(nextRooms);
-    if (task.done) {
-      const roomJustCompleted = room.tasks.every((t) => t.done);
-      if (roomJustCompleted) flashToast(room.name + ' complete!');
-    }
   };
 
   // ── drag-to-reorder jobs within a room ──
@@ -279,39 +262,47 @@ export default function App() {
     const s = sheet;
     if (!s) return;
     const name = (s.name || '').trim();
-    if (!name && s.mode !== 'cost') return;
+    if (!name) return;
     let next = rooms;
-    if (s.mode === 'cost') {
-      const val = parseFloat(name.replace(/[^0-9.]/g, '')) || 0;
-      next = next.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map((t) => (t.id === s.taskId ? { ...t, cost: val } : t)) }));
-      flashToast('Cost saved');
-    } else if (s.mode === 'step') {
+    if (s.mode === 'shopping') {
+      const previous = shopping;
+      setShopping([...shopping, { id: `shop${Date.now()}`, label: name, roomId: s.roomId || '', done: false }]);
+      flashToast('added to shopping', () => setShopping(previous));
+      setSheet(null);
+      return;
+    }
+    if (s.mode === 'step') {
       next = next.map((r) => (r.id !== s.roomId ? r : {
         ...r, tasks: r.tasks.map((t) => (t.id !== s.taskId ? t : resyncSubs({ ...t, subs: [...(t.subs || []), { id: 'sub' + Date.now(), label: name, done: false }] }))),
       }));
       setExpandedTasks((s2) => ({ ...s2, [s.taskId]: true }));
-      flashToast('Step added');
+      flashToast('step added');
     } else if (s.mode === 'edit') {
-      next = next.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map((t) => (t.id === s.taskId ? { ...t, label: name } : t)) }));
-      flashToast('Saved');
+      const isDone = s.status === 'done', isDoing = s.status === 'doing', isStuck = s.status === 'stuck';
+      next = next.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map((t) => (t.id === s.taskId ? {
+        ...t, label: name, done: isDone, doing: isDoing, stuck: isStuck,
+        stuckReason: isStuck ? (s.stuckReason || '').trim() : '',
+        notes: (s.notes || '').trim(),
+        completedAt: isDone ? (t.completedAt || Date.now()) : null,
+      } : t)) }));
+      flashToast('saved', () => setRooms(rooms));
     } else if (s.mode === 'renameRoom') {
       if (next.some((r) => r.id !== s.roomId && r.name.toLowerCase() === name.toLowerCase())) {
-        flashToast('You already have a room called that');
+        flashToast('you already have a room called that');
         return;
       }
       next = next.map((r) => (r.id !== s.roomId ? r : { ...r, name }));
-      flashToast('Renamed');
+      flashToast('renamed');
     } else if (s.mode === 'job' || s.mode === 'capture') {
       const target = next.find((r) => r.id === s.roomId) || next[0];
-      const cost = parseFloat(String(s.cost).replace(/[^0-9.]/g, '')) || 0;
-      const isDone = s.status === 'done', isDoing = s.status === 'doing';
+      const isDone = s.status === 'done', isDoing = s.status === 'doing', isStuck = s.status === 'stuck';
       next = next.map((r) => (r.id !== target.id ? r : {
-        ...r, tasks: [...r.tasks, { id: 't' + Date.now(), label: name, cost, done: isDone, doing: isDoing, completedAt: isDone ? Date.now() : null, subs: [] }],
+        ...r, tasks: [...r.tasks, { id: 't' + Date.now(), label: name, done: isDone, doing: isDoing, stuck: isStuck, stuckReason: isStuck ? (s.stuckReason || '').trim() : '', completedAt: isDone ? Date.now() : null, subs: [] }],
       }));
-      flashToast(s.mode === 'capture' ? 'Added to ' + target.name : 'Job added');
+      flashToast(s.mode === 'capture' ? 'added to ' + target.name : 'job added');
     } else {
       next = [...next, { id: 'r' + Date.now(), name, tasks: [] }];
-      flashToast('Room added');
+      flashToast('room added');
     }
     setRooms(next);
     setSheet(null);
@@ -319,16 +310,29 @@ export default function App() {
 
   const deleteJob = () => {
     const s = sheet;
+    const previous = rooms;
     setRooms(rooms.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.filter((t) => t.id !== s.taskId) })));
-    flashToast('Job deleted');
+    flashToast('job deleted', () => setRooms(previous));
     setSheet(null);
+  };
+  const moveJob = (direction) => {
+    const s = sheet;
+    setRooms(rooms.map((r) => {
+      if (r.id !== s.roomId) return r;
+      const tasks = [...r.tasks];
+      const index = tasks.findIndex((t) => t.id === s.taskId);
+      const target = index + direction;
+      if (index < 0 || target < 0 || target >= tasks.length) return r;
+      [tasks[index], tasks[target]] = [tasks[target], tasks[index]];
+      return { ...r, tasks };
+    }));
+    flashToast(direction < 0 ? 'moved up' : 'moved down');
   };
 
   // ── derived render values ──
   const matIsLight = textFor(theme.mat) === '#241A33';
   const matText80 = matIsLight ? 'rgba(36,26,51,.8)' : 'rgba(255,252,243,.8)';
   const matText75 = matIsLight ? 'rgba(36,26,51,.65)' : 'rgba(255,252,243,.75)';
-  const matBorder50 = matIsLight ? 'rgba(36,26,51,.3)' : 'rgba(255,252,243,.5)';
 
   let allDone = 0, allTotal = 0, roomsDone = 0, monthlyCount = 0;
   const now = new Date();
@@ -350,9 +354,10 @@ export default function App() {
     allDone += done; allTotal += total;
     const pct = total ? Math.round((done / total) * 100) : 0;
     const complete = total > 0 && done === total;
+    const stage = stageFor(done, total);
     if (complete) roomsDone++;
     return {
-      id: r.id, name: r.name, icon: iconFor(r.name), gradient: bg, done, total, pct, complete, textColor,
+      id: r.id, name: r.name, icon: iconFor(r.name), gradient: bg, done, total, pct, complete, stage, textColor,
       iconBadgeBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
       subColor: dark ? 'rgba(36,26,51,.6)' : 'rgba(255,252,243,.75)',
       barTrack: dark ? 'rgba(36,26,51,.16)' : 'rgba(255,252,243,.3)',
@@ -364,8 +369,8 @@ export default function App() {
   });
   const overallPct = allTotal ? Math.round((allDone / allTotal) * 100) : 0;
 
-  const sorted = [...roomStats].sort((a, b) => (a.complete !== b.complete ? (a.complete ? 1 : -1) : 0));
-  const shapeSeq = packShapes(sorted);
+  const sorted = roomStats;
+  const shapeSeq = packShapes(sorted.map((room) => ({ ...room, complete: false })));
   const bentoRooms = sorted.map((r, i) => {
     const shape = shapeSeq[i];
     return {
@@ -402,25 +407,25 @@ export default function App() {
       })) : [];
       return {
         id: t.id, label: t.label, ...shapeFor(t.label, shapeColors),
-        rowBg: t.done ? 'rgba(36,26,51,.05)' : t.doing ? 'rgba(232,169,63,.1)' : 'transparent',
+        rowBg: t.done ? 'rgba(36,26,51,.05)' : t.stuck ? 'rgba(226,84,45,.08)' : t.doing ? 'rgba(232,169,63,.1)' : 'transparent',
         labelColor: t.done ? 'rgba(36,26,51,.35)' : '#241A33',
+        isStuck: !!t.stuck,
+        stuckReason: t.stuck ? (t.stuckReason || '') : '',
+        notePreview: (t.notes || '').replace(/\s+/g, ' ').trim(),
         strike: t.done ? 'line-through' : 'none',
-        checkBg: t.done ? '#241A33' : t.doing ? `linear-gradient(90deg, ${theme.accent} 50%, transparent 50%)` : 'transparent',
-        checkColor: t.done ? theme.accent : 'transparent',
-        checkBorder: t.done ? 'none' : t.doing ? `2px solid ${theme.accent}` : '2px solid rgba(36,26,51,.25)',
-        checkMark: t.done ? 'check' : '',
+        checkBg: t.done ? '#241A33' : t.stuck ? '#E2542D' : t.doing ? theme.accent : 'transparent',
+        checkColor: t.done ? theme.accent : t.stuck ? '#fff' : t.doing ? '#241A33' : 'transparent',
+        checkBorder: t.done || t.stuck || t.doing ? 'none' : '2px solid rgba(36,26,51,.25)',
+        checkMark: t.done ? 'check' : t.stuck ? 'priority_high' : t.doing ? 'more_horiz' : '',
         isDone: t.done,
         hasSubs, chevOpen, subsView,
         showActions: !hasSubs,
         chevronRotate: chevOpen ? 'rotate(180deg)' : 'rotate(0deg)',
         subCountLabel: hasSubs ? `${t.subs.filter((s) => s.done).length}/${t.subs.length}` : '',
-        costLabel: t.cost ? '£' + t.cost.toLocaleString('en-GB') : '+ cost',
-        costColor: t.cost ? 'rgba(36,26,51,.75)' : 'rgba(36,26,51,.4)',
         onToggle: hasSubs ? (() => toggleExpandTask(t.id)) : ((e) => toggleTask(activeRoom.id, t.id, e)),
         onToggleExpand: () => toggleExpandTask(t.id),
         onEdit: (e) => openEditJob(activeRoom.id, t.id, e),
         onDragStart: (e) => onDragStart(activeRoom.id, t.id, e),
-        onCostClick: (e) => openCostSheet(activeRoom.id, t.id, e),
         onStepsClick: (e) => openStepSheet(activeRoom.id, t.id, e),
       };
     });
@@ -430,11 +435,11 @@ export default function App() {
       id: activeRoom.id, name: activeRoom.name, icon: iconFor(activeRoom.name), bg, textColor,
       tileBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
       barTrack: dark ? 'rgba(36,26,51,.14)' : 'rgba(255,255,255,.3)',
-      done, total, pct, left: total - done,
+      done, total, pct, stage: stageFor(done, total), left: total - done,
       tasksView: visibleTasksView,
       allClear: hideDone && total > 0 && visibleTasksView.length === 0,
       hideDone,
-      hideDoneLabel: hideDone ? 'Showing to-do' : 'Hide done',
+      hideDoneLabel: hideDone ? 'showing to-do' : 'hide done',
       hideDoneBg: hideDone ? '#241A33' : 'transparent',
       hideDoneColor: hideDone ? '#FFFCF3' : 'rgba(36,26,51,.6)',
       onToggleHideDone: toggleHideDone,
@@ -448,37 +453,49 @@ export default function App() {
     const isRoomMode = sheet.mode === 'room';
     const isCapture = sheet.mode === 'capture';
     const isRename = sheet.mode === 'renameRoom';
-    const isCost = sheet.mode === 'cost';
     const isStep = sheet.mode === 'step';
     const isJob = sheet.mode === 'job';
-    const roomTied = isJob || isEdit || isCost || isStep || isRename;
-    const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? roomColor(rooms, theme, sheet.roomId) : theme.accent;
+    const isShoppingSheet = sheet.mode === 'shopping';
+    const roomTied = isJob || isEdit || isStep || isRename;
+    const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? roomColor(rooms, theme, sheet.roomId) : isRoomMode ? theme.palette[1] : theme.accent;
+    const sheetTitleText = textFor(sheetAccent);
     sheetView = {
       accent: sheetAccent,
+      titleText: sheetTitleText,
+      titleBadgeBg: sheetTitleText === '#241A33' ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
+      icon: isShoppingSheet ? 'shopping_cart' : (isEdit || isRename) ? 'edit' : isStep ? 'playlist_add' : isRoomMode ? 'add_home' : 'add_task',
       name: sheet.name,
-      title: isEdit ? 'Edit job' : isRename ? 'Rename room' : isCost ? 'Estimated cost' : isStep ? 'Add a step' : isRoomMode ? 'Add a room' : isCapture ? 'Quick add' : 'Add a job',
-      fieldLabel: isRoomMode || isRename ? 'Room name' : isCost ? 'Estimated cost' : isStep ? 'Step' : 'Job',
-      placeholder: isRoomMode || isRename ? 'Room name…' : isCost ? 'e.g. 120' : isStep ? 'New step…' : isCapture ? 'What needs doing…' : 'e.g. Tile the splashback',
+      title: isShoppingSheet ? 'add shopping item' : isEdit ? 'edit job' : isRename ? 'rename room' : isStep ? 'add a step' : isRoomMode ? 'add a room' : isCapture ? 'quick add' : '+ add a job',
+      fieldLabel: isShoppingSheet ? 'item' : isRoomMode || isRename ? 'room name' : isStep ? 'step' : 'job',
+      placeholder: isShoppingSheet ? 'e.g. paint rollers' : isRoomMode || isRename ? 'room name…' : isStep ? 'new step…' : isCapture ? 'what needs doing…' : 'e.g. tile the splashback',
       showDelete: isEdit,
-      saveLabel: (isEdit || isRename || isCost) ? 'Save' : isRoomMode ? 'Add room' : isStep ? 'Add step' : 'Add job',
-      inputMode: isCost ? 'numeric' : 'text',
-      showRoomPick: isCapture || isJob,
-      roomId: sheet.roomId,
-      roomOptions: (isCapture || isJob) ? rooms.map((r) => ({ id: r.id, name: r.name })) : [],
-      showCostStatus: isCapture || isJob,
-      cost: sheet.cost || '',
+      saveLabel: isShoppingSheet ? 'add item' : (isEdit || isRename) ? 'save' : isRoomMode ? 'add room' : isStep ? 'add step' : 'add job',
+      inputMode: 'text',
+      showRoomPick: isCapture || isJob || isShoppingSheet,
+      roomId: sheet.roomId || '',
+      roomOptions: isShoppingSheet ? [{ id: '', name: 'no room' }, ...rooms.map((r) => ({ id: r.id, name: r.name }))] : (isCapture || isJob) ? rooms.map((r) => ({ id: r.id, name: r.name })) : [],
+      showStatus: isCapture || isJob || isEdit,
+      showEditActions: isEdit,
+      showNotes: isEdit,
+      stuckReason: sheet.stuckReason || '',
+      notes: sheet.notes || '',
       status: sheet.status || 'todo',
     };
   }
 
+  const historyEntries = completionHistory(rooms);
   const headline = headlineFor(overallPct);
   const isHome = screen === 'home' && !!rooms.length;
   const isRoom = screen === 'room' && !!roomDetail;
+  const isShopping = screen === 'shopping';
+  const isHistory = screen === 'history';
+
 
   return (
     <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
+
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
-        <div style={{ padding: 'calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
+        <div style={{ padding: '20px 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>
@@ -486,8 +503,7 @@ export default function App() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
                   <div>
                     <div
-                      style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(36,26,51,.5)', marginBottom: 6, cursor: 'pointer' }}
-                      onClick={() => setSettingsOpen(true)}
+                      style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(36,26,51,.5)', marginBottom: 6 }}
                     >&#10022; HOMEQUEST</div>
                     <div style={{ fontWeight: 800, fontSize: 22, lineHeight: 1.15, whiteSpace: 'pre-line' }}>{headline}</div>
                   </div>
@@ -504,12 +520,23 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 2, marginBottom: 12 }}>
-                <div style={{ fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '.2em', color: matText80 }}>Your rooms</div>
-                <button className="hq-addjob" style={{ background: 'none', border: 'none', color: matText80, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '.15em', cursor: 'pointer', padding: 0 }} onClick={openCapture}>+ Add a job</button>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
+                <button className="hq-home-shortcut" onClick={openShopping}>
+                  <span>Shopping</span>
+                  <span>{shopping.filter((item) => !item.done).length} to buy</span>
+                </button>
+                <button className="hq-home-shortcut" onClick={openHistory}>
+                  <span>Completed</span>
+                  <span>{historyEntries.length} finished</span>
+                </button>
               </div>
 
-              <BentoGrid rooms={bentoRooms} matBorder50={matBorder50} matText75={matText75} onAddRoom={openAddRoom} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 2, marginBottom: 12 }}>
+                <div style={{ fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '.2em', color: matText80 }}>your rooms</div>
+                <button className="hq-addjob" style={{ background: 'none', border: 'none', color: matText80, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '.12em', cursor: 'pointer', padding: 0 }} onClick={openCapture}>+ job</button>
+              </div>
+
+              <BentoGrid rooms={bentoRooms} matText75={matText75} cream={theme.cream} accent={theme.palette[1]} accentText={textFor(theme.palette[1])} onAddRoom={openAddRoom} />
             </div>
           )}
 
@@ -523,6 +550,26 @@ export default function App() {
               onDelete={confirmDeleteRoom}
             />
           )}
+          {isShopping && (
+            <ShoppingList
+              theme={theme}
+              matText75={matText75}
+              items={shopping}
+              rooms={rooms}
+              onBack={goHome}
+              onAdd={openAddShopping}
+              onToggle={toggleShopping}
+              onDelete={deleteShopping}
+            />
+          )}
+          {isHistory && (
+            <HistoryList
+              theme={theme}
+              matText75={matText75}
+              entries={historyEntries}
+              onBack={goHome}
+            />
+          )}
         </div>
 
         {sheetView && (
@@ -533,25 +580,18 @@ export default function App() {
             onStop={stopClick}
             onNameChange={setSheetName}
             onRoomChange={setSheetRoom}
-            onCostChange={setSheetCost}
             onStatusChange={setSheetStatus}
+            onStuckReasonChange={setSheetStuckReason}
+            onNotesChange={setSheetNotes}
+            onAddStep={() => setSheet({ mode: 'step', roomId: sheet.roomId, taskId: sheet.taskId, name: '' })}
+            onMoveUp={() => moveJob(-1)}
+            onMoveDown={() => moveJob(1)}
             onKeyDown={sheetKeyDown}
             onSave={saveSheet}
             onDelete={deleteJob}
           />
         )}
-
-        {celebration && <Celebration celebration={celebration} theme={theme} />}
         {toast && <Toast toast={toast} theme={theme} />}
-        {settingsOpen && (
-          <SettingsSheet
-            themeKey={themeKey}
-            onPick={(t) => { setThemeKey(t); setSettingsOpen(false); }}
-            onClose={() => setSettingsOpen(false)}
-            onStop={stopClick}
-            householdCode={householdCode}
-          />
-        )}
 
         {syncEnabled && !householdCode && (
           <OnboardSheet
@@ -566,3 +606,29 @@ export default function App() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
