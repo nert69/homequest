@@ -40,7 +40,9 @@ function TaskRow({ t }) {
 export default function RoomDetail({ theme, matText75, roomDetail: rd, onBack, onRename, onDelete }) {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 14 }}>
+      {/* Pinned so the job list scrolls under a deliberate header rather than
+          being clipped by the iOS status bar. */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: theme.mat, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, paddingTop: 10, paddingBottom: 12, marginBottom: 4 }}>
         <button style={{ width: 44, height: 44, borderRadius: 999, background: theme.cream, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', padding: 0, flexShrink: 0 }} onClick={onBack}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241A33" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
         </button>

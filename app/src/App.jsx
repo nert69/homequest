@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 16';
+const BUILD_LABEL = 'build 17';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -514,15 +514,17 @@ export default function App() {
     <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
 
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
-        <div style={{ padding: '20px 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
+        {/* No top padding — each screen's pinned header supplies its own, so
+            spacing looks the same whether it's stuck to the top or not. */}
+        <div style={{ padding: '0 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>
               {/* Pinned to the top so cards scroll underneath a deliberate
                   header rather than being clipped by the iOS status bar.
                   Collapses to a compact bar once it's stuck. */}
-              <div style={{ position: 'sticky', top: 0, zIndex: 20, background: theme.mat, paddingTop: 6, paddingBottom: 12, marginBottom: 8 }}>
-                <div style={{ position: 'relative', background: theme.cream, borderRadius: 18, padding: scrolled ? '11px 14px' : '18px 18px 16px', transition: 'padding .22s ease' }}>
+              <div style={{ position: 'sticky', top: 0, zIndex: 20, background: theme.mat, paddingTop: 10, paddingBottom: 12, marginBottom: 8 }}>
+                <div style={{ position: 'relative', background: theme.cream, borderRadius: 18, padding: scrolled ? '11px 14px' : '18px 18px 16px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
                     <div>
                       <div

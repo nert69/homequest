@@ -17,7 +17,7 @@ export default function HistoryList({ theme, matText75, entries, onBack }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, background: theme.mat, display: 'flex', alignItems: 'center', gap: 12, paddingTop: 10, paddingBottom: 12, marginBottom: 6 }}>
         <button aria-label="Back home" style={{ width: 44, height: 44, borderRadius: 999, background: theme.cream, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', padding: 0, flexShrink: 0 }} onClick={onBack}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241A33" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
         </button>
