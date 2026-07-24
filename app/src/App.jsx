@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 14';
+const BUILD_LABEL = 'build 15';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -101,12 +101,20 @@ export default function App() {
 
   const theme = THEMES[themeKey] || THEMES.camp;
 
-  // iOS reveals the plain <html>/<body> background during rubber-band overscroll
-  // and behind the translucent status bar — keep it matched to the active theme
-  // so that never flashes white instead of the app's own background.
+  // iOS reveals the plain <html>/<body> background during rubber-band overscroll,
+  // and tints the status bar from <meta name="theme-color">. Point both at the
+  // active theme so the bar and the overscroll area blend into the app instead
+  // of flashing white or reading as a separate banner.
   useEffect(() => {
     document.documentElement.style.background = theme.mat;
     document.body.style.background = theme.mat;
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', theme.mat);
   }, [theme.mat]);
 
   // ── celebration + toast ──
@@ -497,7 +505,7 @@ export default function App() {
     <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
 
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
-        <div style={{ padding: 'calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
+        <div style={{ padding: '20px 16px calc(env(safe-area-inset-bottom) + 40px)', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>

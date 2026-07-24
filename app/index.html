@@ -2,16 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>HomeQuest</title>
     <meta name="description" content="A calm, colourful way to track finishing your home, room by room." />
 
-    <!-- iOS "Add to Home Screen" standalone app behaviour. Deliberately no
-         <link rel="manifest">: with a manifest present iOS paints its own solid
-         status-bar strip from the manifest's theme_color and ignores the
-         setting below, so the page can't run edge-to-edge under the clock. -->
+    <!-- The manifest link is injected at build time by vite-plugin-pwa. -->
+
+    <!-- Tints the iOS status bar to match the app background so it reads as one
+         surface. Kept in sync with the active theme at runtime (see App.jsx). -->
+    <meta name="theme-color" content="#F3EFE5" />
+
+    <!-- iOS "Add to Home Screen" standalone app behaviour. A standalone web app
+         always keeps the system status bar — "black-translucent" (which would
+         let content run beneath it) is deprecated and ignored on current iOS,
+         so "default" is used to sit cleanly below the bar rather than have
+         content clipped by it. -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="HomeQuest" />
     <link rel="apple-touch-icon" href="/icons/icon-180.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
