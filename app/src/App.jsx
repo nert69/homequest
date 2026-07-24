@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 17';
+const BUILD_LABEL = 'build 18';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -523,8 +523,8 @@ export default function App() {
               {/* Pinned to the top so cards scroll underneath a deliberate
                   header rather than being clipped by the iOS status bar.
                   Collapses to a compact bar once it's stuck. */}
-              <div style={{ position: 'sticky', top: 0, zIndex: 20, background: theme.mat, paddingTop: 10, paddingBottom: 12, marginBottom: 8 }}>
-                <div style={{ position: 'relative', background: theme.cream, borderRadius: 18, padding: scrolled ? '11px 14px' : '18px 18px 16px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
+              <div style={{ position: 'sticky', top: 0, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14 }}>
+                <div style={{ position: 'relative', background: theme.cream, borderRadius: '0 0 22px 22px', padding: scrolled ? '12px 18px 14px' : '16px 18px 18px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
                     <div>
                       <div

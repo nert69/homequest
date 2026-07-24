@@ -31,8 +31,11 @@ export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoo
       window.scrollTo(0, scrollY);
     };
   }, []);
+  // Sized with 100dvh rather than inset:0 — in Safari the latter tracks the
+  // small viewport, leaving the sheet floating above the bottom of the screen
+  // once the address bar collapses.
   return (
-    <div style={{ position: 'fixed', inset: 0, width: '100%', overflow: 'hidden', overscrollBehavior: 'none', touchAction: 'none', background: 'rgba(33,30,24,.42)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 80 }} onClick={onClose}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '100dvh', width: '100%', overflow: 'hidden', overscrollBehavior: 'none', touchAction: 'none', background: 'rgba(33,30,24,.42)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 80 }} onClick={onClose}>
       <div className="hq-sheet" style={{ width: '100%', maxWidth: 480, maxHeight: 'calc(100% - 8px)', overflowY: 'auto', overscrollBehavior: 'contain', touchAction: 'pan-y', background: '#FFFCF3', borderRadius: '24px 24px 0 0', padding: '24px 20px max(14px, env(safe-area-inset-bottom))', animation: 'hq-sheet .26s cubic-bezier(.16,1,.3,1)', boxSizing: 'border-box' }} onClick={onStop}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderRadius: 18, padding: '14px 16px', color: sheet.titleText, background: sheet.accent, marginBottom: 18 }}>
           <span aria-hidden="true" style={{ width: 38, height: 38, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: sheet.titleBadgeBg }}><MaterialIcon name={sheet.icon} size={21} /></span>
