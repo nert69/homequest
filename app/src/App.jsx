@@ -7,7 +7,6 @@ import {
 import BentoGrid from './components/BentoGrid.jsx';
 import RoomDetail from './components/RoomDetail.jsx';
 import SheetModal from './components/SheetModal.jsx';
-import Toast from './components/Toast.jsx';
 import OnboardSheet from './components/OnboardSheet.jsx';
 import ShoppingList from './components/ShoppingList.jsx';
 import HistoryList from './components/HistoryList.jsx';
@@ -16,7 +15,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 21';
+const BUILD_LABEL = 'build 22';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -25,7 +24,6 @@ export default function App() {
   const [screen, setScreen] = useState('home');
   const [activeRoomId, setActiveRoomId] = useState(null);
   const [sheet, setSheet] = useState(null);
-  const [toast, setToast] = useState(null);
   const [hideDone, setHideDone] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
   const [householdCode, setHouseholdCodeState] = useState(loadHouseholdCode);
@@ -34,7 +32,6 @@ export default function App() {
   // Drives the home header collapsing once it's pinned to the top.
   const [scrolled, setScrolled] = useState(false);
 
-  const toastTimer = useRef(null);
   const dragRef = useRef(null);
   const roomsRef = useRef(rooms);
   useEffect(() => { roomsRef.current = rooms; });
@@ -119,16 +116,6 @@ export default function App() {
     meta.setAttribute('content', theme.mat);
   }, [theme.mat]);
 
-  // ── celebration + toast ──
-  function flashToast(msg, undo = null) {
-    clearTimeout(toastTimer.current);
-    const onAction = undo ? () => { undo(); setToast(null); clearTimeout(toastTimer.current); } : null;
-    setToast({ msg, onAction });
-    toastTimer.current = setTimeout(() => setToast(null), undo ? 4500 : 1900);
-  }
-
-  useEffect(() => () => { clearTimeout(toastTimer.current); }, []);
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -144,15 +131,10 @@ export default function App() {
   const openHistory = () => { setScreen('history'); setActiveRoomId(null); };
   const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '' });
   const toggleShopping = (itemId) => {
-    const previous = shopping;
-    const next = shopping.map((item) => (item.id === itemId ? { ...item, done: !item.done } : item));
-    setShopping(next);
-    flashToast(next.find((item) => item.id === itemId)?.done ? 'Marked as bought' : 'Back on the list', () => setShopping(previous));
+    setShopping(shopping.map((item) => (item.id === itemId ? { ...item, done: !item.done } : item)));
   };
   const deleteShopping = (itemId) => {
-    const previous = shopping;
     setShopping(shopping.filter((item) => item.id !== itemId));
-    flashToast('Item deleted', () => setShopping(previous));
   };
 
   // ── quick capture ──
@@ -188,11 +170,9 @@ export default function App() {
   const confirmDeleteRoom = () => {
     const room = rooms.find((r) => r.id === activeRoomId);
     if (!room) return;
-    const previous = rooms;
     setRooms(rooms.filter((r) => r.id !== room.id));
     setScreen('home');
     setActiveRoomId(null);
-    flashToast('Room deleted', () => setRooms(previous));
   };
 
   const closeSheet = () => setSheet(null);
@@ -214,11 +194,9 @@ export default function App() {
 
   const deleteSub = (roomId, taskId, subId, e) => {
     stopClick(e);
-    const previous = rooms;
     setRooms(rooms.map((r) => (r.id !== roomId ? r : {
       ...r, tasks: r.tasks.map((t) => (t.id !== taskId ? t : resyncSubs({ ...t, subs: t.subs.filter((s) => s.id !== subId) }))),
     })));
-    flashToast('Step deleted', () => setRooms(previous));
   };
 
   const toggleTask = (roomId, taskId, e) => {
@@ -284,9 +262,7 @@ export default function App() {
     if (!name) return;
     let next = rooms;
     if (s.mode === 'shopping') {
-      const previous = shopping;
       setShopping([...shopping, { id: `shop${Date.now()}`, label: name, roomId: s.roomId || '', done: false }]);
-      flashToast('Added to shopping', () => setShopping(previous));
       setSheet(null);
       return;
     }
@@ -295,7 +271,6 @@ export default function App() {
         ...r, tasks: r.tasks.map((t) => (t.id !== s.taskId ? t : resyncSubs({ ...t, subs: [...(t.subs || []), { id: 'sub' + Date.now(), label: name, done: false }] }))),
       }));
       setExpandedTasks((s2) => ({ ...s2, [s.taskId]: true }));
-      flashToast('Step added');
     } else if (s.mode === 'edit') {
       const isDone = s.status === 'done', isDoing = s.status === 'doing', isStuck = s.status === 'stuck';
       next = next.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.map((t) => (t.id === s.taskId ? {
@@ -304,24 +279,19 @@ export default function App() {
         notes: (s.notes || '').trim(),
         completedAt: isDone ? (t.completedAt || Date.now()) : null,
       } : t)) }));
-      flashToast('Saved', () => setRooms(rooms));
     } else if (s.mode === 'renameRoom') {
       if (next.some((r) => r.id !== s.roomId && r.name.toLowerCase() === name.toLowerCase())) {
-        flashToast('You already have a room called that');
         return;
       }
       next = next.map((r) => (r.id !== s.roomId ? r : { ...r, name }));
-      flashToast('Renamed');
     } else if (s.mode === 'job' || s.mode === 'capture') {
       const target = next.find((r) => r.id === s.roomId) || next[0];
       const isDone = s.status === 'done', isDoing = s.status === 'doing', isStuck = s.status === 'stuck';
       next = next.map((r) => (r.id !== target.id ? r : {
         ...r, tasks: [...r.tasks, { id: 't' + Date.now(), label: name, done: isDone, doing: isDoing, stuck: isStuck, stuckReason: isStuck ? (s.stuckReason || '').trim() : '', completedAt: isDone ? Date.now() : null, subs: [] }],
       }));
-      flashToast(s.mode === 'capture' ? 'Added to ' + target.name : 'Job added');
     } else {
       next = [...next, { id: 'r' + Date.now(), name, tasks: [] }];
-      flashToast('Room added');
     }
     setRooms(next);
     setSheet(null);
@@ -329,9 +299,7 @@ export default function App() {
 
   const deleteJob = () => {
     const s = sheet;
-    const previous = rooms;
     setRooms(rooms.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.filter((t) => t.id !== s.taskId) })));
-    flashToast('Job deleted', () => setRooms(previous));
     setSheet(null);
   };
   const moveJob = (direction) => {
@@ -345,7 +313,6 @@ export default function App() {
       [tasks[index], tasks[target]] = [tasks[target], tasks[index]];
       return { ...r, tasks };
     }));
-    flashToast(direction < 0 ? 'Moved up' : 'Moved down');
   };
 
   // ── derived render values ──
@@ -623,7 +590,6 @@ export default function App() {
             onDelete={deleteJob}
           />
         )}
-        {toast && <Toast toast={toast} theme={theme} />}
 
         {syncEnabled && !householdCode && (
           <OnboardSheet

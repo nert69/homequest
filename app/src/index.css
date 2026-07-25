@@ -87,12 +87,6 @@ input:focus, select:focus, textarea:focus {
   from { transform: translate(-50%, -50%) rotate(0); opacity: 1 }
   to { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)); opacity: 0 }
 }
-@keyframes hq-toast {
-  0% { transform: translate(-50%, 14px); opacity: 0 }
-  14% { transform: translate(-50%, 0); opacity: 1 }
-  86% { transform: translate(-50%, 0); opacity: 1 }
-  100% { transform: translate(-50%, -8px); opacity: 0 }
-}
 @keyframes hq-sheet {
   from { transform: translateY(100%) }
   to { transform: none }
