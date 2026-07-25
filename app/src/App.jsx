@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 25';
+const BUILD_LABEL = 'build 26';
 
 // Flattens the overlay scrim (rgba(33,30,24,a)) onto a colour, so a painted
 // surface we can't cover — the browser's status bar strip — can be given the
@@ -130,8 +130,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', scrimOver(theme.cream, overlayScrim));
-  }, [theme.mat, theme.cream, overlayScrim]);
+    meta.setAttribute('content', scrimOver(theme.mat, overlayScrim));
+  }, [theme.mat, overlayScrim]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -518,17 +518,21 @@ export default function App() {
   return (
     <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
 
+      {/* Covers the strip the pinned headers sit below, so scrolling content
+          doesn't show through the gap between them and the status bar. */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 8, background: theme.mat, zIndex: 25 }} />
+
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
         {/* No top padding — each screen's pinned header supplies its own, so
             spacing looks the same whether it's stuck to the top or not. */}
-        <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
+        <div style={{ padding: '8px 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>
               {/* Pinned to the top so cards scroll underneath a deliberate
                   header rather than being clipped by the iOS status bar.
                   Collapses to a compact bar once it's stuck. */}
-              <div style={{ position: 'sticky', top: 0, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14 }}>
+              <div style={{ position: 'sticky', top: 8, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14 }}>
                 <div style={{ position: 'relative', background: theme.cream, borderRadius: '0 0 22px 22px', padding: scrolled ? '12px 18px 14px' : '16px 18px 18px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
                     <div>

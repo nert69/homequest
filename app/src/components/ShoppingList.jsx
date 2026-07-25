@@ -16,7 +16,7 @@ export default function ShoppingList({ theme, matText75, items, rooms, onBack, o
   );
   return (
     <div>
-      <div style={{ position: 'sticky', top: 0, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14, background: theme.cream, borderRadius: '0 0 22px 22px', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px 12px' }}>
+      <div style={{ position: 'sticky', top: 8, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14, background: theme.cream, borderRadius: '0 0 22px 22px', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px 12px' }}>
         <button style={{ width: 44, height: 44, borderRadius: 999, background: theme.mat, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', padding: 0 }} onClick={onBack}>
           <MaterialIcon name="arrow_back" size={21} />
         </button>
