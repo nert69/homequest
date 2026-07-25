@@ -16,20 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 28';
-
-// Flattens the overlay scrim (rgba(33,30,24,a)) onto a colour, so the
-// status-bar strip — a painted surface no overlay can sit on top of — can be
-// given the colour it would have had underneath that scrim.
-function scrimOver(hex, alpha) {
-  if (!alpha) return hex;
-  const n = parseInt(String(hex).replace('#', ''), 16);
-  const mix = (channel, over) => Math.round(channel * (1 - alpha) + over * alpha);
-  const r = mix((n >> 16) & 255, 33);
-  const g = mix((n >> 8) & 255, 30);
-  const b = mix(n & 255, 24);
-  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-}
+const BUILD_LABEL = 'build 29';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -120,12 +107,11 @@ export default function App() {
   // active theme so the bar and the overscroll area blend into the app instead
   // of flashing white or reading as a separate banner.
   //
-  // The status bar strip is painted by the browser, so the dimming overlay
-  // behind a sheet/dialog can't cover it — it stayed bright while the app
-  // beneath it dimmed. While one is open, the tint is pre-dimmed by the same
-  // amount so the strip darkens along with everything else.
-  const overlayScrim = sheet ? 0.42 : confirm ? 0.5 : (syncEnabled && !householdCode) ? 0.55 : 0;
-
+  // Deliberately not attempting to dim this to match a sheet/dialog overlay —
+  // on a real device the status bar strip didn't respond to live updates to
+  // this tag at all (it likely only reads it once, not on every state change),
+  // so the tint just stays fixed rather than chase an effect that can't be
+  // verified from here.
   useEffect(() => {
     document.documentElement.style.background = theme.mat;
     document.body.style.background = theme.mat;
@@ -135,8 +121,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', scrimOver(theme.mat, overlayScrim));
-  }, [theme.mat, overlayScrim]);
+    meta.setAttribute('content', theme.mat);
+  }, [theme.mat]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
