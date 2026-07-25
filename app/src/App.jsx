@@ -16,7 +16,20 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 24';
+const BUILD_LABEL = 'build 25';
+
+// Flattens the overlay scrim (rgba(33,30,24,a)) onto a colour, so a painted
+// surface we can't cover — the browser's status bar strip — can be given the
+// same colour it would have had underneath the scrim.
+function scrimOver(hex, alpha) {
+  if (!alpha) return hex;
+  const n = parseInt(String(hex).replace('#', ''), 16);
+  const mix = (channel, over) => Math.round(channel * (1 - alpha) + over * alpha);
+  const r = mix((n >> 16) & 255, 33);
+  const g = mix((n >> 8) & 255, 30);
+  const b = mix(n & 255, 24);
+  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -102,9 +115,12 @@ export default function App() {
 
   const theme = THEMES[themeKey] || THEMES.camp;
 
-  // iOS tints the status bar from <meta name="theme-color">. It sits directly
-  // above the pinned header, so it takes the header's cream — matching the mat
-  // instead left a hairline seam where the two shades met.
+  // The status bar strip is painted by the browser from <meta name="theme-color">,
+  // so an overlay can't cover it — it stayed bright cream above a dimmed app.
+  // While something is open, the tint is pre-dimmed by the same scrim so the
+  // strip darkens along with everything else.
+  const overlayScrim = sheet ? 0.42 : confirm ? 0.5 : (syncEnabled && !householdCode) ? 0.55 : 0;
+
   useEffect(() => {
     document.documentElement.style.background = theme.mat;
     document.body.style.background = theme.mat;
@@ -114,8 +130,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', theme.cream);
-  }, [theme.mat, theme.cream]);
+    meta.setAttribute('content', scrimOver(theme.cream, overlayScrim));
+  }, [theme.mat, theme.cream, overlayScrim]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
