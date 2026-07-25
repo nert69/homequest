@@ -7,6 +7,7 @@ import {
 import BentoGrid from './components/BentoGrid.jsx';
 import RoomDetail from './components/RoomDetail.jsx';
 import SheetModal from './components/SheetModal.jsx';
+import ConfirmDialog from './components/ConfirmDialog.jsx';
 import OnboardSheet from './components/OnboardSheet.jsx';
 import ShoppingList from './components/ShoppingList.jsx';
 import HistoryList from './components/HistoryList.jsx';
@@ -15,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 22';
+const BUILD_LABEL = 'build 23';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -29,6 +30,7 @@ export default function App() {
   const [householdCode, setHouseholdCodeState] = useState(loadHouseholdCode);
   const [joinError, setJoinError] = useState('');
   const [joinBusy, setJoinBusy] = useState(false);
+  const [confirm, setConfirm] = useState(null);
   // Drives the home header collapsing once it's pinned to the top.
   const [scrolled, setScrolled] = useState(false);
 
@@ -167,12 +169,25 @@ export default function App() {
     setSheet({ mode: 'renameRoom', roomId: room.id, name: room.name });
   };
 
+  // Deleting a room takes its jobs with it and can't be undone, so it's the one
+  // action that asks first.
   const confirmDeleteRoom = () => {
     const room = rooms.find((r) => r.id === activeRoomId);
     if (!room) return;
-    setRooms(rooms.filter((r) => r.id !== room.id));
-    setScreen('home');
-    setActiveRoomId(null);
+    const n = room.tasks.length;
+    setConfirm({
+      title: `Delete ${room.name}?`,
+      body: n
+        ? `This removes the room and its ${n} job${n === 1 ? '' : 's'}. You can't undo it.`
+        : "This removes the room. You can't undo it.",
+      confirmLabel: 'Delete',
+      onConfirm: () => {
+        setRooms(rooms.filter((r) => r.id !== room.id));
+        setScreen('home');
+        setActiveRoomId(null);
+        setConfirm(null);
+      },
+    });
   };
 
   const closeSheet = () => setSheet(null);
@@ -588,6 +603,15 @@ export default function App() {
             onKeyDown={sheetKeyDown}
             onSave={saveSheet}
             onDelete={deleteJob}
+          />
+        )}
+
+        {confirm && (
+          <ConfirmDialog
+            confirm={confirm}
+            theme={theme}
+            onCancel={() => setConfirm(null)}
+            onStop={stopClick}
           />
         )}
 

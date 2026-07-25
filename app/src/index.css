@@ -91,6 +91,10 @@ input:focus, select:focus, textarea:focus {
   from { transform: translateY(100%) }
   to { transform: none }
 }
+@keyframes hq-dialog {
+  from { transform: scale(.94); opacity: 0 }
+  to { transform: none; opacity: 1 }
+}
 
 .hq-settings-divider {
   height: 1px;
