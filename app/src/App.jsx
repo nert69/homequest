@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 23';
+const BUILD_LABEL = 'build 24';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -102,10 +102,9 @@ export default function App() {
 
   const theme = THEMES[themeKey] || THEMES.camp;
 
-  // iOS reveals the plain <html>/<body> background during rubber-band overscroll,
-  // and tints the status bar from <meta name="theme-color">. Point both at the
-  // active theme so the bar and the overscroll area blend into the app instead
-  // of flashing white or reading as a separate banner.
+  // iOS tints the status bar from <meta name="theme-color">. It sits directly
+  // above the pinned header, so it takes the header's cream — matching the mat
+  // instead left a hairline seam where the two shades met.
   useEffect(() => {
     document.documentElement.style.background = theme.mat;
     document.body.style.background = theme.mat;
@@ -115,8 +114,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', theme.mat);
-  }, [theme.mat]);
+    meta.setAttribute('content', theme.cream);
+  }, [theme.mat, theme.cream]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -124,6 +123,14 @@ export default function App() {
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Each screen starts at the top. Without this the scroll position carries
+  // over, so opening a room from halfway down the home screen dropped you
+  // partway down its job list.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setScrolled(false);
+  }, [screen, activeRoomId]);
 
   // ── navigation ──
   const openRoom = (id) => { setScreen('room'); setActiveRoomId(id); };
