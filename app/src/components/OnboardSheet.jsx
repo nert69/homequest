@@ -8,8 +8,8 @@ export default function OnboardSheet({ onCreate, onConfirmCreate, onJoin, joinEr
   const startCreate = () => { setCreatedCode(onCreate()); setMode('create'); };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(33,30,24,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 90, padding: 20, boxSizing: 'border-box' }}>
-      <div style={{ width: '100%', maxWidth: 380, background: '#FFFCF3', borderRadius: 24, padding: 24, boxSizing: 'border-box' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 90, padding: 20, boxSizing: 'border-box' }}>
+      <div style={{ width: '100%', maxWidth: 380, background: '#FFFCF3', border: '1px solid rgba(36,26,51,.14)', borderRadius: 24, padding: 24, boxSizing: 'border-box', boxShadow: '0 24px 60px -18px rgba(36,26,51,.55)' }}>
         {mode === null && (
           <>
             <div style={{ fontWeight: 800, fontSize: 22, color: '#241A33', marginBottom: 8 }}>set up your household</div>
