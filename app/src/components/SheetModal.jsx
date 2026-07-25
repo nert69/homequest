@@ -1,36 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import MaterialIcon from './MaterialIcon.jsx';
 
 export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoomChange, onStatusChange, onStuckReasonChange, onNotesChange, onKeyDown, onSave, onDelete, onAddStep, onMoveUp, onMoveDown }) {
   const autoFocus = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
+  const inputRef = useRef(null);
 
+  // Focused manually with preventScroll rather than via the autoFocus
+  // attribute — the latter scrolls the page behind the sheet to bring the
+  // field into view, which shunted the list up every time a sheet opened.
   useEffect(() => {
-    const body = document.body;
-    const page = document.documentElement;
-    const scrollY = window.scrollY;
-    const previous = {
-      bodyPosition: body.style.position,
-      bodyTop: body.style.top,
-      bodyWidth: body.style.width,
-      bodyOverflow: body.style.overflow,
-      pageOverflow: page.style.overflow,
-    };
+    if (autoFocus && inputRef.current) inputRef.current.focus({ preventScroll: true });
+  }, [autoFocus]);
 
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.width = '100%';
-    body.style.overflow = 'hidden';
-    page.style.overflow = 'hidden';
-
-    return () => {
-      body.style.position = previous.bodyPosition;
-      body.style.top = previous.bodyTop;
-      body.style.width = previous.bodyWidth;
-      body.style.overflow = previous.bodyOverflow;
-      page.style.overflow = previous.pageOverflow;
-      window.scrollTo(0, scrollY);
-    };
-  }, []);
+  // Deliberately no scroll lock on the page behind. position:fixed on the body
+  // shifted the page up by the scroll offset (clipping content behind the sheet
+  // and needing a scrollTo on close that landed off), and overflow:hidden on
+  // the scrolling element resets scroll to the top outright. The overlay below
+  // already blocks touch scrolling via touch-action and overscroll-behavior.
   // Sized with 100dvh rather than inset:0 — in Safari the latter tracks the
   // small viewport, leaving the sheet floating above the bottom of the screen
   // once the address bar collapses.
@@ -43,7 +29,7 @@ export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoo
         </div>
 
         <div className="hq-field-label">{sheet.fieldLabel}</div>
-        <input className="hq-field" style={fieldStyle} placeholder={sheet.placeholder} value={sheet.name} onChange={onNameChange} onKeyDown={onKeyDown} autoFocus={autoFocus} inputMode={sheet.inputMode} />
+        <input ref={inputRef} className="hq-field" style={fieldStyle} placeholder={sheet.placeholder} value={sheet.name} onChange={onNameChange} onKeyDown={onKeyDown} inputMode={sheet.inputMode} />
 
         {sheet.showRoomPick && (
           <>
