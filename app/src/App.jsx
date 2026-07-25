@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 32';
+const BUILD_LABEL = 'build 33';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -104,8 +104,8 @@ export default function App() {
 
   // iOS reveals the plain <html>/<body> background during rubber-band overscroll,
   // and tints the status bar from <meta name="theme-color">. Point both at the
-  // active theme so the bar and the overscroll area blend into the app instead
-  // of flashing white or reading as a separate banner.
+  // active theme. The page/overscroll area uses the mat, while the status bar
+  // uses the same cream as the pinned header so their boundary nearly disappears.
   //
   // Deliberately not attempting to dim this to match a sheet/dialog overlay —
   // on a real device the status bar strip didn't respond to live updates to
@@ -121,8 +121,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', theme.mat);
-  }, [theme.mat]);
+    meta.setAttribute('content', theme.cream);
+  }, [theme.mat, theme.cream]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
