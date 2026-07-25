@@ -16,20 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 26';
-
-// Flattens the overlay scrim (rgba(33,30,24,a)) onto a colour, so a painted
-// surface we can't cover — the browser's status bar strip — can be given the
-// same colour it would have had underneath the scrim.
-function scrimOver(hex, alpha) {
-  if (!alpha) return hex;
-  const n = parseInt(String(hex).replace('#', ''), 16);
-  const mix = (channel, over) => Math.round(channel * (1 - alpha) + over * alpha);
-  const r = mix((n >> 16) & 255, 33);
-  const g = mix((n >> 8) & 255, 30);
-  const b = mix(n & 255, 24);
-  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
-}
+const BUILD_LABEL = 'build 27';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -115,12 +102,10 @@ export default function App() {
 
   const theme = THEMES[themeKey] || THEMES.camp;
 
-  // The status bar strip is painted by the browser from <meta name="theme-color">,
-  // so an overlay can't cover it — it stayed bright cream above a dimmed app.
-  // While something is open, the tint is pre-dimmed by the same scrim so the
-  // strip darkens along with everything else.
-  const overlayScrim = sheet ? 0.42 : confirm ? 0.5 : (syncEnabled && !householdCode) ? 0.55 : 0;
-
+  // iOS reveals the plain <html>/<body> background during rubber-band overscroll,
+  // and tints the status bar from <meta name="theme-color">. Point both at the
+  // active theme so the bar and the overscroll area blend into the app instead
+  // of flashing white or reading as a separate banner.
   useEffect(() => {
     document.documentElement.style.background = theme.mat;
     document.body.style.background = theme.mat;
@@ -130,8 +115,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', scrimOver(theme.mat, overlayScrim));
-  }, [theme.mat, overlayScrim]);
+    meta.setAttribute('content', theme.mat);
+  }, [theme.mat]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -518,21 +503,17 @@ export default function App() {
   return (
     <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
 
-      {/* Covers the strip the pinned headers sit below, so scrolling content
-          doesn't show through the gap between them and the status bar. */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 8, background: theme.mat, zIndex: 25 }} />
-
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
         {/* No top padding — each screen's pinned header supplies its own, so
             spacing looks the same whether it's stuck to the top or not. */}
-        <div style={{ padding: '8px 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
+        <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
 
           {isHome && (
             <div>
               {/* Pinned to the top so cards scroll underneath a deliberate
                   header rather than being clipped by the iOS status bar.
                   Collapses to a compact bar once it's stuck. */}
-              <div style={{ position: 'sticky', top: 8, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14 }}>
+              <div style={{ position: 'sticky', top: 0, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14 }}>
                 <div style={{ position: 'relative', background: theme.cream, borderRadius: '0 0 22px 22px', padding: scrolled ? '12px 18px 14px' : '16px 18px 18px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
                     <div>

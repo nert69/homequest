@@ -42,7 +42,7 @@ export default function RoomDetail({ theme, matText75, roomDetail: rd, onBack, o
     <div>
       {/* Pinned so the job list scrolls under a deliberate header rather than
           being clipped by the iOS status bar. */}
-      <div style={{ position: 'sticky', top: 8, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14, background: theme.cream, borderRadius: '0 0 22px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '10px 16px 12px' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 20, marginLeft: -16, marginRight: -16, marginBottom: 14, background: theme.cream, borderRadius: '0 0 22px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: '10px 16px 12px' }}>
         <button style={{ width: 44, height: 44, borderRadius: 999, background: theme.mat, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none', padding: 0, flexShrink: 0 }} onClick={onBack}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#241A33" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
         </button>
