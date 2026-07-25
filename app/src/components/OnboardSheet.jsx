@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import useModalScrollLock from '../hooks/useModalScrollLock.js';
 
 export default function OnboardSheet({ onCreate, onConfirmCreate, onJoin, joinError, busy }) {
+  useModalScrollLock();
   const [mode, setMode] = useState(null); // null | 'create' | 'join'
   const [code, setCode] = useState('');
   const [createdCode, setCreatedCode] = useState(null);
