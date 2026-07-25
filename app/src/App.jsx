@@ -16,7 +16,20 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 27';
+const BUILD_LABEL = 'build 28';
+
+// Flattens the overlay scrim (rgba(33,30,24,a)) onto a colour, so the
+// status-bar strip — a painted surface no overlay can sit on top of — can be
+// given the colour it would have had underneath that scrim.
+function scrimOver(hex, alpha) {
+  if (!alpha) return hex;
+  const n = parseInt(String(hex).replace('#', ''), 16);
+  const mix = (channel, over) => Math.round(channel * (1 - alpha) + over * alpha);
+  const r = mix((n >> 16) & 255, 33);
+  const g = mix((n >> 8) & 255, 30);
+  const b = mix(n & 255, 24);
+  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -106,6 +119,13 @@ export default function App() {
   // and tints the status bar from <meta name="theme-color">. Point both at the
   // active theme so the bar and the overscroll area blend into the app instead
   // of flashing white or reading as a separate banner.
+  //
+  // The status bar strip is painted by the browser, so the dimming overlay
+  // behind a sheet/dialog can't cover it — it stayed bright while the app
+  // beneath it dimmed. While one is open, the tint is pre-dimmed by the same
+  // amount so the strip darkens along with everything else.
+  const overlayScrim = sheet ? 0.42 : confirm ? 0.5 : (syncEnabled && !householdCode) ? 0.55 : 0;
+
   useEffect(() => {
     document.documentElement.style.background = theme.mat;
     document.body.style.background = theme.mat;
@@ -115,8 +135,8 @@ export default function App() {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', theme.mat);
-  }, [theme.mat]);
+    meta.setAttribute('content', scrimOver(theme.mat, overlayScrim));
+  }, [theme.mat, overlayScrim]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
