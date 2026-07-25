@@ -1,4 +1,8 @@
+import useModalScrollLock from '../hooks/useModalScrollLock.js';
+
 export default function ConfirmDialog({ confirm, theme, onCancel, onStop }) {
+  useModalScrollLock();
+
   return (
     <div
       style={{
