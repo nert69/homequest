@@ -13,9 +13,9 @@ export default defineConfig({
         name: 'HomeQuest',
         short_name: 'HomeQuest',
         description: 'A calm, colourful way to track finishing your home, room by room.',
-        // Tints the iOS status bar so it blends into the app background instead
-        // of reading as a separate banner above the content.
-        theme_color: '#F3EFE5',
+        // Match the cream pinned header so the iOS status-bar boundary is
+        // as unobtrusive as possible in an installed Home Screen app.
+        theme_color: '#FFFCF3',
         background_color: '#F3EFE5',
         display: 'standalone',
         orientation: 'portrait',
