@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import MaterialIcon from './MaterialIcon.jsx';
+import useModalScrollLock from '../hooks/useModalScrollLock.js';
 
 export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoomChange, onStatusChange, onStuckReasonChange, onNotesChange, onKeyDown, onSave, onDelete, onAddStep, onMoveUp, onMoveDown }) {
   const autoFocus = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
   const inputRef = useRef(null);
+  useModalScrollLock('.hq-sheet');
 
   // Focused manually with preventScroll rather than via the autoFocus
   // attribute — the latter scrolls the page behind the sheet to bring the
@@ -12,11 +14,9 @@ export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoo
     if (autoFocus && inputRef.current) inputRef.current.focus({ preventScroll: true });
   }, [autoFocus]);
 
-  // Deliberately no scroll lock on the page behind. position:fixed on the body
-  // shifted the page up by the scroll offset (clipping content behind the sheet
-  // and needing a scrollTo on close that landed off), and overflow:hidden on
-  // the scrolling element resets scroll to the top outright. The overlay below
-  // already blocks touch scrolling via touch-action and overscroll-behavior.
+  // Keep the body's layout untouched so opening a sheet cannot jump the page.
+  // useModalScrollLock cancels only gestures that would escape the sheet into
+  // the page behind it, while still allowing a long sheet itself to scroll.
   // Sized with 100dvh rather than inset:0 — in Safari the latter tracks the
   // small viewport, leaving the sheet floating above the bottom of the screen
   // once the address bar collapses.
