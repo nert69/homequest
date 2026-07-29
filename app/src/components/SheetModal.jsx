@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import MaterialIcon from './MaterialIcon.jsx';
 import useModalScrollLock from '../hooks/useModalScrollLock.js';
 
-export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoomChange, onStatusChange, onStuckReasonChange, onNotesChange, onKeyDown, onSave, onDelete, onAddStep, onMoveUp, onMoveDown }) {
+export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoomChange, onStatusChange, onStuckReasonChange, onNotesChange, onLinkChange, onSourceChange, onKeyDown, onSave, onDelete, onAddStep, onMoveUp, onMoveDown }) {
   const autoFocus = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
   const inputRef = useRef(null);
   useModalScrollLock('.hq-sheet');
@@ -63,6 +63,20 @@ export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoo
           <div style={{ marginTop: 12 }}>
             <div className="hq-field-label">notes <span style={{ textTransform: 'none', letterSpacing: 0 }}>(optional)</span></div>
             <textarea className="hq-field" style={{ ...fieldStyle, minHeight: 92, resize: 'vertical', lineHeight: 1.4 }} placeholder="measurements, paint colour, product link..." value={sheet.notes} onChange={onNotesChange} />
+          </div>
+        )}
+
+        {sheet.showLink && (
+          <div style={{ marginTop: 12 }}>
+            <div className="hq-field-label">purchase link <span style={{ textTransform: 'none', letterSpacing: 0 }}>(optional)</span></div>
+            <input className="hq-field" style={fieldStyle} placeholder="paste a link to buy it online…" value={sheet.link} onChange={onLinkChange} inputMode="url" />
+          </div>
+        )}
+
+        {sheet.showSource && (
+          <div style={{ marginTop: 12 }}>
+            <div className="hq-field-label">from <span style={{ textTransform: 'none', letterSpacing: 0 }}>(optional)</span></div>
+            <input className="hq-field" style={fieldStyle} placeholder="e.g. B&Q, Amazon, IKEA…" value={sheet.source} onChange={onSourceChange} />
           </div>
         )}
         {sheet.showEditActions && (

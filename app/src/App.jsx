@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 33';
+const BUILD_LABEL = 'build 34';
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -145,13 +145,20 @@ export default function App() {
   const stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
   const openShopping = () => { setScreen('shopping'); setActiveRoomId(null); };
   const openHistory = () => { setScreen('history'); setActiveRoomId(null); };
-  const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '' });
+  const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '', link: '', source: '' });
+  const openEditShopping = (itemId) => {
+    const item = shopping.find((i) => i.id === itemId);
+    if (!item) return;
+    setSheet({ mode: 'editShopping', itemId, name: item.label, roomId: item.roomId || '', link: item.link || '', source: item.source || '' });
+  };
   const toggleShopping = (itemId) => {
     setShopping(shopping.map((item) => (item.id === itemId ? { ...item, done: !item.done } : item)));
   };
   const deleteShopping = (itemId) => {
     setShopping(shopping.filter((item) => item.id !== itemId));
   };
+  const setSheetLink = (e) => setSheet((s) => ({ ...s, link: e.target.value }));
+  const setSheetSource = (e) => setSheet((s) => ({ ...s, source: e.target.value }));
 
   // ── quick capture ──
   const smartCaptureRoom = () => {
@@ -291,7 +298,14 @@ export default function App() {
     if (!name) return;
     let next = rooms;
     if (s.mode === 'shopping') {
-      setShopping([...shopping, { id: `shop${Date.now()}`, label: name, roomId: s.roomId || '', done: false }]);
+      setShopping([...shopping, { id: `shop${Date.now()}`, label: name, roomId: s.roomId || '', done: false, link: (s.link || '').trim(), source: (s.source || '').trim() }]);
+      setSheet(null);
+      return;
+    }
+    if (s.mode === 'editShopping') {
+      setShopping(shopping.map((item) => (item.id !== s.itemId ? item : {
+        ...item, label: name, roomId: s.roomId || '', link: (s.link || '').trim(), source: (s.source || '').trim(),
+      })));
       setSheet(null);
       return;
     }
@@ -330,6 +344,11 @@ export default function App() {
     const s = sheet;
     setRooms(rooms.map((r) => (r.id !== s.roomId ? r : { ...r, tasks: r.tasks.filter((t) => t.id !== s.taskId) })));
     setSheet(null);
+  };
+  // Dispatches the sheet's delete button to whichever kind of item it's editing.
+  const deleteSheetItem = () => {
+    if (sheet?.mode === 'editShopping') { setShopping(shopping.filter((item) => item.id !== sheet.itemId)); setSheet(null); return; }
+    deleteJob();
   };
   const moveJob = (direction) => {
     const s = sheet;
@@ -471,27 +490,33 @@ export default function App() {
     const isStep = sheet.mode === 'step';
     const isJob = sheet.mode === 'job';
     const isShoppingSheet = sheet.mode === 'shopping';
+    const isEditShopping = sheet.mode === 'editShopping';
+    const anyShoppingSheet = isShoppingSheet || isEditShopping;
     const roomTied = isJob || isEdit || isStep || isRename;
-    const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? roomColor(rooms, theme, sheet.roomId) : isRoomMode ? theme.palette[1] : theme.accent;
+    const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? roomColor(rooms, theme, sheet.roomId) : (isRoomMode || anyShoppingSheet) ? theme.palette[1] : theme.accent;
     const sheetTitleText = textFor(sheetAccent);
     sheetView = {
       accent: sheetAccent,
       titleText: sheetTitleText,
       titleBadgeBg: sheetTitleText === '#241A33' ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
-      icon: isShoppingSheet ? 'shopping_cart' : (isEdit || isRename) ? 'edit' : isStep ? 'playlist_add' : isRoomMode ? 'add_home' : 'add_task',
+      icon: anyShoppingSheet ? 'shopping_cart' : (isEdit || isRename) ? 'edit' : isStep ? 'playlist_add' : isRoomMode ? 'add_home' : 'add_task',
       name: sheet.name,
-      title: isShoppingSheet ? 'add shopping item' : isEdit ? 'edit job' : isRename ? 'rename room' : isStep ? 'add a step' : isRoomMode ? 'add a room' : isCapture ? 'quick add' : '+ add a job',
-      fieldLabel: isShoppingSheet ? 'item' : isRoomMode || isRename ? 'room name' : isStep ? 'step' : 'job',
-      placeholder: isShoppingSheet ? 'e.g. paint rollers' : isRoomMode || isRename ? 'room name…' : isStep ? 'new step…' : isCapture ? 'what needs doing…' : 'e.g. tile the splashback',
-      showDelete: isEdit,
-      saveLabel: isShoppingSheet ? 'add item' : (isEdit || isRename) ? 'save' : isRoomMode ? 'add room' : isStep ? 'add step' : 'add job',
+      title: isShoppingSheet ? 'add shopping item' : isEditShopping ? 'edit shopping item' : isEdit ? 'edit job' : isRename ? 'rename room' : isStep ? 'add a step' : isRoomMode ? 'add a room' : isCapture ? 'quick add' : '+ add a job',
+      fieldLabel: anyShoppingSheet ? 'item' : isRoomMode || isRename ? 'room name' : isStep ? 'step' : 'job',
+      placeholder: anyShoppingSheet ? 'e.g. paint rollers' : isRoomMode || isRename ? 'room name…' : isStep ? 'new step…' : isCapture ? 'what needs doing…' : 'e.g. tile the splashback',
+      showDelete: isEdit || isEditShopping,
+      saveLabel: anyShoppingSheet ? (isEditShopping ? 'save' : 'add item') : (isEdit || isRename) ? 'save' : isRoomMode ? 'add room' : isStep ? 'add step' : 'add job',
       inputMode: 'text',
-      showRoomPick: isCapture || isJob || isShoppingSheet,
+      showRoomPick: isCapture || isJob || anyShoppingSheet,
       roomId: sheet.roomId || '',
-      roomOptions: isShoppingSheet ? [{ id: '', name: 'no room' }, ...rooms.map((r) => ({ id: r.id, name: r.name }))] : (isCapture || isJob) ? rooms.map((r) => ({ id: r.id, name: r.name })) : [],
+      roomOptions: anyShoppingSheet ? [{ id: '', name: 'no room' }, ...rooms.map((r) => ({ id: r.id, name: r.name }))] : (isCapture || isJob) ? rooms.map((r) => ({ id: r.id, name: r.name })) : [],
       showStatus: isCapture || isJob || isEdit,
       showEditActions: isEdit,
       showNotes: isEdit,
+      showLink: anyShoppingSheet,
+      showSource: anyShoppingSheet,
+      link: sheet.link || '',
+      source: sheet.source || '',
       stuckReason: sheet.stuckReason || '',
       notes: sheet.notes || '',
       status: sheet.status || 'todo',
@@ -588,6 +613,7 @@ export default function App() {
               onAdd={openAddShopping}
               onToggle={toggleShopping}
               onDelete={deleteShopping}
+              onEdit={openEditShopping}
             />
           )}
           {isHistory && (
@@ -611,12 +637,14 @@ export default function App() {
             onStatusChange={setSheetStatus}
             onStuckReasonChange={setSheetStuckReason}
             onNotesChange={setSheetNotes}
+            onLinkChange={setSheetLink}
+            onSourceChange={setSheetSource}
             onAddStep={() => setSheet({ mode: 'step', roomId: sheet.roomId, taskId: sheet.taskId, name: '' })}
             onMoveUp={() => moveJob(-1)}
             onMoveDown={() => moveJob(1)}
             onKeyDown={sheetKeyDown}
             onSave={saveSheet}
-            onDelete={deleteJob}
+            onDelete={deleteSheetItem}
           />
         )}
 
