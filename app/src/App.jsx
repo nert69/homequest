@@ -16,7 +16,24 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 34';
+const BUILD_LABEL = 'build 35';
+
+// Home-folder fills based on the Pinboard Study preview, with a light
+// saturation lift. The extra Hallway keeps that study's royal-blue accent.
+const PINBOARD_FOLDER_COLORS = {
+  front: '#4164FF',
+  'downstairs hallway': '#B6A1FB',
+  'downstairs toilet': '#CCF74C',
+  kitchen: '#F5546D',
+  hallway: '#36C8F2',
+  'living room': '#FF71AE',
+  bedroom: '#3CD892',
+  bathroom: '#FFCF33',
+};
+
+const pinboardRoomColor = (room, fallback) => (
+  PINBOARD_FOLDER_COLORS[room?.name?.trim().toLowerCase()] || fallback
+);
 
 export default function App() {
   const [rooms, setRoomsState] = useState(loadRooms);
@@ -380,7 +397,7 @@ export default function App() {
 
   const gradientSet = theme.palette;
   const roomStats = rooms.map((r, idx) => {
-    const bg = gradientSet[idx % gradientSet.length];
+    const bg = pinboardRoomColor(r, gradientSet[idx % gradientSet.length]);
     const textColor = textFor(bg);
     const dark = textColor === '#241A33';
     const done = r.tasks.filter((t) => t.done).length;
@@ -389,9 +406,27 @@ export default function App() {
     const pct = total ? Math.round((done / total) * 100) : 0;
     const complete = total > 0 && done === total;
     const stage = stageFor(done, total);
+    const openTasks = r.tasks.filter((t) => !t.done);
+    const doingTask = openTasks.find((t) => t.doing);
+    let slips;
+    if (complete) {
+      slips = [{ label: 'all done', status: 'complete' }];
+    } else if (doingTask) {
+      const remaining = openTasks.length - 1;
+      slips = [{ label: doingTask.label, status: 'doing' }];
+      if (remaining > 0) slips.push({ label: `+${remaining} more inside`, status: '' });
+    } else if (openTasks.length > 0) {
+      slips = [
+        { label: `${openTasks.length} job${openTasks.length === 1 ? '' : 's'} inside`, status: 'open' },
+        { decorative: true },
+      ];
+    } else {
+      slips = [{ label: 'empty folder', status: '' }];
+    }
     if (complete) roomsDone++;
     return {
       id: r.id, name: r.name, icon: iconFor(r.name), gradient: bg, done, total, pct, complete, stage, textColor,
+      slips,
       iconBadgeBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
       subColor: dark ? 'rgba(36,26,51,.6)' : 'rgba(255,252,243,.75)',
       barTrack: dark ? 'rgba(36,26,51,.16)' : 'rgba(255,252,243,.3)',
@@ -418,7 +453,7 @@ export default function App() {
   const activeRoomIdx = rooms.findIndex((r) => r.id === activeRoomId);
   const activeRoom = activeRoomIdx >= 0 ? rooms[activeRoomIdx] : null;
   if (activeRoom) {
-    const bg = theme.palette[activeRoomIdx % theme.palette.length];
+    const bg = pinboardRoomColor(activeRoom, theme.palette[activeRoomIdx % theme.palette.length]);
     const done = activeRoom.tasks.filter((t) => t.done).length;
     const total = activeRoom.tasks.length;
     const pct = total ? Math.round((done / total) * 100) : 0;
@@ -447,8 +482,8 @@ export default function App() {
         stuckReason: t.stuck ? (t.stuckReason || '') : '',
         notePreview: (t.notes || '').replace(/\s+/g, ' ').trim(),
         strike: t.done ? 'line-through' : 'none',
-        checkBg: t.done ? '#241A33' : t.stuck ? '#E2542D' : t.doing ? theme.accent : 'transparent',
-        checkColor: t.done ? theme.accent : t.stuck ? '#fff' : t.doing ? '#241A33' : 'transparent',
+        checkBg: t.done ? '#241A33' : t.stuck ? '#E2542D' : t.doing ? bg : 'transparent',
+        checkColor: t.done ? bg : t.stuck ? '#fff' : t.doing ? textColor : 'transparent',
         checkBorder: t.done || t.stuck || t.doing ? 'none' : '2px solid rgba(36,26,51,.25)',
         checkMark: t.done ? 'check' : t.stuck ? 'priority_high' : t.doing ? 'more_horiz' : '',
         isDone: t.done,
@@ -493,7 +528,8 @@ export default function App() {
     const isEditShopping = sheet.mode === 'editShopping';
     const anyShoppingSheet = isShoppingSheet || isEditShopping;
     const roomTied = isJob || isEdit || isStep || isRename;
-    const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? roomColor(rooms, theme, sheet.roomId) : (isRoomMode || anyShoppingSheet) ? theme.palette[1] : theme.accent;
+    const sheetRoom = roomTied ? rooms.find((room) => room.id === sheet.roomId) : null;
+    const sheetAccent = isCapture ? '#3FAE6B' : roomTied ? pinboardRoomColor(sheetRoom, roomColor(rooms, theme, sheet.roomId)) : (isRoomMode || anyShoppingSheet) ? theme.palette[1] : theme.accent;
     const sheetTitleText = textFor(sheetAccent);
     sheetView = {
       accent: sheetAccent,
@@ -532,15 +568,27 @@ export default function App() {
 
 
   return (
-    <div style={{ minHeight: '100dvh', background: theme.mat, color: '#241A33', fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div
+      className={`hq-app-shell${isHome ? ' hq-app-shell--home' : ''}`}
+      style={{
+        minHeight: '100dvh',
+        background: theme.mat,
+        color: '#241A33',
+        fontFamily: "'Space Grotesk', sans-serif",
+        '--hq-folder-paper': theme.cream,
+        '--hq-board-blue': '#4164FF',
+        '--hq-board-coral': '#F5546D',
+        '--hq-board-lime': '#CCF74C',
+      }}
+    >
 
-      <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
+      <div className="hq-app-stage" style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
         {/* No top padding — each screen's pinned header supplies its own, so
             spacing looks the same whether it's stuck to the top or not. */}
         <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
 
           {isHome && (
-            <div>
+            <div className="hq-home-screen">
               {/* Pinned to the top so cards scroll underneath a deliberate
                   header rather than being clipped by the iOS status bar.
                   Collapses to a compact bar once it's stuck. */}

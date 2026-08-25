@@ -22,6 +22,76 @@ body {
   background: #F3EFE5; /* default theme's mat color; JS keeps this in sync with the active theme */
 }
 
+/* Pinterest-board-inspired die-cut print backdrop. The existing interface
+   stays untouched above it; these are deliberately oversized, cropped colour
+   fields rather than icons, stickers or random doodles. */
+.hq-app-shell {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+.hq-app-shell--home {
+  background-image:
+    linear-gradient(rgba(36, 26, 51, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 26, 51, .035) 1px, transparent 1px) !important;
+  background-position: center top;
+  background-size: 24px 24px;
+}
+
+.hq-app-stage {
+  isolation: isolate;
+}
+
+.hq-app-shell--home .hq-app-stage::before,
+.hq-home-screen::before,
+.hq-home-screen::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+/* Cobalt arch, mostly hidden behind the summary and shortcut cards. */
+.hq-app-shell--home .hq-app-stage::before {
+  top: 286px;
+  right: -102px;
+  width: 176px;
+  height: 244px;
+  border-radius: 88px 88px 24px 24px;
+  background: var(--hq-board-blue);
+  transform: rotate(7deg);
+}
+
+.hq-home-screen {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Coral disc peeking into the first part of the room grid. */
+.hq-home-screen::before {
+  top: 430px;
+  left: -102px;
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
+  background: var(--hq-board-coral);
+}
+
+/* Acid-lime strip with repeated die-cut notches. */
+.hq-home-screen::after {
+  top: 1110px;
+  right: -66px;
+  width: 98px;
+  height: 370px;
+  border-radius: 48px 0 0 48px;
+  background:
+    radial-gradient(circle at 0 22px, transparent 0 12px, var(--hq-board-lime) 13px)
+    0 0 / 100% 44px repeat-y;
+  transform: rotate(-3deg);
+}
+
 button, input, select, textarea {
   font: inherit;
   color: inherit;
@@ -216,5 +286,154 @@ textarea:focus-visible {
   font-family: 'DM Sans', sans-serif;
   font-size: 11px;
   font-weight: 700;
+}
+
+/* Layered room folders: task slips sit behind a separate coloured front and
+   physical tab, matching the earlier Pinboard Study construction. */
+.hq-folder {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-width: 0;
+  padding-top: 42px;
+  flex-direction: column;
+  cursor: pointer;
+  animation: hq-folder-in .62s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.hq-folder:nth-child(2) { animation-delay: .05s; }
+.hq-folder:nth-child(3) { animation-delay: .1s; }
+.hq-folder:nth-child(4) { animation-delay: .15s; }
+.hq-folder:nth-child(5) { animation-delay: .2s; }
+.hq-folder:nth-child(6) { animation-delay: .25s; }
+.hq-folder:nth-child(7) { animation-delay: .3s; }
+.hq-folder:nth-child(8) { animation-delay: .35s; }
+
+.hq-folder-slip {
+  position: absolute;
+  z-index: 0;
+  top: 10px;
+  height: 48px;
+  padding: 8px 10px;
+  overflow: hidden;
+  border-radius: 10px 10px 4px 4px;
+  color: #241A33;
+  background: var(--hq-folder-paper, #FFFCF3);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.15;
+  pointer-events: none;
+  text-transform: uppercase;
+  transition: top .28s cubic-bezier(.2, .8, .2, 1), transform .28s cubic-bezier(.2, .8, .2, 1);
+}
+
+.hq-folder-slip > span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hq-folder-slip > small {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  opacity: .5;
+  font-size: 7px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.hq-folder-slip > .hq-folder-slip-lines {
+  display: flex;
+  padding-top: 2px;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hq-folder-slip-lines i {
+  display: block;
+  width: 82%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(36, 26, 51, .16);
+}
+
+.hq-folder-slip-lines i:nth-child(2) { width: 63%; }
+.hq-folder-slip-lines i:nth-child(3) { width: 74%; }
+
+.hq-folder-slip.one {
+  left: 13px;
+  width: 56%;
+  transform: rotate(-3deg);
+}
+
+.hq-folder-slip.two {
+  top: 14px;
+  right: 9px;
+  width: 49%;
+  background: #EFE6D6;
+  transform: rotate(4deg);
+}
+
+.hq-folder-wide .hq-folder-slip.one {
+  left: 24px;
+  width: 41%;
+}
+
+.hq-folder-wide .hq-folder-slip.two {
+  right: 35px;
+  width: 37%;
+}
+
+.hq-folder-front {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  flex: 1 1 auto;
+  border-radius: 8px 21px 21px 21px;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+}
+
+.hq-folder-front::before {
+  content: '';
+  position: absolute;
+  top: -17px;
+  left: 0;
+  width: 48%;
+  height: 25px;
+  border-radius: 13px 18px 0 0;
+  background: var(--hq-folder-color);
+  pointer-events: none;
+}
+
+.hq-folder:active .hq-folder-front {
+  transform: translateY(1px) scale(.985);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hq-folder:hover .hq-folder-front {
+    transform: translateY(-4px);
+  }
+
+  .hq-folder:hover .hq-folder-slip.one {
+    top: 1px;
+    transform: rotate(-5deg) translateY(-4px);
+  }
+
+  .hq-folder:hover .hq-folder-slip.two {
+    top: 5px;
+    transform: rotate(5deg) translateY(-3px);
+  }
+}
+
+@keyframes hq-folder-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotate(.8deg);
+  }
 }
 

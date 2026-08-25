@@ -25,9 +25,47 @@ function AddButton({ room, size = 26, fontSize = 18, style = {} }) {
   );
 }
 
+function FolderShell({ room, outerStyle, frontStyle, children }) {
+  const wide = outerStyle.gridColumn === 'span 2';
+  return (
+    <div
+      className={`hq-folder${wide ? ' hq-folder-wide' : ''}`}
+      style={{ ...outerStyle, '--hq-folder-color': room.gradient, color: room.textColor }}
+      onClick={room.onOpen}
+    >
+      {(room.slips || []).map((slip, index) => (
+        <span
+          aria-hidden="true"
+          className={`hq-folder-slip ${index === 0 ? 'one' : 'two'}`}
+          key={`${room.id}-slip-${index}`}
+        >
+          {slip.decorative ? (
+            <span className="hq-folder-slip-lines">
+              <i />
+              <i />
+              <i />
+            </span>
+          ) : (
+            <>
+              <span>{slip.label}</span>
+              {slip.status && <small>{slip.status}</small>}
+            </>
+          )}
+        </span>
+      ))}
+      <div
+        className="hq-folder-front hq-room-card"
+        style={{ ...frontStyle, background: room.gradient, color: room.textColor }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function WideCard({ room }) {
   return (
-    <div className="hq-room-card" style={{ gridColumn: 'span 2', position: 'relative', background: room.gradient, borderRadius: 16, padding: '16px 15px 13px', cursor: 'pointer', color: room.textColor }} onClick={room.onOpen}>
+    <FolderShell room={room} outerStyle={{ gridColumn: 'span 2' }} frontStyle={{ position: 'relative', padding: '16px 15px 13px', cursor: 'pointer' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 9 }}>
         <IconBadge room={room} />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -40,13 +78,13 @@ function WideCard({ room }) {
         <AddButton room={room} />
       </div>
       <ProgressBar pct={room.pct} track={room.barTrack} fill={room.barFill} />
-    </div>
+    </FolderShell>
   );
 }
 
 function TallCard({ room }) {
   return (
-    <div className="hq-room-card" style={{ gridColumn: 'span 1', gridRow: 'span 2', position: 'relative', background: room.gradient, borderRadius: 16, padding: '16px 15px 13px', display: 'flex', flexDirection: 'column', cursor: 'pointer', color: room.textColor }} onClick={room.onOpen}>
+    <FolderShell room={room} outerStyle={{ gridColumn: 'span 1', gridRow: 'span 2' }} frontStyle={{ position: 'relative', padding: '16px 15px 13px', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
       <div style={{ marginBottom: 9 }}><IconBadge room={room} /></div>
       <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.2 }}>{room.name}</div>
       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 12, color: room.subColor }}>{room.stage.label} · {room.done}/{room.total}</div>
@@ -54,26 +92,26 @@ function TallCard({ room }) {
       <div style={{ fontWeight: 800, fontSize: 19, marginBottom: 9 }}>{room.pct}%</div>
       <ProgressBar pct={room.pct} track={room.barTrack} fill={room.barFill} />
       <AddButton room={room} style={{ position: 'absolute', top: 14, right: 13 }} />
-    </div>
+    </FolderShell>
   );
 }
 
 function SmCard({ room }) {
   return (
-    <div className="hq-room-card" style={{ gridColumn: 'span 1', position: 'relative', background: room.gradient, borderRadius: 16, padding: '16px 15px 13px', cursor: 'pointer', color: room.textColor }} onClick={room.onOpen}>
+    <FolderShell room={room} outerStyle={{ gridColumn: 'span 1' }} frontStyle={{ position: 'relative', padding: '16px 15px 13px', cursor: 'pointer' }}>
       <div style={{ marginBottom: 9 }}><IconBadge room={room} /></div>
       <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.2 }}>{room.name}</div>
       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 12, color: room.subColor }}>{room.stage.label} · {room.done}/{room.total}</div>
       <div style={{ fontWeight: 800, fontSize: 19, marginTop: 8 }}>{room.pct}%</div>
       <div style={{ marginTop: 8 }}><ProgressBar pct={room.pct} track={room.barTrack} fill={room.barFill} /></div>
       <AddButton room={room} style={{ position: 'absolute', top: 14, right: 13 }} />
-    </div>
+    </FolderShell>
   );
 }
 
 function BigCard({ room }) {
   return (
-    <div className="hq-room-card" style={{ gridColumn: 'span 2', gridRow: 'span 2', position: 'relative', background: room.gradient, borderRadius: 18, padding: '20px 19px 17px', display: 'flex', flexDirection: 'column', cursor: 'pointer', color: room.textColor }} onClick={room.onOpen}>
+    <FolderShell room={room} outerStyle={{ gridColumn: 'span 2', gridRow: 'span 2' }} frontStyle={{ position: 'relative', padding: '20px 19px 17px', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, marginBottom: 14 }}>
         <IconBadge room={room} />
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
@@ -87,28 +125,28 @@ function BigCard({ room }) {
       <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.2 }}>{room.name}</div>
       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 12, color: room.subColor, marginBottom: 10 }}>{room.stage.label} · {room.done}/{room.total}</div>
       <ProgressBar pct={room.pct} track={room.barTrack} fill={room.barFill} height={10} />
-    </div>
+    </FolderShell>
   );
 }
 
 function DoneCard({ room }) {
   return (
-    <div className="hq-room-card" style={{ gridColumn: 'span 1', position: 'relative', background: room.gradient, borderRadius: 16, padding: '14px 15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer', minHeight: 88, color: room.textColor }} onClick={room.onOpen}>
+    <FolderShell room={room} outerStyle={{ gridColumn: 'span 1' }} frontStyle={{ position: 'relative', padding: '14px 15px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer', minHeight: 88 }}>
       <div style={{ fontWeight: 800, fontSize: 16 }}>{room.name}</div>
       <div style={{ borderRadius: 5, padding: '3px 8px', fontWeight: 800, fontSize: 9, textTransform: 'uppercase', letterSpacing: '.5px', background: '#241A33', color: '#FFFCF3', alignSelf: 'flex-start' }}>DONE &#10003;</div>
-    </div>
+    </FolderShell>
   );
 }
 
 function DoneWideCard({ room }) {
   return (
-    <div className="hq-room-card" style={{ gridColumn: 'span 2', position: 'relative', background: room.gradient, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, cursor: 'pointer', color: room.textColor }} onClick={room.onOpen}>
+    <FolderShell room={room} outerStyle={{ gridColumn: 'span 2' }} frontStyle={{ position: 'relative', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, cursor: 'pointer' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 11, minWidth: 0 }}>
         <IconBadge room={room} />
         <div style={{ fontWeight: 800, fontSize: 16, lineHeight: 1.2 }}>{room.name}</div>
       </div>
       <div style={{ borderRadius: 5, padding: '3px 8px', fontWeight: 800, fontSize: 9, textTransform: 'uppercase', letterSpacing: '.5px', background: '#241A33', color: '#FFFCF3', flexShrink: 0 }}>DONE &#10003;</div>
-    </div>
+    </FolderShell>
   );
 }
 
