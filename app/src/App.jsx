@@ -16,7 +16,7 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 35';
+const BUILD_LABEL = 'build 36';
 
 // Home-folder fills based on the Pinboard Study preview, with a light
 // saturation lift. The extra Hallway keeps that study's royal-blue accent.
@@ -592,7 +592,7 @@ export default function App() {
               {/* Pinned to the top so cards scroll underneath a deliberate
                   header rather than being clipped by the iOS status bar.
                   Collapses to a compact bar once it's stuck. */}
-              <div style={{ position: 'sticky', top: 0, zIndex: 95, marginLeft: -16, marginRight: -16, marginBottom: 14 }}>
+              <div className="hq-home-pinned-header" style={{ position: 'sticky', top: 0, zIndex: 95, marginLeft: -16, marginRight: -16, marginBottom: 14, '--hq-pinned-bg': theme.cream }}>
                 <div style={{ position: 'relative', background: theme.cream, borderRadius: '0 0 22px 22px', padding: scrolled ? '12px 18px 14px' : '16px 18px 18px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
                     <div>

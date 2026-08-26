@@ -69,6 +69,20 @@ body {
   isolation: isolate;
 }
 
+/* Safari can expose a sub-pixel of the patterned page while compositing the
+   collapsing sticky header. Bleed the same cream a few pixels above the
+   header so it meets the native iOS status-bar tint without a hairline. */
+.hq-home-pinned-header::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--hq-pinned-bg, #FFFCF3);
+  pointer-events: none;
+}
+
 /* Coral disc peeking into the first part of the room grid. */
 .hq-home-screen::before {
   top: 430px;
