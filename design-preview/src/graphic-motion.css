@@ -32,5 +32,6 @@
 ::view-transition-old(room-panel),::view-transition-new(room-panel){height:100%}
 
 /* 6. On first open the room cards rise in one after another. */
-.graphic-grid.is-intro .graphic-card{animation:card-rise .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 45ms)}
-@keyframes card-rise{from{opacity:0;transform:translateY(12px)}}
+.graphic-grid.is-intro-waiting .graphic-card{opacity:0}
+.graphic-grid.is-intro-playing .graphic-card{animation:card-rise .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 75ms)}
+@keyframes card-rise{from{opacity:0;transform:translateY(20px)}}
