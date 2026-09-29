@@ -1,0 +1,36 @@
+/* Small motion pass. graphic.css already turns every CSS animation and
+   transition off under Reduce Motion; the JS-driven bits check it too. */
+
+/* 1. Completing a job: lime fills out from the centre, then the tick draws on. */
+.graphic-job .graphic-check,
+.graphic-job[data-complete=true] .graphic-check{background:transparent}
+.graphic-check{transition:border-color .18s,transform .15s}
+.graphic-check::before{content:"";position:absolute;inset:-2px;border-radius:50%;background:var(--graphic-lime);transform:scale(0);transition:transform .2s cubic-bezier(.3,.7,.4,1)}
+.graphic-job[data-complete=true] .graphic-check::before{transform:scale(1);transition-timing-function:cubic-bezier(.2,1.25,.4,1)}
+.graphic-check svg{position:relative;z-index:1}
+/* Both marks are always rendered and stacked, so going in-progress -> done
+   swaps them with a transition rather than a fresh mount. */
+.graphic-check .graphic-partial{position:absolute;inset:15%;z-index:1}
+.graphic-partial path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .12s ease-in}
+.graphic-check[data-partial=true] .graphic-partial path{stroke-dashoffset:0;transition:stroke-dashoffset .2s cubic-bezier(.5,0,.3,1)}
+.graphic-tick{animation:none}
+.graphic-tick path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .12s ease-in}
+.graphic-job[data-complete=true] .graphic-tick path{stroke-dashoffset:0;transition:stroke-dashoffset .24s cubic-bezier(.5,0,.3,1) .1s}
+
+/* 3. The done count rolls to its new number. */
+.graphic-room .graphic-count{animation:none}
+.graphic-roll{display:inline-block;overflow:hidden;vertical-align:bottom;line-height:1.2}
+.graphic-roll>span{display:inline-block}
+.graphic-roll>[data-roll=up]{animation:roll-up .32s cubic-bezier(.2,.8,.2,1)}
+.graphic-roll>[data-roll=down]{animation:roll-down .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes roll-up{from{transform:translateY(100%)}}
+@keyframes roll-down{from{transform:translateY(-100%)}}
+
+/* 4. A room card morphs into the room screen and back. */
+::view-transition-group(*){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.24s}
+::view-transition-old(room-panel),::view-transition-new(room-panel){height:100%}
+
+/* 6. On first open the room cards rise in one after another. */
+.graphic-grid.is-intro .graphic-card{animation:card-rise .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 45ms)}
+@keyframes card-rise{from{opacity:0;transform:translateY(12px)}}

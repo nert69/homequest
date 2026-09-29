@@ -8,6 +8,7 @@ import './graphic.css'
 import './graphic-room-refined.css'
 import './graphic-art-fix.css'
 import './graphic-polish.css'
+import './graphic-motion.css'
 import App from './App.jsx'
 
 // Without this, an already-installed home-screen app can keep showing an old

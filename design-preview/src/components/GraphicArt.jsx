@@ -1,12 +1,13 @@
 import { useId } from 'react';
 const positions = [[135,380,258,278],[535,389,320,280],[82,793,336,281],[539,797,339,269],[159,1201,188,288],[599,1208,210,286]];
 export function artIndex(name) { const n=name.toLowerCase(); return n.includes('kitchen')?0:n.includes('living')||n.includes('lounge')?1:n.includes('bath')||n.includes('toilet')?2:n.includes('bed')?3:n.includes('hall')?4:5; }
-export default function GraphicArt({name}) {
+export default function GraphicArt({name,morph}) {
+ const style=morph?{viewTransitionName:morph}:undefined;
  const id=useId(), n=name.toLowerCase();
  const custom=n.includes('toilet')?'/downstairs-toilet.png':n.includes('downstairs')&&n.includes('hall')?'/downstairs-hallway.png':null;
- if(custom) return <div className="graphic-art" aria-hidden="true"><img src={custom} alt="" style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/></div>;
+ if(custom) return <div className="graphic-art" aria-hidden="true" style={style}><img src={custom} alt="" style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/></div>;
  const [x,y,w,h]=positions[artIndex(name)];
- return <div className="graphic-art" aria-hidden="true"><svg viewBox={`${x} ${y} ${w} ${h}`} preserveAspectRatio="xMidYMid meet">
+ return <div className="graphic-art" aria-hidden="true" style={style}><svg viewBox={`${x} ${y} ${w} ${h}`} preserveAspectRatio="xMidYMid meet">
   <defs>
    <clipPath id={`${id}-bounds`}>{artIndex(name)===2?<path d="M150 793H418V1074H82V830H150Z"/>:<rect x={x} y={y} width={w} height={h}/>}</clipPath>
    <filter id={id} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">

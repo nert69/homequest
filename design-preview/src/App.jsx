@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { artIndex } from './components/GraphicArt.jsx';
 import {
   THEMES, loadRooms, saveRooms, loadTheme, saveTheme, loadShopping, saveShopping, stageFor,
@@ -41,6 +42,20 @@ export default function App() {
   const [shopping, setShoppingState] = useState(loadShopping);
   const [screen, setScreen] = useState('home');
   const [activeRoomId, setActiveRoomId] = useState(null);
+  // The room whose card morphs into (and back out of) the room screen.
+  const [morphRoomId, setMorphRoomId] = useState(null);
+  // Jobs just ticked stay put briefly so the tick can draw where it was
+  // tapped, before sliding into the finished pile at the bottom.
+  const [settling, setSettling] = useState(() => new Set());
+  const settleTimers = useRef({});
+  const settle = (taskId) => {
+    clearTimeout(settleTimers.current[taskId]);
+    setSettling((prev) => new Set(prev).add(taskId));
+    settleTimers.current[taskId] = setTimeout(() => {
+      delete settleTimers.current[taskId];
+      setSettling((prev) => { const next = new Set(prev); next.delete(taskId); return next; });
+    }, 650);
+  };
   const [sheet, setSheet] = useState(null);
   const [hideDone, setHideDone] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
@@ -150,8 +165,23 @@ export default function App() {
 
   // ── navigation ──
   const rememberHome = () => { if (screen === 'home') homeScroll.current = window.scrollY; };
-  const openRoom = (id) => { rememberHome(); setScreen('room'); setActiveRoomId(id); };
-  const goHome = () => { setScreen('home'); setActiveRoomId(null); };
+  // Morph the tapped card into the room screen where the browser supports
+  // view transitions (iOS 18+); elsewhere, or with Reduce Motion on, it just
+  // switches instantly as before.
+  const morph = (update) => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !document.startViewTransition) { update(); return; }
+    document.startViewTransition(() => flushSync(update));
+  };
+  const openRoom = (id) => {
+    rememberHome();
+    flushSync(() => setMorphRoomId(id));
+    morph(() => { setScreen('room'); setActiveRoomId(id); });
+  };
+  const goHome = () => {
+    const update = () => { setScreen('home'); setActiveRoomId(null); };
+    if (screen === 'room') morph(update); else update();
+  };
   const stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
   const openShopping = () => { rememberHome(); setScreen('shopping'); setActiveRoomId(null); };
   const openHistory = () => { rememberHome(); setScreen('history'); setActiveRoomId(null); };
@@ -233,6 +263,7 @@ export default function App() {
 
   const toggleSub = (roomId, taskId, subId, e) => {
     stopClick(e);
+    settle(taskId);
     setRooms(rooms.map((r) => (r.id !== roomId ? r : {
       ...r, tasks: r.tasks.map((t) => (t.id !== taskId ? t : resyncSubs({ ...t, subs: t.subs.map((s) => (s.id === subId ? { ...s, done: !s.done } : s)) }))),
     })));
@@ -247,6 +278,7 @@ export default function App() {
 
   const toggleTask = (roomId, taskId, e) => {
     stopClick(e);
+    settle(taskId);
     const nextRooms = rooms.map((r) => (r.id !== roomId ? r : {
       ...r,
       tasks: r.tasks.map((t) => {
@@ -480,8 +512,9 @@ export default function App() {
         onStepsClick: (e) => openStepSheet(activeRoom.id, t.id, e),
       };
     });
-    const orderedTasksView = [...tasksView].sort((a, b) => (a.isDone === b.isDone ? 0 : a.isDone ? 1 : -1));
-    const visibleTasksView = hideDone ? orderedTasksView.filter((t) => !t.isDone) : orderedTasksView;
+    const finished = (t) => t.isDone && !settling.has(t.id);
+    const orderedTasksView = [...tasksView].sort((a, b) => (finished(a) === finished(b) ? 0 : finished(a) ? 1 : -1));
+    const visibleTasksView = hideDone ? orderedTasksView.filter((t) => !finished(t)) : orderedTasksView;
     roomDetail = {
       number: [...rooms].sort((a,b)=>artIndex(a.name)-artIndex(b.name)).findIndex(room=>room.id===activeRoom.id)+1,
       id: activeRoom.id, name: activeRoom.name, icon: iconFor(activeRoom.name), bg, textColor,
@@ -572,7 +605,8 @@ export default function App() {
           {isHome && (
             <HomeDashboard rooms={bentoRooms} overallPct={overallPct} allDone={allDone} allTotal={allTotal} roomsDone={roomsDone}
               shoppingCount={shopping.filter((item) => !item.done).length} completedCount={historyEntries.length}
-              onShopping={openShopping} onHistory={openHistory} onCapture={openCapture} onAddRoom={openAddRoom} />
+              onShopping={openShopping} onHistory={openHistory} onCapture={openCapture} onAddRoom={openAddRoom}
+              morphRoomId={morphRoomId} />
           )}
 
           {isRoom && (
