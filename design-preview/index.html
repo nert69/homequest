@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>HomeQuest · Graphic Preview</title>
+    <meta name="description" content="A calm, colourful way to track finishing your home, room by room." />
+
+    <!-- The manifest link is injected at build time by vite-plugin-pwa. -->
+
+    <!-- Tints the iOS status bar to match the cream pinned header, softening
+         the system boundary between them. Kept in sync at runtime (see App.jsx). -->
+    <meta name="theme-color" content="#F0F0E8" />
+
+    <!-- iOS "Add to Home Screen" standalone app behaviour. A standalone web app
+         always keeps the system status bar — "black-translucent" (which would
+         let content run beneath it) is deprecated and ignored on current iOS,
+         so "default" is used to sit cleanly below the bar rather than have
+         content clipped by it. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="HomeQuest" />
+    <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,1,0&display=block" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

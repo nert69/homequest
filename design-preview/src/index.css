@@ -1,0 +1,453 @@
+:root {
+  color-scheme: light;
+}
+
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+}
+
+/* `none` rather than `contain` — it stops Safari's rubber-band bounce, which
+   otherwise drags the pinned header away from the top and exposes the
+   background behind it when you pull past the top of the list. */
+html {
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overscroll-behavior: none;
+  background: #F3EFE5; /* default theme's mat color; JS keeps this in sync with the active theme */
+}
+
+/* Pinterest-board-inspired die-cut print backdrop. The existing interface
+   stays untouched above it; these are deliberately oversized, cropped colour
+   fields rather than icons, stickers or random doodles. */
+.hq-app-shell {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+.hq-app-shell--home {
+  background-image:
+    linear-gradient(rgba(36, 26, 51, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 26, 51, .035) 1px, transparent 1px) !important;
+  background-position: center top;
+  background-size: 24px 24px;
+}
+
+.hq-app-stage {
+  isolation: isolate;
+}
+
+.hq-app-shell--home .hq-app-stage::before,
+.hq-home-screen::before,
+.hq-home-screen::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
+/* Cobalt arch, mostly hidden behind the summary and shortcut cards. */
+.hq-app-shell--home .hq-app-stage::before {
+  top: 286px;
+  right: -102px;
+  width: 176px;
+  height: 244px;
+  border-radius: 88px 88px 24px 24px;
+  background: var(--hq-board-blue);
+  transform: rotate(7deg);
+}
+
+.hq-home-screen {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Safari can expose a sub-pixel of the patterned page while compositing the
+   collapsing sticky header. Bleed the same cream a few pixels above the
+   header so it meets the native iOS status-bar tint without a hairline. */
+.hq-home-pinned-header::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--hq-pinned-bg, #FFFCF3);
+  pointer-events: none;
+}
+
+/* Coral disc peeking into the first part of the room grid. */
+.hq-home-screen::before {
+  top: 430px;
+  left: -102px;
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
+  background: var(--hq-board-coral);
+}
+
+/* Acid-lime strip with repeated die-cut notches. */
+.hq-home-screen::after {
+  top: 1110px;
+  right: -66px;
+  width: 98px;
+  height: 370px;
+  border-radius: 48px 0 0 48px;
+  background:
+    radial-gradient(circle at 0 22px, transparent 0 12px, var(--hq-board-lime) 13px)
+    0 0 / 100% 44px repeat-y;
+  transform: rotate(-3deg);
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+.hq-field:focus,
+.hq-field:focus-visible {
+  border-color: #241A33 !important;
+  outline: none;
+  box-shadow: none;
+}
+
+.hq-linkbtn:hover {
+  color: #241A33;
+  background: rgba(36, 26, 51, .08);
+}
+
+.hq-linkbtn-danger:hover {
+  color: #E2542D;
+  background: rgba(226, 84, 45, .1);
+}
+
+.hq-addjob:hover {
+  color: #241A33 !important;
+}
+
+@keyframes hq-pop {
+  0% { transform: translate(-50%, -50%) scale(.2) rotate(-16deg); opacity: 0 }
+  12% { opacity: 1 }
+  34% { transform: translate(-50%, -50%) scale(1.16) rotate(6deg) }
+  50% { transform: translate(-50%, -50%) scale(.95) rotate(-3deg) }
+  60% { transform: translate(-50%, -50%) scale(1) rotate(0) }
+  82% { transform: translate(-50%, -50%) scale(1) rotate(0); opacity: 1 }
+  100% { transform: translate(-50%, -50%) scale(.7) rotate(0); opacity: 0 }
+}
+@keyframes hq-rays {
+  from { transform: translate(-50%, -50%) rotate(0) }
+  to { transform: translate(-50%, -50%) rotate(60deg) }
+}
+@keyframes hq-ribbon {
+  0% { opacity: 0; transform: translate(-50%, 12px) }
+  28% { opacity: 0; transform: translate(-50%, 12px) }
+  44% { opacity: 1; transform: translate(-50%, 0) }
+  82% { opacity: 1; transform: translate(-50%, 0) }
+  100% { opacity: 0; transform: translate(-50%, -8px) }
+}
+@keyframes hq-fade {
+  0% { opacity: 0 }
+  15% { opacity: 1 }
+  80% { opacity: 1 }
+  100% { opacity: 0 }
+}
+@keyframes hq-confetti {
+  from { transform: translate(-50%, -50%) rotate(0); opacity: 1 }
+  to { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(var(--rot)); opacity: 0 }
+}
+@keyframes hq-sheet {
+  from { transform: translateY(100%) }
+  to { transform: none }
+}
+@keyframes hq-dialog {
+  from { transform: scale(.94); opacity: 0 }
+  to { transform: none; opacity: 1 }
+}
+
+.hq-settings-divider {
+  height: 1px;
+  margin: 22px 0 18px;
+  background: rgba(36, 26, 51, .1);
+}
+
+.hq-setting-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 2px solid rgba(36, 26, 51, .1);
+  border-radius: 14px;
+  color: #241A33;
+  background: #FFFCF3;
+  cursor: pointer;
+  text-align: left;
+}
+
+.hq-setting-option[data-active="true"] {
+  border-color: #241A33;
+  background: #F3EFE5;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #2F43E0;
+  outline-offset: 3px;
+}
+
+.hq-field:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
+.hq-sheet {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hq-sheet::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+.hq-field-label {
+  margin: 0 2px 6px;
+  color: rgba(36, 26, 51, .55);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.hq-action-button {
+  min-height: 40px;
+  padding: 8px 7px;
+  border: 0;
+  border-radius: 10px;
+  color: rgba(36, 26, 51, .55);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hq-action-button-primary {
+  color: #241A33;
+}
+
+.hq-action-button:hover {
+  background: rgba(36, 26, 51, .06);
+}
+
+@keyframes hq-check-in {
+  0% { transform: scale(.82); }
+  55% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.hq-task-check[data-done="true"] {
+  animation: hq-check-in .2s ease-out;
+}
+
+.hq-home-shortcut {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 13px 14px;
+  border: 0;
+  border-radius: 15px;
+  color: #241A33;
+  background: #FFFCF3;
+  cursor: pointer;
+  text-align: left;
+}
+
+.hq-home-shortcut span:first-child {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.hq-home-shortcut span:last-child {
+  color: rgba(36, 26, 51, .52);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Layered room folders: task slips sit behind a separate coloured front and
+   physical tab, matching the earlier Pinboard Study construction. */
+.hq-folder {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-width: 0;
+  padding-top: 42px;
+  flex-direction: column;
+  cursor: pointer;
+  animation: hq-folder-in .62s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.hq-folder:nth-child(2) { animation-delay: .05s; }
+.hq-folder:nth-child(3) { animation-delay: .1s; }
+.hq-folder:nth-child(4) { animation-delay: .15s; }
+.hq-folder:nth-child(5) { animation-delay: .2s; }
+.hq-folder:nth-child(6) { animation-delay: .25s; }
+.hq-folder:nth-child(7) { animation-delay: .3s; }
+.hq-folder:nth-child(8) { animation-delay: .35s; }
+
+.hq-folder-slip {
+  position: absolute;
+  z-index: 0;
+  top: 10px;
+  height: 48px;
+  padding: 8px 10px;
+  overflow: hidden;
+  border-radius: 10px 10px 4px 4px;
+  color: #241A33;
+  background: var(--hq-folder-paper, #FFFCF3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.15;
+  pointer-events: none;
+  text-transform: uppercase;
+  transition: top .28s cubic-bezier(.2, .8, .2, 1), transform .28s cubic-bezier(.2, .8, .2, 1);
+}
+
+.hq-folder-slip > span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hq-folder-slip > small {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  opacity: .5;
+  font-size: 7px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.hq-folder-slip > .hq-folder-slip-lines {
+  display: flex;
+  padding-top: 2px;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hq-folder-slip-lines i {
+  display: block;
+  width: 82%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(36, 26, 51, .16);
+}
+
+.hq-folder-slip-lines i:nth-child(2) { width: 63%; }
+.hq-folder-slip-lines i:nth-child(3) { width: 74%; }
+
+.hq-folder-slip.one {
+  left: 13px;
+  width: 56%;
+  transform: rotate(-3deg);
+}
+
+.hq-folder-slip.two {
+  top: 14px;
+  right: 9px;
+  width: 49%;
+  background: #EFE6D6;
+  transform: rotate(4deg);
+}
+
+.hq-folder-wide .hq-folder-slip.one {
+  left: 24px;
+  width: 41%;
+}
+
+.hq-folder-wide .hq-folder-slip.two {
+  right: 35px;
+  width: 37%;
+}
+
+.hq-folder-front {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  flex: 1 1 auto;
+  border-radius: 8px 21px 21px 21px;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+}
+
+.hq-folder-front::before {
+  content: '';
+  position: absolute;
+  top: -17px;
+  left: 0;
+  width: 48%;
+  height: 25px;
+  border-radius: 13px 18px 0 0;
+  background: var(--hq-folder-color);
+  pointer-events: none;
+}
+
+.hq-folder:active .hq-folder-front {
+  transform: translateY(1px) scale(.985);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hq-folder:hover .hq-folder-front {
+    transform: translateY(-4px);
+  }
+
+  .hq-folder:hover .hq-folder-slip.one {
+    top: 1px;
+    transform: rotate(-5deg) translateY(-4px);
+  }
+
+  .hq-folder:hover .hq-folder-slip.two {
+    top: 5px;
+    transform: rotate(5deg) translateY(-3px);
+  }
+}
+
+@keyframes hq-folder-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotate(.8deg);
+  }
+}
+
