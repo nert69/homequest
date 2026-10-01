@@ -58,8 +58,10 @@
 
 .graphic-grid.is-intro-waiting .graphic-card{opacity:0}
 .graphic-grid.is-intro-playing .graphic-card{animation:card-fade .28s ease-out var(--d) both,card-deal .9s var(--spring-card) var(--d) both}
-.graphic-grid.is-intro-playing .graphic-card .graphic-art{animation:art-pop .9s var(--spring-art) calc(var(--d) + 140ms) both}
+.graphic-grid.art-hidden .graphic-card .graphic-art{opacity:0}
+.graphic-grid.is-intro-playing.art-in .graphic-card .graphic-art{animation:art-pop .9s var(--spring-art) calc(var(--d) + 140ms) both}
+.graphic-grid.is-intro-playing.art-late .graphic-card .graphic-art{animation:art-pop .9s var(--spring-art) calc(var(--d) * .4) both}
 .graphic-grid.is-intro-playing .graphic-card .graphic-count{animation:soft-in .4s ease-out calc(var(--d) + 320ms) both}
 @keyframes card-fade{from{opacity:0}}
 @keyframes card-deal{from{transform:translateY(54px) scale(.86) rotate(var(--r))}}
-@keyframes art-pop{from{transform:scale(.35) rotate(calc(var(--r) * -2.5))}}
+@keyframes art-pop{from{opacity:0;transform:scale(.35) rotate(calc(var(--r) * -2.5))}}

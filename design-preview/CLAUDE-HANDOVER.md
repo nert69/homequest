@@ -22,8 +22,8 @@ Warm ivory background, flat pale panels, angular colourful editorial illustratio
 - src/components/GraphicArt.jsx: original illustration crops and two distinct new room assets
 - src/graphic*.css: current visual styling and polish
 - src/App.jsx: navigation, matching room numbers and home scroll restoration
-- public/room-art.png: original mockup artwork source
-- public/downstairs-toilet.png and downstairs-hallway.png: new raster illustrations
+- public/room-art.png: original mockup artwork source (served as public/room-art.webp)
+- public/downstairs-toilet.png and downstairs-hallway.png: new raster illustrations (served as 720px .webp copies; regenerate those if the PNGs change)
 
 The image crops use a browser filter to remove the pale source background. Do not reintroduce tight silhouette masks: they previously clipped the brick-balancing hand and other details.
 

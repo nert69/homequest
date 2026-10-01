@@ -1,6 +1,9 @@
 import { useId } from 'react';
+// WebP copies of the PNG sources in public/ (about 150 KB in total instead
+// of 2.6 MB); the two new illustrations are scaled to 720px, still above
+// their largest on-screen size at 3x.
 const base=import.meta.env.BASE_URL;
-export const ART={sheet:base+'room-art.png',toilet:base+'downstairs-toilet.png',hallway:base+'downstairs-hallway.png'};
+export const ART={sheet:base+'room-art.webp',toilet:base+'downstairs-toilet.webp',hallway:base+'downstairs-hallway.webp'};
 const positions = [[135,380,258,278],[535,389,320,280],[82,793,336,281],[539,797,339,269],[159,1201,188,288],[599,1208,210,286]];
 export function artIndex(name) { const n=name.toLowerCase(); return n.includes('kitchen')?0:n.includes('living')||n.includes('lounge')?1:n.includes('bath')||n.includes('toilet')?2:n.includes('bed')?3:n.includes('hall')?4:5; }
 export default function GraphicArt({name,morph}) {
