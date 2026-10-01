@@ -1,7 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { registerSW } from 'virtual:pwa-register'
 import './index.css'
+import './soft-light.css'
+import './colour-study.css'
+import './paper-study.css'
+import './graphic.css'
+import './graphic-room-refined.css'
+import './graphic-art-fix.css'
+import './graphic-polish.css'
+import './graphic-motion.css'
 import App from './App.jsx'
 
 // Without this, an already-installed home-screen app can keep showing an old
@@ -13,8 +20,6 @@ if (import.meta.env.DEV) {
   navigator.serviceWorker?.getRegistrations().then((registrations) => {
     registrations.forEach((registration) => registration.unregister())
   })
-} else {
-  registerSW({ immediate: true, onNeedRefresh() { window.location.reload() } })
 }
 
 createRoot(document.getElementById('root')).render(

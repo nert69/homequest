@@ -22,15 +22,15 @@ export default function ConfirmDialog({ confirm, theme, onCancel, onStop }) {
         }}
         onClick={onStop}
       >
-        <div style={{ fontWeight: 800, fontSize: 20, color: '#241A33', lineHeight: 1.2 }}>{confirm.title}</div>
-        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 14, lineHeight: 1.5, color: 'rgba(36,26,51,.6)', marginTop: 8 }}>{confirm.body}</div>
+        <div style={{ fontWeight: 600, fontSize: 20, color: '#241A33', lineHeight: 1.2 }}>{confirm.title}</div>
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 600, fontSize: 14, lineHeight: 1.5, color: 'rgba(36,26,51,.6)', marginTop: 8 }}>{confirm.body}</div>
         <div style={{ display: 'flex', gap: 10, marginTop: 22 }}>
           <button
             style={{ flex: 1, fontWeight: 600, fontSize: 15, color: 'rgba(36,26,51,.65)', background: 'rgba(36,26,51,.08)', border: 'none', borderRadius: 14, padding: 13, cursor: 'pointer' }}
             onClick={onCancel}
           >Cancel</button>
           <button
-            style={{ flex: 1, fontWeight: 700, fontSize: 15, color: '#FFFCF3', background: '#E2542D', border: 'none', borderRadius: 14, padding: 13, cursor: 'pointer' }}
+            style={{ flex: 1, fontWeight: 500, fontSize: 15, color: '#FFFCF3', background: '#E2542D', border: 'none', borderRadius: 14, padding: 13, cursor: 'pointer' }}
             onClick={confirm.onConfirm}
           >{confirm.confirmLabel}</button>
         </div>

@@ -1,6 +1,8 @@
 # HomeQuest graphic design preview
 
-This folder contains the latest approved visual experiment. The existing app/ folder is unchanged. Do not replace or deploy the production app without Nathan's explicit approval.
+Update: with the owner's go-ahead, this redesign (including both motion passes) has been copied into app/ and is now the real app, with Supabase sync re-enabled and storage under homequest-v1. app/ is the version to change from here; this folder is the isolated preview it came from and can be removed once the app is confirmed on a real iPhone.
+
+This folder contains the latest approved visual experiment.
 
 Preview: https://homequest-graphic-phone.nertnert.chatgpt.site (owner-private; screenshots or local execution may be needed).
 

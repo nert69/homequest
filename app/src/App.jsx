@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
+import { artIndex } from './components/GraphicArt.jsx';
 import {
   THEMES, loadRooms, saveRooms, loadTheme, saveTheme, loadShopping, saveShopping, stageFor,
-  iconFor, textFor, shapePalette, shapeFor, headlineFor, roomColor,
+  iconFor, textFor, shapePalette, shapeFor, roomColor,
   resyncSubs, packShapes, completionHistory,
 } from './data.js';
-import BentoGrid from './components/BentoGrid.jsx';
-import RoomDetail from './components/RoomDetail.jsx';
+import HomeDashboard from './components/GraphicDashboard.jsx';
+import RoomDetail from './components/GraphicRoom.jsx';
 import SheetModal from './components/SheetModal.jsx';
 import ConfirmDialog from './components/ConfirmDialog.jsx';
 import OnboardSheet from './components/OnboardSheet.jsx';
@@ -16,19 +18,18 @@ import {
   fetchHousehold, pushHousehold, subscribeHousehold,
 } from './sync.js';
 
-const BUILD_LABEL = 'build 36';
 
 // Home-folder fills based on the Pinboard Study preview, with a light
 // saturation lift. The extra Hallway keeps that study's royal-blue accent.
 const PINBOARD_FOLDER_COLORS = {
-  front: '#4164FF',
-  'downstairs hallway': '#B6A1FB',
-  'downstairs toilet': '#CCF74C',
-  kitchen: '#F5546D',
-  hallway: '#36C8F2',
-  'living room': '#FF71AE',
-  bedroom: '#3CD892',
-  bathroom: '#FFCF33',
+  front: '#A7D943',
+  'downstairs hallway': '#B3A0D5',
+  'downstairs toilet': '#E9B358',
+  kitchen: '#EA9878',
+  hallway: '#83B8CC',
+  'living room': '#D8A0B8',
+  bedroom: '#83BBA0',
+  bathroom: '#DDD16B',
 };
 
 const pinboardRoomColor = (room, fallback) => (
@@ -41,6 +42,24 @@ export default function App() {
   const [shopping, setShoppingState] = useState(loadShopping);
   const [screen, setScreen] = useState('home');
   const [activeRoomId, setActiveRoomId] = useState(null);
+  // The room whose card morphs into (and back out of) the room screen.
+  const [morphRoomId, setMorphRoomId] = useState(null);
+  // A closed sheet stays mounted for a moment so it can slide away rather
+  // than vanish; it ignores input while it leaves.
+  const lastSheetView = useRef(null);
+  const [leavingSheet, setLeavingSheet] = useState(null);
+  // Jobs just ticked stay put briefly so the tick can draw where it was
+  // tapped, before sliding into the finished pile at the bottom.
+  const [settling, setSettling] = useState(() => new Set());
+  const settleTimers = useRef({});
+  const settle = (taskId) => {
+    clearTimeout(settleTimers.current[taskId]);
+    setSettling((prev) => new Set(prev).add(taskId));
+    settleTimers.current[taskId] = setTimeout(() => {
+      delete settleTimers.current[taskId];
+      setSettling((prev) => { const next = new Set(prev); next.delete(taskId); return next; });
+    }, 650);
+  };
   const [sheet, setSheet] = useState(null);
   const [hideDone, setHideDone] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
@@ -48,8 +67,6 @@ export default function App() {
   const [joinError, setJoinError] = useState('');
   const [joinBusy, setJoinBusy] = useState(false);
   const [confirm, setConfirm] = useState(null);
-  // Drives the home header collapsing once it's pinned to the top.
-  const [scrolled, setScrolled] = useState(false);
 
   const dragRef = useRef(null);
   const roomsRef = useRef(rooms);
@@ -117,7 +134,7 @@ export default function App() {
     setHouseholdCodeState(code);
   };
 
-  const theme = THEMES[themeKey] || THEMES.camp;
+  const theme = { ...(THEMES[themeKey] || THEMES.camp), mat: '#F0F0E8', cream: '#F0F0E8', accent: '#70834A', palette: Object.values(PINBOARD_FOLDER_COLORS) };
 
   // iOS reveals the plain <html>/<body> background during rubber-band overscroll,
   // and tints the status bar from <meta name="theme-color">. Point both at the
@@ -141,27 +158,37 @@ export default function App() {
     meta.setAttribute('content', theme.cream);
   }, [theme.mat, theme.cream]);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   // Each screen starts at the top. Without this the scroll position carries
   // over, so opening a room from halfway down the home screen dropped you
   // partway down its job list.
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setScrolled(false);
+  const homeScroll = useRef(0);
+  useLayoutEffect(() => {
+    window.scrollTo(0, screen === 'home' ? homeScroll.current : 0);
   }, [screen, activeRoomId]);
 
   // ── navigation ──
-  const openRoom = (id) => { setScreen('room'); setActiveRoomId(id); };
-  const goHome = () => { setScreen('home'); setActiveRoomId(null); };
+  const rememberHome = () => { if (screen === 'home') homeScroll.current = window.scrollY; };
+  // Morph the tapped card into the room screen where the browser supports
+  // view transitions (iOS 18+); elsewhere, or with Reduce Motion on, it just
+  // switches instantly as before.
+  const morph = (update) => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !document.startViewTransition) { update(); return; }
+    document.startViewTransition(() => flushSync(update));
+  };
+  const openRoom = (id) => {
+    rememberHome();
+    flushSync(() => setMorphRoomId(id));
+    morph(() => { setScreen('room'); setActiveRoomId(id); });
+  };
+  const goHome = () => {
+    const update = () => { setScreen('home'); setActiveRoomId(null); };
+    if (screen !== 'home') morph(update); else update();
+  };
   const stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
-  const openShopping = () => { setScreen('shopping'); setActiveRoomId(null); };
-  const openHistory = () => { setScreen('history'); setActiveRoomId(null); };
+  const openShopping = () => { rememberHome(); morph(() => { setScreen('shopping'); setActiveRoomId(null); }); };
+  const openHistory = () => { rememberHome(); morph(() => { setScreen('history'); setActiveRoomId(null); }); };
   const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '', link: '', source: '' });
   const openEditShopping = (itemId) => {
     const item = shopping.find((i) => i.id === itemId);
@@ -240,6 +267,7 @@ export default function App() {
 
   const toggleSub = (roomId, taskId, subId, e) => {
     stopClick(e);
+    settle(taskId);
     setRooms(rooms.map((r) => (r.id !== roomId ? r : {
       ...r, tasks: r.tasks.map((t) => (t.id !== taskId ? t : resyncSubs({ ...t, subs: t.subs.map((s) => (s.id === subId ? { ...s, done: !s.done } : s)) }))),
     })));
@@ -254,6 +282,7 @@ export default function App() {
 
   const toggleTask = (roomId, taskId, e) => {
     stopClick(e);
+    settle(taskId);
     const nextRooms = rooms.map((r) => (r.id !== roomId ? r : {
       ...r,
       tasks: r.tasks.map((t) => {
@@ -382,24 +411,13 @@ export default function App() {
 
   // ── derived render values ──
   const matIsLight = textFor(theme.mat) === '#241A33';
-  const matText80 = matIsLight ? 'rgba(36,26,51,.8)' : 'rgba(255,252,243,.8)';
   const matText75 = matIsLight ? 'rgba(36,26,51,.65)' : 'rgba(255,252,243,.75)';
 
-  let allDone = 0, allTotal = 0, roomsDone = 0, monthlyCount = 0;
-  const now = new Date();
-  rooms.forEach((r) => r.tasks.forEach((t) => {
-    if (!t.done) return;
-    if (t.completedAt) {
-      const d = new Date(t.completedAt);
-      if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) monthlyCount++;
-    }
-  }));
+  let allDone = 0, allTotal = 0, roomsDone = 0;
 
   const gradientSet = theme.palette;
   const roomStats = rooms.map((r, idx) => {
     const bg = pinboardRoomColor(r, gradientSet[idx % gradientSet.length]);
-    const textColor = textFor(bg);
-    const dark = textColor === '#241A33';
     const done = r.tasks.filter((t) => t.done).length;
     const total = r.tasks.length;
     allDone += done; allTotal += total;
@@ -425,13 +443,13 @@ export default function App() {
     }
     if (complete) roomsDone++;
     return {
-      id: r.id, name: r.name, icon: iconFor(r.name), gradient: bg, done, total, pct, complete, stage, textColor,
-      slips,
-      iconBadgeBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
-      subColor: dark ? 'rgba(36,26,51,.6)' : 'rgba(255,252,243,.75)',
-      barTrack: dark ? 'rgba(36,26,51,.16)' : 'rgba(255,252,243,.3)',
-      barFill: textColor,
-      addBtnColor: dark ? 'rgba(36,26,51,.45)' : 'rgba(255,252,243,.8)',
+      id: r.id, name: r.name, icon: iconFor(r.name), gradient: '#FFFFFF', accent: bg, done, total, pct, complete, stage, textColor: '#202328',
+      slips, nextTask: doingTask?.label || openTasks[0]?.label || (complete ? 'Every job is finished.' : 'Add your first job'),
+      iconBadgeBg: `${bg}12`,
+      subColor: '#757C86',
+      barTrack: `${bg}16`,
+      barFill: bg,
+      addBtnColor: '#8B929C',
       onOpen: () => openRoom(r.id),
       onQuickAdd: (e) => openAddJob(r.id, e),
     };
@@ -476,7 +494,7 @@ export default function App() {
       })) : [];
       return {
         id: t.id, label: t.label, ...shapeFor(t.label, shapeColors),
-        rowBg: t.done ? 'rgba(36,26,51,.05)' : t.stuck ? 'rgba(226,84,45,.08)' : t.doing ? 'rgba(232,169,63,.1)' : 'transparent',
+        rowBg: t.done ? '#F8FAFB' : t.stuck ? '#FFF5F1' : t.doing ? `${bg}09` : 'transparent',
         labelColor: t.done ? 'rgba(36,26,51,.35)' : '#241A33',
         isStuck: !!t.stuck,
         stuckReason: t.stuck ? (t.stuckReason || '') : '',
@@ -498,9 +516,11 @@ export default function App() {
         onStepsClick: (e) => openStepSheet(activeRoom.id, t.id, e),
       };
     });
-    const orderedTasksView = [...tasksView].sort((a, b) => (a.isDone === b.isDone ? 0 : a.isDone ? 1 : -1));
-    const visibleTasksView = hideDone ? orderedTasksView.filter((t) => !t.isDone) : orderedTasksView;
+    const finished = (t) => t.isDone && !settling.has(t.id);
+    const orderedTasksView = [...tasksView].sort((a, b) => (finished(a) === finished(b) ? 0 : finished(a) ? 1 : -1));
+    const visibleTasksView = hideDone ? orderedTasksView.filter((t) => !finished(t)) : orderedTasksView;
     roomDetail = {
+      number: [...rooms].sort((a,b)=>artIndex(a.name)-artIndex(b.name)).findIndex(room=>room.id===activeRoom.id)+1,
       id: activeRoom.id, name: activeRoom.name, icon: iconFor(activeRoom.name), bg, textColor,
       tileBg: dark ? 'rgba(36,26,51,.12)' : 'rgba(255,255,255,.22)',
       barTrack: dark ? 'rgba(36,26,51,.14)' : 'rgba(255,255,255,.3)',
@@ -560,12 +580,23 @@ export default function App() {
   }
 
   const historyEntries = completionHistory(rooms);
-  const headline = headlineFor(overallPct);
   const isHome = screen === 'home' && !!rooms.length;
   const isRoom = screen === 'room' && !!roomDetail;
   const isShopping = screen === 'shopping';
   const isHistory = screen === 'history';
 
+
+  if (sheetView) lastSheetView.current = sheetView;
+  useEffect(() => {
+    if (sheetView) return undefined;
+    const last = lastSheetView.current;
+    lastSheetView.current = null;
+    if (!last || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+    setLeavingSheet(last);
+    const t = setTimeout(() => setLeavingSheet(null), 240);
+    return () => clearTimeout(t);
+  }, [!!sheetView]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shownSheet = sheetView || leavingSheet;
 
   return (
     <div
@@ -574,7 +605,7 @@ export default function App() {
         minHeight: '100dvh',
         background: theme.mat,
         color: '#241A33',
-        fontFamily: "'Space Grotesk', sans-serif",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
         '--hq-folder-paper': theme.cream,
         '--hq-board-blue': '#4164FF',
         '--hq-board-coral': '#F5546D',
@@ -588,57 +619,10 @@ export default function App() {
         <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
 
           {isHome && (
-            <div className="hq-home-screen">
-              {/* Pinned to the top so cards scroll underneath a deliberate
-                  header rather than being clipped by the iOS status bar.
-                  Collapses to a compact bar once it's stuck. */}
-              <div className="hq-home-pinned-header" style={{ position: 'sticky', top: 0, zIndex: 95, marginLeft: -16, marginRight: -16, marginBottom: 14, '--hq-pinned-bg': theme.cream }}>
-                <div style={{ position: 'relative', background: theme.cream, borderRadius: '0 0 22px 22px', padding: scrolled ? '12px 18px 14px' : '16px 18px 18px', transition: 'padding .22s ease, box-shadow .22s ease', boxShadow: scrolled ? '0 10px 16px -12px rgba(36,26,51,.45)' : 'none' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: scrolled ? 0 : 12, transition: 'margin-bottom .22s ease' }}>
-                    <div>
-                      <div
-                        style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(36,26,51,.5)', marginBottom: scrolled ? 2 : 6, transition: 'margin-bottom .22s ease' }}
-                      >&#10022; HOMEQUEST</div>
-                      <div style={{ fontWeight: 800, fontSize: scrolled ? 15 : 22, lineHeight: 1.15, whiteSpace: 'pre-line', transition: 'font-size .22s ease' }}>{headline}</div>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0, paddingTop: 2 }}>
-                      <div style={{ fontWeight: 800, fontSize: scrolled ? 19 : 28, lineHeight: 1, transition: 'font-size .22s ease' }}>{overallPct}%</div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 11, color: 'rgba(36,26,51,.55)', marginTop: 2 }}>{allDone}/{allTotal} tasks</div>
-                    </div>
-                  </div>
-                  <div style={{ maxHeight: scrolled ? 0 : 60, opacity: scrolled ? 0 : 1, overflow: 'hidden', transition: 'max-height .22s ease, opacity .16s ease' }}>
-                    <div style={{ height: 10, borderRadius: 999, background: 'rgba(36,26,51,.1)', overflow: 'hidden', marginBottom: 10 }}>
-                      <div style={{ height: '100%', borderRadius: 999, background: theme.accent, width: `${overallPct}%`, transition: 'width .5s ease' }} />
-                    </div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 11, color: 'rgba(36,26,51,.55)', marginTop: 7 }}>
-                      {roomsDone} of {rooms.length} rooms done &#183; {monthlyCount} done this month
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
-                <button className="hq-home-shortcut" onClick={openShopping}>
-                  <span>Shopping</span>
-                  <span>{shopping.filter((item) => !item.done).length} to buy</span>
-                </button>
-                <button className="hq-home-shortcut" onClick={openHistory}>
-                  <span>Completed</span>
-                  <span>{historyEntries.length} finished</span>
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 2, marginBottom: 12 }}>
-                <div style={{ fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '.2em', color: matText80 }}>your rooms</div>
-                <button className="hq-addjob" style={{ background: 'none', border: 'none', color: matText80, fontWeight: 700, fontSize: 10, textTransform: 'uppercase', letterSpacing: '.12em', cursor: 'pointer', padding: 0 }} onClick={openCapture}>+ job</button>
-              </div>
-
-              <BentoGrid rooms={bentoRooms} matText75={matText75} cream={theme.cream} accent={theme.palette[1]} accentText={textFor(theme.palette[1])} onAddRoom={openAddRoom} />
-
-              {/* Lets us confirm at a glance which build a device is actually
-                  running, rather than guessing whether a deploy landed. */}
-              <div style={{ marginTop: 18, textAlign: 'center', fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 10, letterSpacing: '.08em', color: 'rgba(36,26,51,.3)' }}>{BUILD_LABEL}</div>
-            </div>
+            <HomeDashboard rooms={bentoRooms} overallPct={overallPct} allDone={allDone} allTotal={allTotal} roomsDone={roomsDone}
+              shoppingCount={shopping.filter((item) => !item.done).length} completedCount={historyEntries.length}
+              onShopping={openShopping} onHistory={openHistory} onCapture={openCapture} onAddRoom={openAddRoom}
+              morphRoomId={morphRoomId} />
           )}
 
           {isRoom && (
@@ -649,6 +633,8 @@ export default function App() {
               onBack={goHome}
               onRename={openRenameRoom}
               onDelete={confirmDeleteRoom}
+              onShopping={openShopping}
+              onHistory={openHistory}
             />
           )}
           {isShopping && (
@@ -674,9 +660,10 @@ export default function App() {
           )}
         </div>
 
-        {sheetView && (
+        {shownSheet && (
           <SheetModal
-            sheet={sheetView}
+            sheet={shownSheet}
+            leaving={!sheetView}
             theme={theme}
             onClose={closeSheet}
             onStop={stopClick}
