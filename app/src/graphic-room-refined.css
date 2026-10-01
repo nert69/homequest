@@ -1,0 +1,27 @@
+/* Room screen: measured against the approved 941px-wide reference. */
+.graphic-room .graphic-header{padding:9px 7px 18px;min-height:54px}
+.graphic-room .graphic-header>span{font-size:15px;letter-spacing:.17em}
+.graphic-room .graphic-header>button{font-family:Arial,sans-serif;font-size:37px}
+.graphic-room-hero{padding:14px 16px 16px;position:relative;border:0;border-radius:0;aspect-ratio:858/544;box-sizing:border-box;display:flex;flex-direction:column}
+.graphic-room-hero .graphic-card-top{min-height:29px;flex-shrink:0}
+.graphic-room-hero .graphic-number{width:27px;height:27px;font-size:12px}
+.graphic-room-hero h1{font-size:11px;letter-spacing:.23em;padding-right:27px}
+.graphic-room-hero .graphic-art{flex:1;min-height:0;width:52%;max-width:none;aspect-ratio:auto;margin:7px auto 1px}
+.graphic-room-hero .graphic-count{font-size:12px;letter-spacing:.22em;margin:6px 0 0}
+.graphic-room-tools{justify-content:flex-end;gap:7px;height:27px;margin:3px 0 5px}
+.graphic-room-tools button,.graphic-room-tools summary{font-size:9px;padding:7px;color:#74756c}
+.graphic-room-tools details[open]{position:absolute;right:16px;border:1px solid var(--graphic-line);padding:4px 10px;background:var(--graphic-bg)}
+.graphic-job{border-bottom:1px solid var(--graphic-line);background:none;border-radius:0;margin:0}
+.graphic-job-line{display:flex;align-items:center;gap:16px;min-height:58px;padding:5px 7px;box-sizing:border-box}
+.graphic-check{border:1px solid #111;border-radius:50%;width:26px;height:26px;flex:0 0 26px;background:transparent;color:#111;padding:0;display:grid;place-items:center;font:22px Arial;cursor:pointer;transition:transform .16s,background .16s}
+.graphic-check:active{transform:scale(.88)}
+.graphic-job[data-complete=true] .graphic-check{background:var(--graphic-lime);border-color:var(--graphic-lime)}
+.graphic-job-label{flex:1;min-width:0;text-align:left;border:0;background:none;font:400 15px/1.45 Arial,sans-serif;padding:10px 0;color:#111;cursor:pointer}
+.graphic-job-label>span{display:block}.graphic-job-label small{display:block;color:#73756c;font-size:11px;line-height:1.4}
+.graphic-job[data-complete=true] .graphic-job-label{color:#7c7d76}
+.graphic-job-options{flex:0 0 30px;width:30px;height:44px;border:0;background:none;font-size:9px;letter-spacing:1px;color:#999b90;cursor:pointer}
+.graphic-subtasks{padding:0 10px 12px 47px;font-size:13px}.graphic-subtasks>div{display:flex;gap:10px;align-items:center;min-height:40px}.graphic-subtasks span{flex:1}.graphic-subtasks button{background:none;border:0;min-width:30px;min-height:36px}
+.graphic-room>.graphic-add{padding:28px 7px 14px;font-size:12px;letter-spacing:.2em}
+.graphic-room .graphic-nav{padding:37px 7px 8px}.graphic-room .graphic-nav button{font-size:10px;letter-spacing:.12em}.graphic-room .graphic-nav button:first-child{border-bottom:1px solid #111;color:#111}
+@media(min-width:600px){.graphic-room-hero{padding:22px 26px 24px}.graphic-room-hero h1{font-size:15px}.graphic-room-hero .graphic-number{width:36px;height:36px;font-size:15px}.graphic-room-hero .graphic-count{font-size:16px}.graphic-job-line{min-height:78px;gap:24px;padding-inline:12px}.graphic-check{width:34px;height:34px;flex-basis:34px;font-size:27px}.graphic-job-label{font-size:20px}.graphic-room .graphic-header>span{font-size:20px}.graphic-room .graphic-nav button{font-size:13px}}
+@media(hover:hover){.graphic-job-options{opacity:0}.graphic-job-line:hover .graphic-job-options,.graphic-job-options:focus-visible{opacity:1}}

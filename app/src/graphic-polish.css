@@ -1,0 +1,25 @@
+.graphic-art:has(img){overflow:visible}
+.graphic-art img{transform:scale(1.14)}
+.graphic-check{transition:background-color .2s,border-color .2s,transform .15s}
+.graphic-check{position:relative;appearance:none;-webkit-appearance:none;box-sizing:border-box;border:1.75px solid #171914;line-height:1;box-shadow:none}
+.graphic-check::after{content:"";position:absolute;inset:-9px;border-radius:50%}
+.graphic-check .graphic-tick,.graphic-check .graphic-partial{display:block;width:70%;height:70%;fill:none;stroke:#111;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transform-origin:center}
+.graphic-job[data-complete=true] .graphic-check{background:#d4f515;border-color:#d4f515}
+.graphic-tick{display:inline-block;animation:tick-in .24s ease-out}
+.graphic-room .graphic-count{animation:count-in .2s ease-out}
+@keyframes tick-in{from{opacity:0;transform:scale(.6) rotate(-15deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes count-in{from{opacity:.5}to{opacity:1}}
+.graphic-support{padding-top:0}
+.graphic-support-header{display:flex;align-items:center;justify-content:space-between;padding:20px 7px!important;border-bottom:0!important;margin:0!important}
+.graphic-support-header span{font-size:16px;font-weight:700;letter-spacing:.17em}
+.graphic-support-header button{font-size:34px;border:0;background:none;width:46px;height:46px;cursor:pointer}
+.graphic-support-title{padding:12px 8px 26px}
+.graphic-support-title h1{font-size:32px;letter-spacing:-.035em;margin:0 0 10px}
+.graphic-support-title p{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#555}
+.graphic-support section{margin-top:24px}
+.graphic-support button,.graphic-support a{min-height:44px}
+.hq-sheet{padding:24px!important;border:1px solid var(--graphic-line)}
+.hq-sheet-title{font-size:22px!important;font-weight:600!important;letter-spacing:-.025em}
+.hq-sheet label{font-size:11px!important;letter-spacing:.1em;text-transform:uppercase}
+.hq-sheet input,.hq-sheet textarea,.hq-sheet select{padding:13px!important;font-size:16px!important}
+@media(prefers-reduced-motion:reduce){.graphic-tick,.graphic-room .graphic-count{animation:none}.graphic-check{transition:none}}
