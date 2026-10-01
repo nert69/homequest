@@ -44,6 +44,10 @@ export default function App() {
   const [activeRoomId, setActiveRoomId] = useState(null);
   // The room whose card morphs into (and back out of) the room screen.
   const [morphRoomId, setMorphRoomId] = useState(null);
+  // A closed sheet stays mounted for a moment so it can slide away rather
+  // than vanish; it ignores input while it leaves.
+  const lastSheetView = useRef(null);
+  const [leavingSheet, setLeavingSheet] = useState(null);
   // Jobs just ticked stay put briefly so the tick can draw where it was
   // tapped, before sliding into the finished pile at the bottom.
   const [settling, setSettling] = useState(() => new Set());
@@ -180,11 +184,11 @@ export default function App() {
   };
   const goHome = () => {
     const update = () => { setScreen('home'); setActiveRoomId(null); };
-    if (screen === 'room') morph(update); else update();
+    if (screen !== 'home') morph(update); else update();
   };
   const stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
-  const openShopping = () => { rememberHome(); setScreen('shopping'); setActiveRoomId(null); };
-  const openHistory = () => { rememberHome(); setScreen('history'); setActiveRoomId(null); };
+  const openShopping = () => { rememberHome(); morph(() => { setScreen('shopping'); setActiveRoomId(null); }); };
+  const openHistory = () => { rememberHome(); morph(() => { setScreen('history'); setActiveRoomId(null); }); };
   const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '', link: '', source: '' });
   const openEditShopping = (itemId) => {
     const item = shopping.find((i) => i.id === itemId);
@@ -582,6 +586,18 @@ export default function App() {
   const isHistory = screen === 'history';
 
 
+  if (sheetView) lastSheetView.current = sheetView;
+  useEffect(() => {
+    if (sheetView) return undefined;
+    const last = lastSheetView.current;
+    lastSheetView.current = null;
+    if (!last || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+    setLeavingSheet(last);
+    const t = setTimeout(() => setLeavingSheet(null), 240);
+    return () => clearTimeout(t);
+  }, [!!sheetView]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shownSheet = sheetView || leavingSheet;
+
   return (
     <div
       className={`hq-app-shell${isHome ? ' hq-app-shell--home' : ''}`}
@@ -644,9 +660,10 @@ export default function App() {
           )}
         </div>
 
-        {sheetView && (
+        {shownSheet && (
           <SheetModal
-            sheet={sheetView}
+            sheet={shownSheet}
+            leaving={!sheetView}
             theme={theme}
             onClose={closeSheet}
             onStop={stopClick}

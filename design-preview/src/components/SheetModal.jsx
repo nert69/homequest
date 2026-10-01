@@ -2,10 +2,14 @@ import { useEffect, useRef } from 'react';
 import MaterialIcon from './MaterialIcon.jsx';
 import useModalScrollLock from '../hooks/useModalScrollLock.js';
 
-export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoomChange, onStatusChange, onStuckReasonChange, onNotesChange, onLinkChange, onSourceChange, onKeyDown, onSave, onDelete, onAddStep, onMoveUp, onMoveDown }) {
+export default function SheetModal({ sheet, leaving, onClose, onStop, onNameChange, onRoomChange, onStatusChange, onStuckReasonChange, onNotesChange, onLinkChange, onSourceChange, onKeyDown, onSave, onDelete, onAddStep, onMoveUp, onMoveDown }) {
   const autoFocus = typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches;
   const inputRef = useRef(null);
   useModalScrollLock('.hq-sheet');
+  // A leaving sheet is a snapshot: drop focus so typing can't reach it.
+  useEffect(() => {
+    if (leaving && document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  }, [leaving]);
 
   // Focused manually with preventScroll rather than via the autoFocus
   // attribute — the latter scrolls the page behind the sheet to bring the
@@ -21,8 +25,8 @@ export default function SheetModal({ sheet, onClose, onStop, onNameChange, onRoo
   // small viewport, leaving the sheet floating above the bottom of the screen
   // once the address bar collapses.
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '100dvh', width: '100%', overflow: 'hidden', overscrollBehavior: 'none', touchAction: 'none', background: 'transparent', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 80 }} onClick={onClose}>
-      <div className="hq-sheet" style={{ width: '100%', maxWidth: 480, maxHeight: 'calc(100% - 8px)', overflowY: 'auto', overscrollBehavior: 'contain', touchAction: 'pan-y', background: '#FFFCF3', border: '1px solid rgba(36,26,51,.12)', boxShadow: '0 -18px 48px -24px rgba(36,26,51,.5)', borderRadius: '24px 24px 0 0', padding: '24px 20px max(52px, calc(env(safe-area-inset-bottom) + 32px))', animation: 'hq-sheet .26s cubic-bezier(.16,1,.3,1)', boxSizing: 'border-box' }} onClick={onStop}>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '100dvh', width: '100%', overflow: 'hidden', overscrollBehavior: 'none', touchAction: 'none', background: 'transparent', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 80, pointerEvents: leaving ? 'none' : undefined }} onClick={onClose}>
+      <div className="hq-sheet" data-leaving={leaving || undefined} style={{ width: '100%', maxWidth: 480, maxHeight: 'calc(100% - 8px)', overflowY: 'auto', overscrollBehavior: 'contain', touchAction: 'pan-y', background: '#FFFCF3', border: '1px solid rgba(36,26,51,.12)', boxShadow: '0 -18px 48px -24px rgba(36,26,51,.5), 0 48px 0 #FFFCF3', borderRadius: '24px 24px 0 0', padding: '24px 20px max(52px, calc(env(safe-area-inset-bottom) + 32px))', animation: leaving ? 'hq-sheet-out .22s cubic-bezier(.4,0,1,1) forwards' : 'hq-sheet .6s var(--spring-sheet, cubic-bezier(.16,1,.3,1))', boxSizing: 'border-box' }} onClick={onStop}>
         <div className="hq-sheet-title" style={{ display: 'flex', alignItems: 'center', gap: 12, borderRadius: 18, padding: '14px 16px', color: sheet.titleText, background: sheet.accent, marginBottom: 18, '--sheet-accent': sheet.accent }}>
           <span aria-hidden="true" style={{ width: 38, height: 38, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: sheet.titleBadgeBg }}><MaterialIcon name={sheet.icon} size={21} /></span>
           <div style={{ fontWeight: 600, fontSize: 19 }}>{sheet.title}</div>

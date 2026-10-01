@@ -65,3 +65,29 @@
 @keyframes card-fade{from{opacity:0}}
 @keyframes card-deal{from{transform:translateY(54px) scale(.86) rotate(var(--r))}}
 @keyframes art-pop{from{opacity:0;transform:scale(.35) rotate(calc(var(--r) * -2.5))}}
+
+/* 7. Shopping and Done: the title rises out of its mask and the rows
+   cascade in on the same spring; on Done each tick badge pops after its
+   row. Only while the screen is entering, so later moves don't replay. */
+.is-entering .graphic-line>span{animation:line-up .65s cubic-bezier(.2,.9,.1,1) both}
+.is-entering .graphic-support-title p,.is-entering>.graphic-add{animation:soft-in .45s ease-out .15s both}
+.is-entering .graphic-row{--row-d:calc(min(var(--i),12) * 40ms + 160ms);animation:card-fade .25s ease-out var(--row-d) both,row-rise .7s var(--spring-card) var(--row-d) both}
+.is-entering .graphic-done-badge{animation:badge-pop .75s var(--spring-art) calc(min(var(--i),12) * 40ms + 280ms) both}
+@keyframes row-rise{from{transform:translateY(18px)}}
+@keyframes badge-pop{from{transform:scale(0) rotate(-40deg)}}
+
+/* 8. The add/edit sheet springs up (a solid shadow below it covers the
+   overshoot) with its contents following in order, and slides away when
+   closed. Screen changes crossfade via the root view transition. */
+:root{
+ --spring-sheet:cubic-bezier(.2,1.1,.4,1);
+ --spring-sheet:linear(0,0.026,0.092,0.184,0.291,0.402,0.512,0.615,0.708,0.79,0.859,0.915,0.96,0.995,1.02,1.037,1.048,1.053,1.054,1.052,1.049,1.043,1.038,1.032,1.026,1.02,1.015,1.011,1.007,1.004,1);
+}
+@keyframes hq-sheet-out{to{transform:translateY(100%)}}
+.hq-sheet:not([data-leaving])>*{animation:soft-in .4s ease-out both}
+.hq-sheet:not([data-leaving])>:nth-child(1){animation-delay:.08s}
+.hq-sheet:not([data-leaving])>:nth-child(2){animation-delay:.13s}
+.hq-sheet:not([data-leaving])>:nth-child(3){animation-delay:.18s}
+.hq-sheet:not([data-leaving])>:nth-child(4){animation-delay:.23s}
+.hq-sheet:not([data-leaving])>:nth-child(5){animation-delay:.28s}
+.hq-sheet:not([data-leaving])>:nth-child(n+6){animation-delay:.32s}
