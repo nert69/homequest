@@ -23,3 +23,7 @@
 .hq-sheet label{font-size:11px!important;letter-spacing:.1em;text-transform:uppercase}
 .hq-sheet input,.hq-sheet textarea,.hq-sheet select{padding:13px!important;font-size:16px!important}
 @media(prefers-reduced-motion:reduce){.graphic-tick,.graphic-room .graphic-count{animation:none}.graphic-check{transition:none}}
+/* The baked mockup crops replace an SVG that sat at 100% and clipped; keep
+   them that size (the 1.14 scale is for the two new padded illustrations). */
+.graphic-art:has(.graphic-art-crop){overflow:hidden}
+.graphic-art img.graphic-art-crop{transform:none}
