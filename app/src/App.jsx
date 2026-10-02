@@ -13,6 +13,7 @@ import ConfirmDialog from './components/ConfirmDialog.jsx';
 import OnboardSheet from './components/OnboardSheet.jsx';
 import ShoppingList from './components/ShoppingList.jsx';
 import HistoryList from './components/HistoryList.jsx';
+import useSwipeBack from './hooks/useSwipeBack.js';
 import {
   syncEnabled, loadHouseholdCode, saveHouseholdCode, generateCode,
   fetchHousehold, pushHousehold, subscribeHousehold,
@@ -177,18 +178,43 @@ export default function App() {
     if (reduce || !document.startViewTransition) { update(); return; }
     document.startViewTransition(() => flushSync(update));
   };
+  // Screens away from home sit one browser-history step above it, so the
+  // back arrow, a swipe, Safari's edge swipe and Android's back button all
+  // land in the same place. Leaving home pushes that step; moving between
+  // non-home screens replaces it. Going back pops it, and the popstate
+  // handler below does the actual switch, morphing only when the app itself
+  // asked (a native gesture has already animated, and a swipe slid off).
+  const backStyle = useRef(null);
+  const showHome = () => { setScreen('home'); setActiveRoomId(null); };
+  const enter = (update) => {
+    const step = { hq: 1 };
+    if (screen === 'home') window.history.pushState(step, ''); else window.history.replaceState(step, '');
+    morph(update);
+  };
+  const back = (style) => {
+    if (window.history.state?.hq) { backStyle.current = style; window.history.back(); }
+    else if (style === 'morph') morph(showHome);
+    else showHome();
+  };
+  useEffect(() => {
+    const onPop = (e) => {
+      if (e.state?.hq) return; // forward onto a screen we no longer know; stay put
+      const style = backStyle.current;
+      backStyle.current = null;
+      if (style === 'morph') morph(showHome); else showHome();
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const openRoom = (id) => {
     rememberHome();
     flushSync(() => setMorphRoomId(id));
-    morph(() => { setScreen('room'); setActiveRoomId(id); });
+    enter(() => { setScreen('room'); setActiveRoomId(id); });
   };
-  const goHome = () => {
-    const update = () => { setScreen('home'); setActiveRoomId(null); };
-    if (screen !== 'home') morph(update); else update();
-  };
+  const goHome = () => { if (screen !== 'home') back('morph'); };
   const stopClick = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
-  const openShopping = () => { rememberHome(); morph(() => { setScreen('shopping'); setActiveRoomId(null); }); };
-  const openHistory = () => { rememberHome(); morph(() => { setScreen('history'); setActiveRoomId(null); }); };
+  const openShopping = () => { if (screen === 'shopping') return; rememberHome(); enter(() => { setScreen('shopping'); setActiveRoomId(null); }); };
+  const openHistory = () => { if (screen === 'history') return; rememberHome(); enter(() => { setScreen('history'); setActiveRoomId(null); }); };
   const openAddShopping = () => setSheet({ mode: 'shopping', name: '', roomId: '', link: '', source: '' });
   const openEditShopping = (itemId) => {
     const item = shopping.find((i) => i.id === itemId);
@@ -248,9 +274,8 @@ export default function App() {
       confirmLabel: 'Delete',
       onConfirm: () => {
         setRooms(rooms.filter((r) => r.id !== room.id));
-        setScreen('home');
-        setActiveRoomId(null);
         setConfirm(null);
+        back('instant');
       },
     });
   };
@@ -597,6 +622,8 @@ export default function App() {
     return () => clearTimeout(t);
   }, [!!sheetView]); // eslint-disable-line react-hooks/exhaustive-deps
   const shownSheet = sheetView || leavingSheet;
+  const stageRef = useRef(null);
+  useSwipeBack(stageRef, screen !== 'home' && !shownSheet && !confirm, () => back('instant'));
 
   return (
     <div
@@ -613,7 +640,7 @@ export default function App() {
       }}
     >
 
-      <div className="hq-app-stage" style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
+      <div className="hq-app-stage" ref={stageRef} style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
         {/* No top padding — each screen's pinned header supplies its own, so
             spacing looks the same whether it's stuck to the top or not. */}
         <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
