@@ -1,5 +1,6 @@
 import MaterialIcon from './MaterialIcon.jsx';
 import useEntering from '../hooks/useEntering.js';
+import DoneCalendar from './DoneCalendar.jsx';
 
 function dateLabel(value) {
   const date = new Date(value);
@@ -22,6 +23,7 @@ export default function HistoryList({ theme, matText75, entries, onBack }) {
     <div className={'graphic-support' + (entering ? ' is-entering' : '')}>
       <header className="graphic-support-header"><span>HOMEQUEST</span><button onClick={onBack} aria-label="Back to rooms">←</button></header>
       <section className="graphic-support-title"><h1><span className="graphic-line"><span>DONE</span></span></h1><p>{entries.length} jobs finished</p></section>
+      <DoneCalendar entries={entries} />
       
       {!entries.length && (
         <div style={{ padding: '36px 22px', textAlign: 'center', borderRadius: 18, background: theme.cream, color: 'rgba(36,26,51,.55)' }}>
