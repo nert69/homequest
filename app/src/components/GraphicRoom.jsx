@@ -14,7 +14,7 @@ function TaskRow({t}) {
      <button className="graphic-job-label" onClick={t.hasSubs?t.onToggleExpand:t.onEdit}><span>{t.label}</span>{t.hasSubs&&<small>{t.subCountLabel}</small>}{t.isStuck&&<small>Stuck{t.stuckReason?' · '+t.stuckReason:''}</small>}{t.notePreview&&<small>{t.notePreview}</small>}</button>
      <button className="graphic-job-options" onClick={t.onEdit} aria-label={'Edit '+t.label}>•••</button>
    </div>
-   {t.chevOpen&&<div className="graphic-subtasks">{t.subsView.map(s=><div key={s.id}><button onClick={s.onToggle} aria-label={'Toggle '+s.label}>{s.checkMark?'✓':'○'}</button><span>{s.label}</span><button onClick={s.onDelete} aria-label={'Delete '+s.label}>×</button></div>)}</div>}
+   {t.chevOpen&&<div className="graphic-subtasks">{t.subsView.map(s=><div key={s.id}><button className="graphic-check graphic-subtask-check" onClick={s.onToggle} aria-label={(s.checkMark?'Mark as not done: ':'Complete ')+s.label} aria-pressed={!!s.checkMark}><svg className="graphic-tick" viewBox="0 0 24 24" aria-hidden="true"><path pathLength="1" d="m5 12 4.5 4.5L19 7"/></svg></button><span>{s.label}</span><button onClick={s.onDelete} aria-label={'Delete '+s.label}>×</button></div>)}</div>}
  </div>;
 }
 export default function GraphicRoom({roomDetail:r,onBack,onRename,onDelete,onShopping,onHistory}) {
