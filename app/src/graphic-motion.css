@@ -98,9 +98,6 @@
    first open the colour rises into each card just after its art pops. */
 .graphic-art>img{width:100%;height:100%;object-fit:contain;display:block}
 .graphic-art>.graphic-art-ghost{position:absolute;inset:0}
-/* A little colour is present even at zero; the full-strength fill still
-   represents the actual completion ratio, without inventing progress. */
-.graphic-art>.graphic-art-tint{position:absolute;inset:0;opacity:.22;pointer-events:none}
 .graphic-art>.graphic-art-ghost~.graphic-art-ink{position:relative;clip-path:inset(calc((1 - var(--fill)) * 100%) 0 0 0);transition:clip-path .9s var(--spring-sheet)}
 .graphic-grid.is-intro-playing .graphic-art-ghost~.graphic-art-ink{animation:fill-rise 1.1s var(--spring-sheet) calc(var(--d) + 420ms) both}
 @keyframes fill-rise{from{clip-path:inset(100% 0 0 0)}}

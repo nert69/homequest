@@ -25,7 +25,7 @@ export default function GraphicArt({name,morph,fill}) {
  const level=fill==null?1:Math.max(0,Math.min(1,fill));
  const style={...(morph?{viewTransitionName:morph}:{}),'--fill':level};
  return <div className="graphic-art" aria-hidden="true" style={style} data-fill={fill==null?undefined:Math.round(level*100)}>
-  {fill!=null&&<><img className={['graphic-art-ghost',kind].filter(Boolean).join(' ')} src={ghost} alt="" decoding="async"/><img className={['graphic-art-tint',kind].filter(Boolean).join(' ')} src={src} alt="" decoding="async"/></>}
+  {fill!=null&&<img className={['graphic-art-ghost',kind].filter(Boolean).join(' ')} src={ghost} alt="" decoding="async"/>}
   <img className={['graphic-art-ink',kind].filter(Boolean).join(' ')} src={src} alt="" decoding="async"/>
  </div>;
 }
