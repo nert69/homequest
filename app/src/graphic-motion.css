@@ -91,3 +91,35 @@
 .hq-sheet:not([data-leaving])>:nth-child(4){animation-delay:.23s}
 .hq-sheet:not([data-leaving])>:nth-child(5){animation-delay:.28s}
 .hq-sheet:not([data-leaving])>:nth-child(n+6){animation-delay:.32s}
+
+/* 9. Rooms colour in as jobs get done. A pale sketch of the illustration
+   sits underneath and the full-colour art is revealed from the bottom up to
+   --fill (done / total). Ticking a job raises the colour on a spring; on the
+   first open the colour rises into each card just after its art pops. */
+.graphic-art>img{width:100%;height:100%;object-fit:contain;display:block}
+.graphic-art>.graphic-art-ghost{position:absolute;inset:0;filter:grayscale(1) contrast(.85);opacity:.3}
+.graphic-art>.graphic-art-ghost~.graphic-art-ink{position:relative;clip-path:inset(calc((1 - var(--fill)) * 100%) 0 0 0);transition:clip-path .9s var(--spring-sheet)}
+.graphic-grid.is-intro-playing .graphic-art-ghost~.graphic-art-ink{animation:fill-rise 1.1s var(--spring-sheet) calc(var(--d) + 420ms) both}
+@keyframes fill-rise{from{clip-path:inset(100% 0 0 0)}}
+
+/* 10. Done calendar: a black panel of day squares, lit lime by how many jobs
+   were finished. Squares cascade in by week; lit ones pop on a spring. */
+.graphic-calendar{margin:0 0 26px}
+.graphic-calendar-stats{display:flex;justify-content:space-between;gap:12px;margin:0 2px 10px;font-size:10px;letter-spacing:.16em;color:#55574f}
+.graphic-calendar-stats span:first-child{color:#111}
+/* !important and the extra specificity beat graphic.css stripping backgrounds
+   from .graphic-support section > div */
+.graphic-support .graphic-calendar .graphic-calendar-panel{background:#111!important;border-radius:4px!important;padding:12px 12px 13px}
+.graphic-calendar-months,.graphic-calendar-grid{display:grid;grid-template-columns:repeat(var(--weeks),minmax(0,1fr));column-gap:3px}
+.graphic-calendar-months{margin-bottom:7px;font-size:9px;letter-spacing:.06em;color:#9a9b92;height:11px}
+.graphic-calendar-months b{font-weight:400;white-space:nowrap;overflow:visible}
+.graphic-calendar-grid{grid-template-rows:repeat(7,auto);row-gap:3px}
+.graphic-calendar-grid i{display:block;aspect-ratio:1;border-radius:2px;background:#2a2b26}
+.graphic-calendar-grid i[data-future]{background:transparent}
+.graphic-calendar-grid i[data-level="1"]{background:color-mix(in srgb,var(--graphic-lime) 55%,#2a2b26)}
+.graphic-calendar-grid i[data-level="2"]{background:color-mix(in srgb,var(--graphic-lime) 78%,#2a2b26)}
+.graphic-calendar-grid i[data-level="3"]{background:var(--graphic-lime)}
+.graphic-calendar-grid i[data-today]{box-shadow:0 0 0 1px var(--graphic-lime)}
+.is-entering .graphic-calendar-grid i{animation:card-fade .3s ease-out calc(var(--w) * 14ms + 120ms) both}
+.is-entering .graphic-calendar-grid i:not([data-level="0"]):not([data-future]){animation:card-fade .2s ease-out calc(var(--w) * 14ms + 200ms) both,cell-pop .7s var(--spring-art) calc(var(--w) * 14ms + 200ms) both}
+@keyframes cell-pop{from{transform:scale(.2)}}

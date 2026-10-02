@@ -5,14 +5,24 @@
 // filter ran on the main thread in Safari for every card on every visit to
 // home and left the page blank for seconds. Sources are in art-source/.
 // The two new illustrations are 720px WebP copies of their PNGs.
+//
+// `fill` (0–1) is how finished the room is: a pale sketch sits underneath and
+// the full-colour art is revealed from the bottom up to that level, so a room
+// colours in as its jobs get done. Leave it out for full colour.
 const base=import.meta.env.BASE_URL;
 const CROPS=['kitchen','living','bathroom','bedroom','hall','other'].map((n)=>base+'art/'+n+'.webp');
 export const ART={crops:CROPS,toilet:base+'downstairs-toilet.webp',hallway:base+'downstairs-hallway.webp'};
 export const ART_SOURCES=[...CROPS,ART.toilet,ART.hallway];
 export function artIndex(name) { const n=name.toLowerCase(); return n.includes('kitchen')?0:n.includes('living')||n.includes('lounge')?1:n.includes('bath')||n.includes('toilet')?2:n.includes('bed')?3:n.includes('hall')?4:5; }
-export default function GraphicArt({name,morph}) {
- const style=morph?{viewTransitionName:morph}:undefined;
+export default function GraphicArt({name,morph,fill}) {
  const n=name.toLowerCase();
  const custom=n.includes('toilet')?ART.toilet:n.includes('downstairs')&&n.includes('hall')?ART.hallway:null;
- return <div className="graphic-art" aria-hidden="true" style={style}><img className={custom?undefined:'graphic-art-crop'} src={custom||CROPS[artIndex(name)]} alt="" decoding="async" style={{width:'100%',height:'100%',objectFit:'contain',display:'block'}}/></div>;
+ const src=custom||CROPS[artIndex(name)];
+ const kind=custom?undefined:'graphic-art-crop';
+ const level=fill==null?1:Math.max(0,Math.min(1,fill));
+ const style={...(morph?{viewTransitionName:morph}:{}),'--fill':level};
+ return <div className="graphic-art" aria-hidden="true" style={style} data-fill={fill==null?undefined:Math.round(level*100)}>
+  {fill!=null&&<img className={['graphic-art-ghost',kind].filter(Boolean).join(' ')} src={src} alt="" decoding="async"/>}
+  <img className={['graphic-art-ink',kind].filter(Boolean).join(' ')} src={src} alt="" decoding="async"/>
+ </div>;
 }
