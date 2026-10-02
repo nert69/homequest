@@ -622,8 +622,11 @@ export default function App() {
     return () => clearTimeout(t);
   }, [!!sheetView]); // eslint-disable-line react-hooks/exhaustive-deps
   const shownSheet = sheetView || leavingSheet;
-  const stageRef = useRef(null);
-  useSwipeBack(stageRef, screen !== 'home' && !shownSheet && !confirm, () => back('instant'));
+  // The swipe slides the current screen's layer off and reveals home, which
+  // is already mounted underneath (see useSwipeBack).
+  const screenRef = useRef(null);
+  const homeRef = useRef(null);
+  useSwipeBack(screenRef, homeRef, screen !== 'home' && !shownSheet && !confirm, () => back('instant'), () => homeScroll.current);
 
   return (
     <div
@@ -640,7 +643,7 @@ export default function App() {
       }}
     >
 
-      <div className="hq-app-stage" ref={stageRef} style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
+      <div className="hq-app-stage" style={{ maxWidth: 480, margin: '0 auto', position: 'relative', minHeight: '100dvh' }}>
         {/* No top padding — each screen's pinned header supplies its own, so
             spacing looks the same whether it's stuck to the top or not. */}
         <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
@@ -648,13 +651,16 @@ export default function App() {
           {/* Home stays mounted (just hidden) while another screen is open, so
               going back shows it immediately instead of rebuilding every card
               and reloading its art, which left Safari blank for a moment. */}
-          <div hidden={!isHome}>
+          <div hidden={!isHome} ref={homeRef}>
             <HomeDashboard rooms={bentoRooms} overallPct={overallPct} allDone={allDone} allTotal={allTotal} roomsDone={roomsDone}
               shoppingCount={shopping.filter((item) => !item.done).length} completedCount={historyEntries.length}
               onShopping={openShopping} onHistory={openHistory} onCapture={openCapture} onAddRoom={openAddRoom}
               morphRoomId={morphRoomId} />
           </div>
 
+          {/* Opaque layer, bled over the side gutters, so the swipe can slide it
+              off over home without home showing through around the edges. */}
+          {!isHome && <div ref={screenRef} style={{ position: 'relative', zIndex: 1, margin: '0 -16px', padding: '0 16px', minHeight: '100dvh', background: 'var(--graphic-bg)' }}>
           {isRoom && (
             <RoomDetail
               theme={theme}
@@ -688,6 +694,7 @@ export default function App() {
               onBack={goHome}
             />
           )}
+          </div>}
         </div>
 
         {shownSheet && (
