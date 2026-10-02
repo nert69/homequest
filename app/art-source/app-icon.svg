@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="#F1F1E8"/>  <g transform="translate(500 500) scale(.86) translate(-512 -520)">
+    <polygon points="636,214 704,206 708,352 640,318" fill="#111"/>
+    <polygon points="196,476 498,192 520,206 512,512 214,520" fill="#F2541F"/>
+    <polygon points="498,192 520,206 842,470 822,512 512,512" fill="#D9420F"/>
+    <line x1="509" y1="200" x2="512" y2="512" stroke="#fff" stroke-width="6"/>
+    <polygon points="250,506 512,512 506,846 262,826" fill="#1F4FE8"/>
+    <polygon points="512,512 790,500 772,812 506,846" fill="#1740C9"/>
+    <line x1="512" y1="512" x2="506" y2="846" stroke="#fff" stroke-width="6"/>
+    <polygon points="326,628 438,624 442,840 330,834" fill="#1E5A35"/>
+    <circle cx="418" cy="738" r="11" fill="#D4F515"/>
+    <polygon points="572,566 708,560 704,682 576,688" fill="#D4F515"/>
+    <line x1="640" y1="562" x2="640" y2="686" stroke="#1740C9" stroke-width="11"/>
+    <line x1="574" y1="624" x2="706" y2="620" stroke="#1740C9" stroke-width="11"/>
+  </g>
+  <g transform="translate(724 724)">
+    <circle r="128" fill="#D4F515" stroke="#F1F1E8" stroke-width="22"/>
+    <path d="M-56 4 L-17 43 L61 -43" fill="none" stroke="#111" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
