@@ -645,12 +645,15 @@ export default function App() {
             spacing looks the same whether it's stuck to the top or not. */}
         <div style={{ padding: '0 16px max(64px, calc(env(safe-area-inset-bottom) + 52px))', boxSizing: 'border-box' }}>
 
-          {isHome && (
+          {/* Home stays mounted (just hidden) while another screen is open, so
+              going back shows it immediately instead of rebuilding every card
+              and reloading its art, which left Safari blank for a moment. */}
+          <div hidden={!isHome}>
             <HomeDashboard rooms={bentoRooms} overallPct={overallPct} allDone={allDone} allTotal={allTotal} roomsDone={roomsDone}
               shoppingCount={shopping.filter((item) => !item.done).length} completedCount={historyEntries.length}
               onShopping={openShopping} onHistory={openHistory} onCapture={openCapture} onAddRoom={openAddRoom}
               morphRoomId={morphRoomId} />
-          )}
+          </div>
 
           {isRoom && (
             <RoomDetail
