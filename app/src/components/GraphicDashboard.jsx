@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import GraphicArt,{ART,artIndex} from './GraphicArt.jsx';
+import GraphicArt,{ART_SOURCES,artIndex} from './GraphicArt.jsx';
 // Cards rise in one after another only on the app's first open, never when
 // returning from a room (that would fight the restored scroll position).
 // The cards are dealt a beat after the headline once the page is on screen
@@ -9,7 +9,7 @@ let introPlayed=false;
 const reduceMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const onScreen=()=>document.visibilityState==='visible'?Promise.resolve():new Promise(res=>document.addEventListener('visibilitychange',res,{once:true}));
 const pause=(ms)=>new Promise(res=>setTimeout(res,ms));
-const artLoaded=()=>Promise.race([Promise.all(Object.values(ART).map(src=>{const img=new Image();img.src=src;return img.decode().catch(()=>{});})),pause(3000)]);
+const artLoaded=()=>Promise.race([Promise.all(ART_SOURCES.map(src=>{const img=new Image();img.src=src;return img.decode().catch(()=>{});})),pause(3000)]);
 // Each card is dealt onto the board in a diagonal wave with its own slight
 // tilt (fixed per room, alternating by column) that springs flat as it lands.
 function dealStyle(r,i) {
