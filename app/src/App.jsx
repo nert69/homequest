@@ -4,7 +4,7 @@ import { artIndex } from './components/GraphicArt.jsx';
 import {
   THEMES, loadRooms, saveRooms, loadTheme, saveTheme, loadShopping, saveShopping, stageFor,
   iconFor, textFor, shapePalette, shapeFor, roomColor,
-  resyncSubs, packShapes, completionHistory,
+  resyncSubs, packShapes, completionHistory, backupLocal,
 } from './data.js';
 import HomeDashboard from './components/GraphicDashboard.jsx';
 import RoomDetail from './components/GraphicRoom.jsx';
@@ -73,6 +73,10 @@ export default function App() {
   const roomsRef = useRef(rooms);
   useEffect(() => { roomsRef.current = rooms; });
   const lastSyncedRef = useRef(null);
+  // Nothing is pushed until this device has read the household's saved copy,
+  // so a fresh or offline phone can never overwrite the real list with its
+  // own starter data.
+  const [syncReady, setSyncReady] = useState(false);
 
   const setRooms = (next) => { setRoomsState(next); saveRooms(next); };
   const setShopping = (next) => { setShoppingState(next); saveShopping(next); };
@@ -81,12 +85,24 @@ export default function App() {
   useEffect(() => {
     if (!householdCode || !syncEnabled) return undefined;
     let cancelled = false;
+    setSyncReady(false);
     (async () => {
       const remote = await fetchHousehold(householdCode);
-      if (cancelled || !remote.ok) return; // couldn't reach the server — keep using local data, try again next mount
-      if (remote.data) {
-        const { rooms: remoteRooms, theme: remoteTheme, shopping: remoteShopping } = remote.data;
-        lastSyncedRef.current = JSON.stringify(remote.data);
+      if (cancelled || !remote.ok) return; // couldn't reach the server — keep using local data, push nothing, try again next mount
+      // fetchHousehold returns the table row ({ data, updated_at }); the saved
+      // household is its `data`. Reading the row itself here meant the saved
+      // copy was never loaded, and this device's own data was then pushed
+      // over it.
+      const saved = remote.data && remote.data.data;
+      if (saved) {
+        const { rooms: remoteRooms, theme: remoteTheme, shopping: remoteShopping } = saved;
+        // Keep this device's copy before replacing it, so nothing is lost if
+        // the server copy turns out to be the wrong one.
+        backupLocal({ rooms: roomsRef.current, theme: themeKey, shopping });
+        const nextRooms = Array.isArray(remoteRooms) ? remoteRooms : roomsRef.current;
+        const nextTheme = remoteTheme || themeKey;
+        const nextShopping = Array.isArray(remoteShopping) ? remoteShopping : shopping;
+        lastSyncedRef.current = JSON.stringify({ rooms: nextRooms, theme: nextTheme, shopping: nextShopping });
         if (Array.isArray(remoteRooms)) { setRoomsState(remoteRooms); saveRooms(remoteRooms); }
         if (remoteTheme) { setThemeKeyState(remoteTheme); saveTheme(remoteTheme); }
         if (Array.isArray(remoteShopping)) { setShoppingState(remoteShopping); saveShopping(remoteShopping); }
@@ -95,6 +111,7 @@ export default function App() {
         lastSyncedRef.current = JSON.stringify(payload);
         pushHousehold(householdCode, payload);
       }
+      setSyncReady(true);
     })();
     const unsubscribe = subscribeHousehold(householdCode, (row) => {
       if (!row || !row.data) return;
@@ -112,7 +129,7 @@ export default function App() {
 
   // push local changes up to the household row (debounced, skips echoes of our own remote-applied state)
   useEffect(() => {
-    if (!householdCode || !syncEnabled) return undefined;
+    if (!householdCode || !syncEnabled || !syncReady) return undefined;
     const payload = { rooms, theme: themeKey, shopping };
     const serialized = JSON.stringify(payload);
     if (serialized === lastSyncedRef.current) return undefined;
@@ -121,7 +138,7 @@ export default function App() {
       pushHousehold(householdCode, payload);
     }, 500);
     return () => clearTimeout(t);
-  }, [rooms, themeKey, shopping, householdCode]);
+  }, [rooms, themeKey, shopping, householdCode, syncReady]);
 
   const handleCreateHousehold = () => generateCode();
   const handleConfirmCreate = (code) => { saveHouseholdCode(code); setHouseholdCodeState(code); };
