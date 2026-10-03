@@ -211,6 +211,18 @@ export function loadRooms() {
   return buildDefaultRooms();
 }
 
+// Before a device's data is replaced by the household's saved copy, keep the
+// last few local copies so a bad sync can be undone.
+export const BACKUP_STORAGE_KEY = STORAGE_KEY + '-backups';
+export function backupLocal(payload) {
+  try {
+    const list = JSON.parse(localStorage.getItem(BACKUP_STORAGE_KEY) || '[]');
+    const entry = { at: new Date().toISOString(), ...payload };
+    if (list.length && JSON.stringify({ ...list[0], at: '' }) === JSON.stringify({ ...entry, at: '' })) return;
+    localStorage.setItem(BACKUP_STORAGE_KEY, JSON.stringify([entry, ...list].slice(0, 5)));
+  } catch (e) { /* storage full/unavailable */ }
+}
+
 export function saveRooms(rooms) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms)); } catch (e) { /* storage full/unavailable */ }
 }
