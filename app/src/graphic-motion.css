@@ -132,3 +132,6 @@
 .is-entering .graphic-calendar-grid i{animation:card-fade .3s ease-out calc(var(--w) * 14ms + 120ms) both}
 .is-entering .graphic-calendar-grid i:not([data-level="0"]):not([data-future]){animation:card-fade .2s ease-out calc(var(--w) * 14ms + 200ms) both,cell-pop .7s var(--spring-art) calc(var(--w) * 14ms + 200ms) both}
 @keyframes cell-pop{from{transform:scale(.2)}}
+
+/* 11. Grab handle on bottom sheets: they can be swiped down to close. */
+.hq-sheet::before{content:"";display:block;width:38px;height:4px;border-radius:2px;background:rgba(17,17,17,.2);margin:-12px auto 14px}
