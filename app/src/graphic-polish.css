@@ -18,6 +18,9 @@
 .graphic-support-title p{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#555}
 .graphic-support section{margin-top:24px}
 .graphic-support button,.graphic-support a{min-height:44px}
+/* Preserve the 36px purchase-link circle; enlarge only its invisible tap area. */
+.graphic-support a[aria-label='Open purchase link']{min-height:0;min-width:36px;max-width:36px;max-height:36px;box-sizing:border-box;position:relative;text-decoration:none}
+.graphic-support a[aria-label='Open purchase link']::after{content:"";position:absolute;inset:-4px;border-radius:50%}
 /* The Shopping tick circles are 38px; the 44px minimum above stretched them
    into ovals. Keep them round and put the 44px+ tap area on a pseudo-element. */
 .graphic-support button[aria-label='Mark as bought'],.graphic-support button[aria-label='Mark as needed']{min-height:0;width:38px;height:38px;flex:0 0 38px;position:relative}
