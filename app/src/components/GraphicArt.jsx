@@ -13,12 +13,12 @@
 // filtered while rendering.
 const base=import.meta.env.BASE_URL;
 const CROPS=['kitchen','living','bathroom','bedroom','hall','other'].map((n)=>base+'art/'+n+'.webp');
-export const ART={crops:CROPS,toilet:base+'downstairs-toilet.webp',hallway:base+'downstairs-hallway.webp'};
-export const ART_SOURCES=[...CROPS,ART.toilet,ART.hallway].flatMap((s)=>[s,s.replace(/\.webp$/,'-ghost.webp')]);
+export const ART={crops:CROPS,toilet:base+'downstairs-toilet.webp',hallway:base+'downstairs-hallway.webp',garden:base+'art/back-garden.webp',spare:base+'art/spare-room.webp'};
+export const ART_SOURCES=[...CROPS,ART.toilet,ART.hallway,ART.garden,ART.spare].flatMap((s)=>[s,s.replace(/\.webp$/,'-ghost.webp')]);
 export function artIndex(name) { const n=name.toLowerCase(); return n.includes('kitchen')?0:n.includes('living')||n.includes('lounge')?1:n.includes('bath')||n.includes('toilet')?2:n.includes('bed')?3:n.includes('hall')?4:5; }
 export default function GraphicArt({name,morph,fill}) {
- const n=name.toLowerCase();
- const custom=n.includes('toilet')?ART.toilet:n.includes('downstairs')&&n.includes('hall')?ART.hallway:null;
+ const n=name.trim().toLowerCase();
+ const custom=n==='back garden'?ART.garden:n==='spare room'?ART.spare:n.includes('toilet')?ART.toilet:n.includes('downstairs')&&n.includes('hall')?ART.hallway:null;
  const src=custom||CROPS[artIndex(name)];
  const ghost=src.replace(/\.webp$/,'-ghost.webp');
  const kind=custom?undefined:'graphic-art-crop';
