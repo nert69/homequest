@@ -119,7 +119,7 @@ export function completionHistory(rooms) {
 
 export function buildDefaultRooms() {
   return [
-    { id: 'front', name: 'Front', tasks: [
+    { id: 'front', name: 'Front & Garden', tasks: [
       mk('fr1', 'New stones', 'doing'), mk('fr2', 'Outdoor Govee light', 'done'), mk('fr3', 'New house number', false),
       mk('fr4', 'Paint peak', false), mk('fr5', 'Remove moss on driveway', false), mk('fr6', 'Cut down bush', false),
       mk('fr7', 'Remove weeds', false), mk('fr8', 'Ring doorbell', false),
@@ -135,7 +135,7 @@ export function buildDefaultRooms() {
       mk('k1', 'Internal door', false), mk('k2', 'Blinds', false), mk('k3', 'Frames', false), mk('k4', 'Govee bulbs', false),
       mk('k5', 'Fix sealant', false), mk('k6', 'Paint', false), mk('k7', 'Window sill', false),
     ] },
-    { id: 'hallway', name: 'Hallway', tasks: [
+    { id: 'hallway', name: 'Hallway & Stairs', tasks: [
       mk('h1', 'Frames', false), mk('h2', 'Internal doors', false), mk('h3', 'Strip banister', false),
       mk('h4', 'Paint', false), mk('h5', 'Carpet', false),
     ] },
@@ -148,6 +148,8 @@ export function buildDefaultRooms() {
       mk('b1', 'Internal door', false), mk('b2', 'Anchor points', false), mk('b3', 'New mirror', false), mk('b4', 'Update frames', false),
       mk('b5', 'Bedside tables', false), mk('b6', 'TV', false), mk('b7', 'Blinds', false), mk('b8', 'Paint', false), mk('b9', 'Frames', false),
     ] },
+    { id: 'back-garden', name: 'Back Garden', tasks: [] },
+    { id: 'spare-room', name: 'Spare Room', tasks: [] },
     { id: 'bathroom', name: 'Bathroom', tasks: [
       mk('ba1', 'Internal door', false), mk('ba2', 'New blinds', false), mk('ba3', 'Reseal shower', false),
       mk('ba4', 'Fix skirting', false), mk('ba5', 'Paint', false),

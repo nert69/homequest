@@ -24,10 +24,14 @@ import {
 // saturation lift. The extra Hallway keeps that study's royal-blue accent.
 const PINBOARD_FOLDER_COLORS = {
   front: '#A7D943',
+  'front & garden': '#A7D943',
+  'back garden': '#83BBA0',
+  'spare room': '#B3A0D5',
   'downstairs hallway': '#B3A0D5',
   'downstairs toilet': '#E9B358',
   kitchen: '#EA9878',
   hallway: '#83B8CC',
+  'hallway & stairs': '#83B8CC',
   'living room': '#D8A0B8',
   bedroom: '#83BBA0',
   bathroom: '#DDD16B',
